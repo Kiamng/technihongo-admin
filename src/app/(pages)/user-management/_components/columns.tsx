@@ -34,7 +34,7 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "joinDate",
-    header: "Role",
+    header: "Joined date",
   },
   {
     id: "actions",
