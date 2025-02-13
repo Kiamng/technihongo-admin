@@ -7,8 +7,7 @@ import users from "@/types/user";
 import { columns } from "./_components/columns";
 import { Button } from "@/components/ui/button";
 import { Users, GraduationCap, UserCheck, Calendar } from "lucide-react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TabsContent } from "@radix-ui/react-tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function UserManagementPage() {
   const [currentPage, setCurrentPage] = useState(1);
