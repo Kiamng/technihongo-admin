@@ -7,17 +7,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <section>
+    <section className="h-screen flex flex-col">
       <Header />
-      <div className="flex flex-row h-screen gap-4">
+      <div className="flex flex-row flex-1 overflow-hidden">
         <Navigation />
-        <div className="flex-1 overflow-x-auto">
-          <div className="sm:h-[calc(99vh-60px)] overflow-auto">
-            <div className="w-full flex overflow-auto h-[calc(100vh - 120px)] overflow-y-auto relative">
-              <div className="w-full p-10">{children}</div>
-            </div>
-          </div>
-        </div>
+        <div className="flex-1 overflow-y-auto p-10">{children}</div>
       </div>
     </section>
   );
