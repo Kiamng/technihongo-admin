@@ -6,8 +6,7 @@ import { DataTable } from "@/components/data-table";
 import users from "@/types/user";
 import { columns } from "./_components/columns";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Search, Users, GraduationCap, UserCheck, Calendar,  } from "lucide-react";
+import { Users, GraduationCap, UserCheck, Calendar,  } from "lucide-react";
 
 export default function UserManagementPage() {
   const [currentPage, setCurrentPage] = useState(1);
