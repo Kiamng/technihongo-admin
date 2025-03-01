@@ -11,7 +11,9 @@ export default function RootLayout({
       <Header />
       <div className="flex flex-row flex-1 overflow-hidden">
         <Navigation />
-        <div className="flex-1 overflow-y-auto p-10">{children}</div>
+        <div className="flex-1 overflow-y-auto p-10">{children}
+
+        </div>
       </div>
     </section>
   );

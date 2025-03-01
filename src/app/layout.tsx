@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 import { Inter } from "next/font/google";
 
@@ -13,7 +14,7 @@ export default function RootLayout({
       <body className={`${inter.className}`}>
         {/* Layout UI */}
         {/* Place children where you want to render a page or nested layout */}
-        <main>{children}</main>
+        <main>{children} <Toaster /></main>
       </body>
     </html>
   );

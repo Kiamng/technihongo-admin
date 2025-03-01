@@ -9,7 +9,7 @@ interface CellActionProps {
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   return (
     <>
-      <Link href={`/user-management/${data.id}`}>
+      <Link href={`/user-management/${data.userId}`}>
         <Button> View</Button>
       </Link>
     </>

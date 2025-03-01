@@ -1,4 +1,4 @@
-/*"use client"
+"use client"
 
 import * as React from "react"
 import { TrendingUp, Pencil, Trash } from "lucide-react"
@@ -147,4 +147,3 @@ export default function SystemConfigurationPage() {
     </div>
   )
 }
-*/
