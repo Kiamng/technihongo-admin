@@ -43,5 +43,13 @@ export const NavItems = () => {
       active: isNavItemActive(pathname, "/system-configuration"),
       position: "top",
     },
+    {
+      name: "Violation Management",
+      href: "/violation-management",
+      icon: <MonitorCog size={size} />,
+      active: isNavItemActive(pathname, "/violation-management"),
+      position: "top",
+    },
+    
   ];
 };
