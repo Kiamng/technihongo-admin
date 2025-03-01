@@ -33,14 +33,14 @@ export type SubscriptionPlan = {
       name: "Annual Basic Plan",
       price: 99.99,
       durationDays: 365,
-      isActive: true,
+      isActive: false,
     },
     {
       id: "5",
       name: "Annual Premium Plan",
       price: 299.99,
       durationDays: 365,
-      isActive: true,
+      isActive: false,
     },
     {
       id: "6",
