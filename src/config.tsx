@@ -1,7 +1,6 @@
 import {
   LayoutDashboard,
   MonitorCog,
-  SquareChartGantt,
   User,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -27,13 +26,6 @@ export const NavItems = () => {
       href: "/user-management",
       icon: <User size={size} />,
       active: isNavItemActive(pathname, "/user-management"),
-      position: "top",
-    },
-    {
-      name: "Subscription management",
-      href: "/subscription-management",
-      icon: <SquareChartGantt size={size} />,
-      active: isNavItemActive(pathname, "/subscription-management"),
       position: "top",
     },
     {
