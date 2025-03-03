@@ -19,9 +19,13 @@ import {
     Lock,
     Trash,
     PenSquare,
+    User,
+    Mail
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { use } from "react";
+import { use, useEffect, useState } from "react";
+import { User as UserType } from "@/types/user";
+import { getUserById } from "@/app/api/user/user.api";
 
 interface UserDetailPageProps {
     params: Promise<{ userId: string }>;
@@ -154,10 +158,42 @@ const groupActivitiesByDate = (activities: ActivityLog[]) => {
 
 export default function UserDetailPage({ params }: UserDetailPageProps) {
     const router = useRouter();
+    // Properly unwrap the Promise params using the use hook
     const resolvedParams = use(params);
-    console.log(resolvedParams);
+    const [user, setUser] = useState<UserType | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
+    useEffect(() => {
+        const fetchUserID = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                
+                if (resolvedParams.userId) {
+                    const userData = await getUserById(resolvedParams.userId);
+                    setUser(userData);
+                }
+            } catch (err) {
+                console.error("Error fetching user data:", err);
+                setError("Failed to load user data. Please try again later.");
+            } finally {
+                setLoading(false);
+            }
+        };
+    
+        fetchUserID();
+    }, [resolvedParams.userId]);
 
+   
+    if (error) {
+        return <div className="text-center text-red-500 p-4">{error}</div>;
+    }
+
+    
+    if (loading) {
+        return <p className="text-center text-gray-500">Đang tải dữ liệu...</p>;
+    }
 
     const StatCard = ({ icon: Icon, title, value, className = "" }: StatCardProps) => (
         <Card className="flex-1">
@@ -176,6 +212,17 @@ export default function UserDetailPage({ params }: UserDetailPageProps) {
     const groupedActivities = groupActivitiesByDate(activityLogs);
     const sortedDates = Object.keys(groupedActivities).sort((a, b) => b.localeCompare(a));
 
+    
+    const formatJoinDate = (date: Date | string | undefined) => {
+        if (!date) return "";
+        const formattedDate = typeof date === 'string' ? new Date(date) : date;
+        return formattedDate.toLocaleDateString('vi-VN', {
+            day: 'numeric',
+            month: 'numeric',
+            year: 'numeric'
+        });
+    };
+
     return (
         <div className="w-full max-w-5xl mx-auto p-6 space-y-6">
             {/* Header Section */}
@@ -189,19 +236,20 @@ export default function UserDetailPage({ params }: UserDetailPageProps) {
                     <span>Quay lại</span>
                 </Button>
 
-                {/* <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
-            <User className="w-6 h-6 text-primary" />
-          </div>
-          <div className="flex-1">
-            <h1 className="text-xl font-bold">{currentUser?.fullname || 'Người dùng không tồn tại'}</h1>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Mail className="w-4 h-4" />
-              <span>{currentUser?.email}</span>
-            </div>
-            <p className="text-sm text-muted-foreground mt-1">Tham gia từ: {currentUser?.joinDate}</p>
-          </div>
-        </div> */}
+                {/* User Information Section */}
+                <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                        <User className="w-6 h-6 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                        <h1 className="text-xl font-bold">{user?.userName || 'Người dùng không tồn tại'}</h1>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Mail className="w-4 h-4" />
+                            <span>{user?.email}</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">Tham gia từ: {formatJoinDate(user?.createdAt)}</p>
+                    </div>
+                </div>
             </div>
 
             {/* Stats Grid */}
