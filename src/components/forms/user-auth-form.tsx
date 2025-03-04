@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 
 import { Lock, Mail } from "lucide-react";
 import { signIn } from 'next-auth/react';
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -14,6 +15,7 @@ interface LoginFormValues {
   password: string;
 }
 export default function UserAuthForm() {
+  const router = useRouter();
   const [isPending, setIsPending] = useState(false);
   const {
     register,
@@ -27,17 +29,23 @@ export default function UserAuthForm() {
     const result = await signIn("credentials", {
       email: data.email,
       password: data.password,
-      callbackUrl: "/dashboard",
     });
 
     setIsPending(false);
 
     if (result?.error) {
-      toast.error("Đăng nhập thất bại. Kiểm tra lại email và mật khẩu!");
+      toast.error("Login failed, check your email and password again!");
     } else {
-      toast.success("Đăng nhập thành công!");
+      toast.success("Login successfully!");
     }
-    console.log(data);
+    const res = await fetch("/api/auth/session");
+    const session = await res.json();
+
+    if (session?.user?.role === "Administrator") {
+      router.push("/dashboard");
+    } else if (session?.user?.role === "Content Manager") {
+      router.push("/course-management");
+    }
 
   };
 

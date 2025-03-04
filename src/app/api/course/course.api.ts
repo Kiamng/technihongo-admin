@@ -26,7 +26,7 @@ export const createCourse = async (values:z.infer<typeof CreateCourseSchema>, to
     description : values.description,
     domainId : values.domainId,
     difficultyLevelId : 1,
-    attachmentUrl : "https://",
+    attachmentUrl : "",
     thumbnailUrl : values.thumbnailUrl,
     estimatedDuration : values.estimatedDuration,
     isPremium : false

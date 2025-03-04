@@ -2,41 +2,55 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-// Các trang public mà không cần đăng nhập (sign-in, login, v.v.)
-const publicRoutes = [ "/"];
+// Các trang public mà không cần đăng nhập
+const publicRoutes = ["/"];
 
-// Các trang yêu cầu đăng nhập (home, dashboard, profile, v.v.)
-const authRoutes = ["/dashboard"];
+// Các trang dành cho Admin
+const authRoutes = ["/dashboard", "/system-configuration", "/user-management", "/violation-management"];
+
+// Các trang dành cho Content Manager
+const CMRoutes = ["/course-management"];
 
 export default async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const { pathname } = req.nextUrl;
 
-  // Kiểm tra token trên console (optional)
-  console.log("Path:", pathname, "Token:", token);
+  console.log("🌍 Path:", pathname, "🛂 Role:", token?.role);
 
-  // Nếu người dùng đã đăng nhập và cố gắng truy cập các trang public (sign-in) -> Chuyển hướng về /dashboard
-  if (token && publicRoutes.some((path) => pathname.startsWith(path))) {
-    // Nếu đang ở trang /sign-in thì không chuyển hướng nữa
-    if (pathname === "/") {
-      return NextResponse.redirect(new URL("/dashboard", req.url)); // Chuyển hướng về /dashboard
+  // 🛑 Nếu chưa đăng nhập, chỉ cho phép vào publicRoutes (trang đăng nhập)
+  if (!token) {
+    if (!publicRoutes.includes(pathname)) {
+      console.log("🚫 Chưa đăng nhập, chuyển hướng về / (trang đăng nhập)");
+      return NextResponse.redirect(new URL("/", req.url));
     }
-    return NextResponse.next(); // Cho phép tiếp tục nếu đang ở trang khác ngoài sign-in
+    return NextResponse.next();
   }
 
-  // Nếu người dùng chưa đăng nhập và cố gắng truy cập các trang yêu cầu auth (dashboard) -> Chuyển hướng về /sign-in
-  if (!token && authRoutes.some((path) => pathname.startsWith(path))) {
-    // Nếu đang ở trang /dashboard thì không chuyển hướng nữa
-    if (pathname === "/dashboard") {
-      return NextResponse.redirect(new URL("/", req.url)); // Chuyển hướng về /sign-in
-    }
-    return NextResponse.next(); // Cho phép tiếp tục nếu đang ở trang khác ngoài dashboard
+  const { role } = token;
+
+  // 🔄 Nếu đã đăng nhập mà vẫn vào trang đăng nhập, chuyển hướng về dashboard phù hợp
+  if (pathname === "/") {
+    console.log("🔄 Đã đăng nhập, chuyển hướng đến trang phù hợp...");
+    return NextResponse.redirect(new URL(role === "Administrator" ? "/dashboard" : "/course-management", req.url));
   }
 
-  // Cho phép request tiếp tục nếu không vi phạm điều kiện trên
+  // ✅ Nếu role là Content Manager, chỉ cho phép truy cập CMRoutes
+  if (role === "Content Manager" && !CMRoutes.some((path) => pathname.startsWith(path))) {
+    console.log("⛔ Content Manager bị chặn truy cập:", pathname);
+    return NextResponse.redirect(new URL("/not-found", req.url));
+  }
+
+  // ✅ Nếu role là Administrator, chỉ cho phép truy cập authRoutes
+  if (role === "Administrator" && !authRoutes.some((path) => pathname.startsWith(path))) {
+    console.log("⛔ Administrator bị chặn truy cập:", pathname);
+    return NextResponse.redirect(new URL("/not-found", req.url));
+  }
+
+  // ✅ Nếu hợp lệ, tiếp tục truy cập
+  console.log("✅ Truy cập hợp lệ:", pathname);
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/((?!api|_next|static|favicon.ico).*)"],
+  matcher: ["/((?!api|_next|static|favicon.ico|not-found).*)"],
 };
