@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { UserStats } from "./_components/UserStats";
-import { Pagination } from "./_components/Pagination";
 import { DataTable } from "@/components/data-table";
 import { columns } from "./_components/columns";
 import { Users, GraduationCap, UserCheck, Calendar } from "lucide-react";
@@ -9,8 +8,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User } from "@/types/user";
 import { getStudent, getContentManager } from "@/app/api/user/user.api";
 import AddContentManagerPopup from "./_components/add-content-manager-popup";
+import { Pagination } from "@/components/Pagination";
 
 export default function UserManagementPage() {
+
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState<boolean>(true);
   const [users, setUsers] = useState<User[]>([]);

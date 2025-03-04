@@ -14,11 +14,9 @@ const ENDPOINT = {
 
 
 export const getAllDomain = async (): Promise<Domain[]> => {
-  console.log("Fetching from:", axiosClient.defaults.baseURL + ENDPOINT.GETALLDOMAIN);
   
   try {
       const response = await axiosClient.get(ENDPOINT.GETALLDOMAIN);
-      console.log("Fetched Data:", response.data); // Kiểm tra dữ liệu nhận được
       return response.data.data as Domain[];
   } catch (error) {
       console.error("Error fetching subscriptions:", error);

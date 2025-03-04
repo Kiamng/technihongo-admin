@@ -13,7 +13,7 @@ export default function DomainManagement() {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState<boolean>(true);
   const [domains, setDomains] = useState<Domain[]>([]);
-  
+
   const itemsPerPage = 5;
   const totalPages = Math.ceil(domains.length / itemsPerPage);
   const paginatedDomain = domains.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -26,7 +26,6 @@ export default function DomainManagement() {
 
       const response = await getAllDomain();
       setDomains(response);
-      console.log(response);
     } catch (err) {
       console.log(err);
     } finally {

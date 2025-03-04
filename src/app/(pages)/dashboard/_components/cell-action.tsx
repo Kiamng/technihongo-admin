@@ -50,7 +50,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   return (
     <>
       <div className="flex gap-2">
-        <Button onClick={() => setIsOpen(true)} className="bg-blue-500 hover:bg-blue-600 text-white">
+        <Button onClick={() => setIsOpen(true)} >
           <Edit className="w-4 h-4" /> Update
         </Button>
 

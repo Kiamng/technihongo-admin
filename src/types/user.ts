@@ -1,3 +1,5 @@
+import { DifficultyLevel } from "./difficulty-level";
+
 export type User = {
   userId: number;
   userName: string;
@@ -10,15 +12,6 @@ export type User = {
   profileImg: string | null; // Ảnh đại diện có thể là chuỗi hoặc null
   student: Student | null; // Có thể là chuỗi hoặc null, nếu có thông tin sinh viên
   active: boolean;  // Trạng thái hoạt động (true/false)
-};
-export type DifficultyLevel = {
-  levelId: number;
-  tag: string;
-  name: string;
-  description: string;
-  orderSequence: number | null;
-  createdAt: string;
-  active: boolean;
 };
 
 export type Student = {

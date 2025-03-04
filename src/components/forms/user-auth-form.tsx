@@ -1,95 +1,106 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
-// import { signIn } from 'next-auth/react';
-// import { useSearchParams } from 'next/navigation';
+import { Label } from "@/components/ui/label";
+
+import { Lock, Mail } from "lucide-react";
+import { signIn } from 'next-auth/react';
 import { useState } from "react";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "sonner";
 
-const formSchema = z.object({
-  email: z.string(),
-  password: z.string(),
-});
-
-type UserFormValue = z.infer<typeof formSchema>;
-
+interface LoginFormValues {
+  email: string;
+  password: string;
+}
 export default function UserAuthForm() {
-  //   const searchParams = useSearchParams();
-  //   const callbackUrl = searchParams.get('callbackUrl');
-  const [loading, setLoading] = useState(false);
-  const form = useForm<UserFormValue>({
-    resolver: zodResolver(formSchema),
-  });
+  const [isPending, setIsPending] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormValues>();
 
-  const onSubmit = async (data: UserFormValue) => {
-    // signIn('credentials', {
-    //   email: data.email,
-    //   password: data.password,
-    //   callbackUrl: callbackUrl ?? '/dashboard'
-    // });
+  const onSubmit: SubmitHandler<LoginFormValues> = async (data) => {
+    setIsPending(true);
+
+    const result = await signIn("credentials", {
+      email: data.email,
+      password: data.password,
+      callbackUrl: "/dashboard",
+    });
+
+    setIsPending(false);
+
+    if (result?.error) {
+      toast.error("Đăng nhập thất bại. Kiểm tra lại email và mật khẩu!");
+    } else {
+      toast.success("Đăng nhập thành công!");
+    }
     console.log(data);
-    setLoading(!loading);
+
   };
 
   return (
     <>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full space-y-2"
-        >
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email or username</FormLabel>
-                <FormControl>
-                  <Input
-                    type="text"
-                    placeholder="Enter your email or username..."
-                    disabled={loading}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input
-                    type="password"
-                    placeholder="Enter your password..."
-                    disabled={loading}
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <Button disabled={loading} className="ml-auto w-full" type="submit">
-            Login
-          </Button>
-        </form>
-      </Form>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-full space-y-5"
+      >
+        <div className="grid w-full items-center gap-1.5 relative">
+          <Label htmlFor="email">Email</Label>
+          <div className="relative">
+            <span className="absolute inset-y-0 left-3 flex items-center text-gray-400">
+              <Mail className="w-5 h-5" />
+            </span>
+            <Input
+              className="pl-10"
+              disabled={isPending}
+              id="email"
+              placeholder="Nhập email tại đây"
+              type="email"
+              {...register("email", {
+                required: "Bạn cần phải nhập email",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Email không hợp lệ",
+                },
+              })}
+            />
+          </div>
+          {errors.email && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.email.message}
+            </p>
+          )}
+        </div>
+        <div className="grid w-full items-center gap-1.5 relative">
+          <Label htmlFor="password">Mật khẩu</Label>
+          <div className="relative">
+            <span className="absolute inset-y-0 left-3 flex items-center text-gray-400">
+              <Lock className="w-5 h-5" />
+            </span>
+            <Input
+              className="pl-10 pr-10"
+              disabled={isPending}
+              id="password"
+              placeholder="Nhập mật khẩu tại đây"
+              type={"password"}
+              {...register("password", {
+                required: "Bạn cần phải nhập mật khẩu"
+              })}
+            />
+          </div>
+          {errors.password && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors.password.message}
+            </p>
+          )}
+        </div>
+        <Button disabled={isPending} className="ml-auto w-full" type="submit">
+          Login
+        </Button>
+      </form>
     </>
   );
 }

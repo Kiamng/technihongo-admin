@@ -24,11 +24,11 @@ import { z } from "zod"
 import { addContentManagerSchema } from "@/schema/user";
 import { useState } from "react";
 import { addContentManager } from "@/app/api/user/user.api";
-
+import { useSession } from "next-auth/react";
 
 
 const AddContentManagerPopup = () => {
-    const adminId = 1;
+    const { data: session } = useSession();
     const [isLoadind, setIsLoading] = useState<boolean>(false);
     const form = useForm<z.infer<typeof addContentManagerSchema>>({
         resolver: zodResolver(addContentManagerSchema),
@@ -43,7 +43,7 @@ const AddContentManagerPopup = () => {
     const onSubmitForm = async (values: z.infer<typeof addContentManagerSchema>) => {
         try {
             setIsLoading(true)
-            const response = await addContentManager(adminId, values);
+            const response = await addContentManager(session?.user.id as number, values);
             if (response.success === false) {
                 toast.error("Failed to add new content manager!!");
             } else {
