@@ -14,6 +14,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { useRouter } from "next/navigation";
 
 
 interface CellActionProps {
@@ -21,6 +22,7 @@ interface CellActionProps {
 }
 
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -37,6 +39,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
         toast.error("Failed to delete subscription plan!");
       } else {
         toast.success("Subscription plan deleted successfully!");
+        router.refresh();
       }
     } catch (error) {
       console.error(error);

@@ -16,6 +16,15 @@ export type Course = {
     enrollmentCount: number;
     createdAt: string;
     updateAt: string | null;
-    public: boolean;
+    publicStatus: boolean;
     premium: boolean;
 };
+
+export type CourseList = {
+    content : Course[],
+    pageNo: number,
+        pageSize: number,
+        totalElements: number,
+        totalPages: number,
+        last: boolean
+}

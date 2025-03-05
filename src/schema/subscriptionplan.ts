@@ -1,32 +1,26 @@
 import { z } from "zod";
 
 export const addSubscriptionPlanSchema = z.object({
-  name: z
-    .string()
-    .nonempty("Tên gói không được để trống") // Bắt buộc nhập
-    .min(3, { message: "Tên gói phải có ít nhất 3 ký tự" })
-    .max(100, { message: "Tên gói không được vượt quá 100 ký tự" }),
+  name: z.string().nonempty("Subscription plan name is required"),
 
-  benefits: z
-    .string()
-    .min(10, { message: "Benefits phải có ít nhất 10 ký tự" })
-    .max(500, { message: "Benefits không được vượt quá 500 ký tự" }),
+  benefits: z.string().min(1, { message: "Benefit is required" }),
 
   price: z
-    .number({
-      required_error: "Giá không được để trống",
-      invalid_type_error: "Giá phải là một số hợp lệ",
+    .coerce.number({
+      required_error: "Price is required",
+      invalid_type_error: "Price must be a valid number",
     })
-    .min(10000, { message: "Giá phải từ 10,000 đến 10,000,000 VND" })
-    .max(10000000, { message: "Giá phải từ 10,000 đến 10,000,000 VND" }),
+    .min(10000, { message: "Price must be from 10,000 to 10,000,000 VND" })
+    .max(10000000, { message: "Price must be from 10,000 to 10,000,000 VND" }),
 
   durationDays: z
-    .number({
-      required_error: "Thời gian không được để trống",
-      invalid_type_error: "Thời gian phải là một số hợp lệ",
+    .coerce.number({
+      required_error: "Duration day is required",
+      invalid_type_error: "Duration day must be a valid number",
     })
-    .min(60, { message: "Thời gian phải từ 60 đến 3650 ngày" })
-    .max(3650, { message: "Thời gian phải từ 60 đến 3650 ngày" }),
+    .min(30, { message: "Duration day must be from 30 to 365 days" })
+    .max(365, { message: "Duration day must be from 30 to 365 days" }),
 
   active: z.boolean(),
 });
+

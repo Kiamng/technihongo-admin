@@ -46,7 +46,7 @@ export const columns: ColumnDef<Course>[] = [
         accessorKey: "public",
         header: "Public status",
         cell: ({ row }) => {
-            return row.original.public ? (
+            return row.original.publicStatus ? (
                 <div className="px-4 py-2 bg-[#56D071] w-fit text-[#56D071] rounded-xl bg-opacity-10">ACTIVE</div>
             ) : (
                 <div className="px-4 py-2 bg-[#FD5673] w-fit text-[#FD5673] rounded-xl bg-opacity-10">INACTIVE</div>

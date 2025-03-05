@@ -1,9 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import { UserStats } from "./_components/UserStats";
 import { DataTable } from "@/components/data-table";
 import { columns } from "./_components/columns";
-import { Users, GraduationCap, UserCheck, Calendar } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User } from "@/types/user";
 import { getStudent, getContentManager } from "@/app/api/user/user.api";
@@ -65,29 +63,31 @@ export default function UserManagementPage() {
   }, [activeTab, contentManagersLoaded]);
 
   return (
-    <div className="w-full">
-      <div className="flex justify-between items-center mb-6">
+    <div className="w-full space-y-6">
+      <div className="flex justify-between items-center">
         <h1 className="text-4xl font-bold">Account Management</h1>
         <AddContentManagerPopup />
       </div>
 
-      <div className="grid grid-cols-4 gap-4 mb-6">
+      {/* <div className="grid grid-cols-4 gap-4">
         <UserStats title="Total user" count={625} icon={<Users className="w-6 h-6 text-gray-500" />} />
         <UserStats title="Student" count={users.length} icon={<GraduationCap className="w-6 h-6 text-gray-500" />} />
         <UserStats title="Content manager" count={contentManagers.length} icon={<UserCheck className="w-6 h-6 text-gray-500" />} />
         <UserStats title="Joined this month" count={123} icon={<Calendar className="w-6 h-6 text-gray-500" />} />
-      </div>
+      </div> */}
 
       {/* Tabs */}
       <Tabs defaultValue="student" onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-[400px] grid-cols-2 mb-6">
-          <TabsTrigger value="student">Student</TabsTrigger>
-          <TabsTrigger value="contentManager">Content Manager</TabsTrigger>
+          <TabsTrigger onClick={() => setCurrentPage(1)} value="student">Student</TabsTrigger>
+          <TabsTrigger onClick={() => setCurrentPage(1)} value="contentManager">Content Manager</TabsTrigger>
         </TabsList>
-        <TabsContent value="student">
+        <TabsContent className="space-y-6" value="student">
+          <div className="font-medium">Total students: {users.length}</div>
           <DataTable columns={columns} searchKey="userName" data={paginatedData} isLoading={loading} />
         </TabsContent>
-        <TabsContent value="contentManager">
+        <TabsContent className="space-y-6" value="contentManager">
+          <div className="font-medium">Total students: {contentManagers.length}</div>
           <DataTable columns={columns} searchKey="userName" data={paginatedData} isLoading={loading} />
         </TabsContent>
       </Tabs>

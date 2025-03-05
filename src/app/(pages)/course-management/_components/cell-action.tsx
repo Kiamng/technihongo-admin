@@ -1,4 +1,3 @@
-
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -6,7 +5,8 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Course } from "@/types/course";
-import { EllipsisVertical, Edit, Trash, Eye } from "lucide-react";
+import { EllipsisVertical, Trash, Eye } from "lucide-react";
+import Link from "next/link";
 
 
 
@@ -17,21 +17,16 @@ interface CellActionProps {
 export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
 
-
     return (
-        <>
-            <DropdownMenu>
-                <DropdownMenuTrigger><EllipsisVertical /></DropdownMenuTrigger>
-                <DropdownMenuContent>
+        <DropdownMenu>
+            <DropdownMenuTrigger><EllipsisVertical /></DropdownMenuTrigger>
+            <DropdownMenuContent>
+                <Link href={`/course-management/${data.courseId}`} >
                     <DropdownMenuItem><Eye />View more</DropdownMenuItem>
-                    <DropdownMenuItem><Edit />Update</DropdownMenuItem>
-                    <DropdownMenuItem><Trash /> Delete</DropdownMenuItem>
-                </DropdownMenuContent>
-            </DropdownMenu>
+                </Link>
 
-
-
-
-        </>
+                <DropdownMenuItem><Trash /> Delete</DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
     );
 };

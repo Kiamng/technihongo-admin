@@ -15,7 +15,7 @@ export default async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const { pathname } = req.nextUrl;
 
-  console.log("🌍 Path:", pathname, "🛂 Role:", token?.role);
+  console.log("🌍 Path:", pathname, "🛂 Role:", token?.role, "token:", token);
 
   // 🛑 Nếu chưa đăng nhập, chỉ cho phép vào publicRoutes (trang đăng nhập)
   if (!token) {

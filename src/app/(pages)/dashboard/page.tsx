@@ -17,24 +17,24 @@ export default function Dashboard() {
   const itemsPerPage = 5;
   const totalPages = Math.ceil(subscriptions.length / itemsPerPage);
   const paginatedUsers = subscriptions.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const fetchSubscriptions = async () => {
+    try {
 
-  useEffect(() => {
-    const fetchSubscriptions = async () => {
-      try {
+      setLoading(true)
+      // Gọi API với axios
+      const response = await getAllSubscription();
+      setSubscriptions(response);
 
-        setLoading(true)
-        // Gọi API với axios
-        const response = await getAllSubscription();
-        setSubscriptions(response);
+    } catch (err) {
+      console.log(err);
 
-      } catch (err) {
-        console.log(err);
-
-      } finally {
-        // Đổi trạng thái loading thành false khi hoàn thành
-        setLoading(false);
-      }
+    } finally {
+      // Đổi trạng thái loading thành false khi hoàn thành
+      setLoading(false);
     }
+  }
+  useEffect(() => {
+
 
     fetchSubscriptions();
   }, [])
@@ -44,7 +44,7 @@ export default function Dashboard() {
       {/* Tiêu đề trang */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-4xl font-bold">Dashboard</h1>
-        <AddSubscriptionPlanPopup />
+        <AddSubscriptionPlanPopup fetchSubscriptions={fetchSubscriptions} />
       </div>
       {/* Thống kê */}
       <div className="grid grid-cols-4 gap-4 mb-6">
