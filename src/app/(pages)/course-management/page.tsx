@@ -3,9 +3,9 @@ import { getAllCourse } from "@/app/api/course/course.api";
 import { CourseList } from "@/types/course";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { columns } from "./_components/columns";
+import { columns } from "./_components/course/columns";
 import { DataTable } from "@/components/data-table";
-import CreateNewCourseForm from "./_components/add-course-pop-up";
+import CreateNewCourseForm from "./_components/course/add-course-pop-up";
 import {
     Pagination,
     PaginationContent,

@@ -11,17 +11,18 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { z } from "zod";
 import { updateCourseSchema } from "@/schema/course";
 import { uploadImageCloud } from "@/app/api/image/image.api";
-import CourseUpdateForm from "../_components/update-course-component";
 import { Button } from "@/components/ui/button";
-import { CornerDownLeft, EllipsisVertical, Eye, PenLine, Trash } from "lucide-react";
+import { CornerDownLeft, PenLine, } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import Link from "next/link";
+import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+
+
+import { getStudyPlanByCourseId } from "@/app/api/study-plan/study-plan.api";
+import CourseUpdateForm from "../_components/course/update-course-component";
+import StudyPlanList from "../_components/study-plan/study-plan-list";
+import { StudyPlan } from "@/types/study-plan";
+import EmptyStudyPlan from "../_components/study-plan/empty-study-plan";
+import CreateStudyPlanPopUp from "../_components/study-plan/create-study-plan-pop-up";
 interface CourseDetailPageProps {
     params: Promise<{ courseId: number }>;
 }
@@ -33,25 +34,51 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [course, setCourse] = useState<Course>();
     const [domains, setDomains] = useState<Domain[]>([]);
+    const [studyPlans, setStudyPlans] = useState<StudyPlan[]>([])
     const [isPending, setIsPending] = useState<boolean>(false);
+    const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+
+    const fetchStudyPlan = async () => {
+        try {
+            const studyPlansData = await getStudyPlanByCourseId(resolvedParam.courseId, session?.user.token as string);
+            setStudyPlans(studyPlansData);
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to load study plans.");
+        }
+    };
+
+    const fetchCourse = async () => {
+        try {
+            const courseResponse = await getCourseById(session?.user.token as string, resolvedParam.courseId);
+            const domainData = await getAllDomain();
+            setCourse(courseResponse);
+            setDomains(domainData);
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to load course details.");
+        }
+    };
+
+
+
 
     useEffect(() => {
         if (!session?.user?.token) return;
 
-        const fetchCourse = async () => {
+        const fetchData = async () => {
             setIsLoading(true);
             try {
-                const courseResponse = await getCourseById(session.user.token, resolvedParam.courseId);
-                setCourse(courseResponse);
-                setDomains(await getAllDomain());
+                await Promise.all([fetchCourse(), fetchStudyPlan()]);
             } catch (error) {
                 console.error(error);
+                toast.error("Failed to load course or study plans.");
             } finally {
                 setIsLoading(false);
             }
         };
 
-        fetchCourse();
+        fetchData();
     }, [session?.user?.token]);
 
     const handleSubmit = async (values: z.infer<typeof updateCourseSchema>, selectedFile: File | null) => {
@@ -100,30 +127,21 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
                 <span>Quay lại</span>
             </Button>
             <div className="text-4xl font-bold flex items-center">{course?.title} <PenLine size={28} /></div>
-            <Separator />
             <CourseUpdateForm course={course} domains={domains} onSubmit={handleSubmit} isPending={isPending} />
             <Separator />
-            <div className="text-4xl font-bold flex items-center">Study plans in course</div>
-            <div className="text-sm font-bold">Default study plan :</div>
-            <div className="default study plan w-full flex flex-row justify-between items-center p-5 rounded-[20px] shadow-xl">
-                <div className="flex flex-col gap-2">
-                    <div className="flex flex-row gap-2 items-center">
-                        <div className="text-sm font-bold">Study plan</div>
-                        <div className="px-4 py-2 bg-[#56D071] w-fit text-[#56D071] rounded-xl text-xs font-semibold bg-opacity-10">ACTIVE</div>
-                    </div>
-                    <div className="text-xs font-medium">description</div>
-                </div>
-                <DropdownMenu>
-                    <DropdownMenuTrigger><EllipsisVertical /></DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <Link href={``} >
-                            <DropdownMenuItem><Eye />View more</DropdownMenuItem>
-                        </Link>
-
-                        <DropdownMenuItem><Trash /> Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+            <div className="w-full flex justify-between">
+                <div className="text-4xl font-bold flex items-center">Study plans in course</div>
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogTrigger className="flex items-center gap-2 py-2 px-4 bg-primary rounded-xl hover:bg-primary/90 text-white">
+                        Create new study plan
+                    </DialogTrigger>
+                    <DialogContent width='400px'>
+                        <CreateStudyPlanPopUp fetchStudyPlan={fetchStudyPlan} setIsDialogOpen={setIsDialogOpen} courseId={resolvedParam.courseId} />
+                    </DialogContent>
+                </Dialog>
             </div>
+            {studyPlans ? <StudyPlanList StudyPlanList={studyPlans} /> : <EmptyStudyPlan />}
+
         </div>
     )
 }
