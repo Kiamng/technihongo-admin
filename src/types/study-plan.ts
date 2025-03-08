@@ -1,5 +1,9 @@
 export type StudyPlan = {
-    studyPlanId : string,
+    studyPlanId : number,
+    course : {
+        courseId : number,
+        title : string
+    }
     title: string,
     description: string,
     hoursPerDay: number,

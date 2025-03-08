@@ -1,23 +1,30 @@
 'use client'
 import { getCourseById, patchCourse } from "@/app/api/course/course.api";
 import { getAllDomain } from "@/app/api/system-configuration/system.api";
+import { uploadImageCloud } from "@/app/api/image/image.api";
+import { getStudyPlanByCourseId } from "@/app/api/study-plan/study-plan.api";
+
+
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
+import { z } from "zod";
+import { toast } from "sonner";
+
+
 import { Course } from "@/types/course";
 import { Domain } from "@/types/domain";
-import { toast } from "sonner";
-import { Skeleton } from "@/components/ui/skeleton";
-import { z } from "zod";
 import { updateCourseSchema } from "@/schema/course";
-import { uploadImageCloud } from "@/app/api/image/image.api";
+
+
+import { Skeleton } from "@/components/ui/skeleton";
+
 import { Button } from "@/components/ui/button";
 import { CornerDownLeft, PenLine, } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
 
-import { getStudyPlanByCourseId } from "@/app/api/study-plan/study-plan.api";
 import CourseUpdateForm from "../_components/course/update-course-component";
 import StudyPlanList from "../_components/study-plan/study-plan-list";
 import { StudyPlan } from "@/types/study-plan";
@@ -59,8 +66,6 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
             toast.error("Failed to load course details.");
         }
     };
-
-
 
 
     useEffect(() => {
@@ -140,7 +145,7 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
                     </DialogContent>
                 </Dialog>
             </div>
-            {studyPlans ? <StudyPlanList StudyPlanList={studyPlans} /> : <EmptyStudyPlan />}
+            {studyPlans ? <StudyPlanList fetchStudyPlan={fetchStudyPlan} StudyPlanList={studyPlans} /> : <EmptyStudyPlan />}
 
         </div>
     )

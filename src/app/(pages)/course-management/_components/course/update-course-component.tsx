@@ -69,13 +69,13 @@ export default function CourseUpdateForm({ course, domains, onSubmit, isPending 
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit((values) => onSubmit(values, selectedFile))} className="space-y-4 w-full">
-                <div className='flex flex-row space-x-14'>
+                <div className='grid grid-cols-2 gap-6 w-full'>
                     <div className='grid grid-cols-1 gap-4'>
                         <FormField control={form.control} name="title" render={({ field }) => (
                             <FormItem>
                                 <Label>Title</Label>
                                 <FormControl>
-                                    <Input className='w-[510px]' placeholder="Enter Title" {...field} />
+                                    <Input placeholder="Enter Title" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -85,7 +85,7 @@ export default function CourseUpdateForm({ course, domains, onSubmit, isPending 
                             <FormItem>
                                 <Label>Description</Label>
                                 <FormControl>
-                                    <Textarea className='h-[100px]' placeholder="Enter description" {...field} />
+                                    <Textarea className='min-h-[100px]' placeholder="Enter description" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -164,9 +164,6 @@ export default function CourseUpdateForm({ course, domains, onSubmit, isPending 
                         <FormItem>
                             <FormLabel className="flex flex-row items-center justify-between">
                                 <div>Thumbnail Image </div>
-                                <Button type="button" size="sm" onClick={() => fileInputRef.current?.click()}>
-                                    Choose
-                                </Button>
                             </FormLabel>
                             <FormControl>
                                 <Input
@@ -178,6 +175,9 @@ export default function CourseUpdateForm({ course, domains, onSubmit, isPending 
                                 />
                             </FormControl>
                             {imageSrc && <img src={imageSrc} alt="Preview" className="max-w-xs mt-2" />}
+                            <Button type="button" size="sm" onClick={() => fileInputRef.current?.click()}>
+                                Choose
+                            </Button>
                             <FormMessage />
                         </FormItem>
                     )} />
