@@ -6,7 +6,7 @@ import { getToken } from "next-auth/jwt";
 const publicRoutes = ["/"];
 
 // Các trang dành cho Admin
-const authRoutes = ["/dashboard", "/system-configuration", "/user-management", "/violation-management"];
+const authRoutes = ["/dashboard", "/system-configuration", "/user-management", "/violation-management", "/learning-path" ];
 
 // Các trang dành cho Content Manager
 const CMRoutes = ["/course-management"];
@@ -15,7 +15,7 @@ export default async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const { pathname } = req.nextUrl;
 
-  // console.log("🌍 Path:", pathname, "🛂 Role:", token?.role, "token:", token);
+   console.log("🌍 Path:", pathname, "🛂 Role:", token?.role, "token:", token);
 
   // 🛑 Nếu chưa đăng nhập, chỉ cho phép vào publicRoutes (trang đăng nhập)
   if (!token) {

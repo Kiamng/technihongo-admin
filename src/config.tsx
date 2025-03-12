@@ -48,6 +48,15 @@ export const NavItems = () => {
         position: "top",
       },
 
+      {
+        name: "Learning Path Management",
+        href: "/learning-path",
+        icon: <GraduationCap size={size} />,
+        active: isNavItemActive(pathname, "/learning-path"),
+        position: "top",
+      },
+
+
     ];
   }
 
