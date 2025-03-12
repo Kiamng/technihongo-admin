@@ -25,7 +25,7 @@ import { Domain } from '@/types/domain';
 import { getAllDomain } from '@/app/api/system-configuration/system.api';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createCourse } from '@/app/api/course/course.api';
-import { LoaderCircle } from 'lucide-react';
+import { CirclePlus, LoaderCircle } from 'lucide-react';
 import { toast } from "sonner";
 
 interface CreateNewCourseFormProps {
@@ -146,7 +146,7 @@ export default function CreateNewCourseForm({ token, fetchCourses }: CreateNewCo
     return (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger className="flex items-center gap-2 py-2 px-4 bg-primary rounded-xl hover:bg-primary/90 text-white">
-                Create new course
+                <CirclePlus />Create new course
             </DialogTrigger>
             <DialogContent width='7000px'>
                 {isLoading && <Skeleton className='w-[700px] h-[500px]' />}

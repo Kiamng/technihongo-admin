@@ -25,19 +25,25 @@ export const getAllCourse = async ({
   pageNo,
   pageSize,
   sortBy,
-  sortDir
+  sortDir,
+  keyword,
+  domainId,
 }: {
   token: string;
   pageNo?: number;
   pageSize?: number;
   sortBy?: string;
   sortDir?: string;
+  keyword? : string;
+  domainId? : number | null
 }) :Promise<CourseList> => {
   const params = new URLSearchParams();
   if (pageNo) params.append("pageNo", pageNo.toString());
   if (pageSize) params.append("pageSize", pageSize.toString());
   if (sortBy) params.append("sortBy", sortBy);
   if (sortDir) params.append("sortDir", sortDir);
+  if (keyword) params.append("keyword", keyword);
+  if (domainId) params.append("domainId", domainId.toString());
   
   const response = await axiosClient.get(`${ENDPOINT.ALL}?${params.toString()}`,{
     headers: {
