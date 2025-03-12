@@ -8,7 +8,7 @@ interface SubscriptionStatsProps {
 
 export const SubscriptionStats: React.FC<SubscriptionStatsProps> = ({ title, count, icon }) => {
   return (
-    <Card className="w-64 flex items-center gap-4 p-4">
+    <Card className="w-full flex items-center gap-4 p-4">
       <div className="p-3 bg-gray-100 rounded-full">{icon}</div>
       <div>
         <CardHeader>

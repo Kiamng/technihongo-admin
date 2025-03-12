@@ -4,7 +4,7 @@ import { SubscriptionPlan } from "@/types/subscription";
 import { CellAction } from "./cell-action";
 
 export const columns: ColumnDef<SubscriptionPlan>[] = [
-  
+
   {
     accessorKey: "name",
     header: "Name",
@@ -12,6 +12,9 @@ export const columns: ColumnDef<SubscriptionPlan>[] = [
   {
     accessorKey: "price",
     header: "Price",
+    cell: ({ row }) => {
+      return row.original.price.toLocaleString();
+    },
   },
   {
     accessorKey: "durationDays",

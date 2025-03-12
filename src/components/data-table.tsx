@@ -23,7 +23,7 @@ import { Input } from "./ui/input";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  searchKey: string;
+  searchKey?: string;
   isLoading: boolean;
 }
 
@@ -56,7 +56,7 @@ export function DataTable<TData, TValue>({
         <Skeleton className="h-[500px] w-full rounded-xl" />
       ) : (
         <div className="space-y-4">
-          <Input
+          {searchKey && <Input
             placeholder={`Search ${searchKey}...`}
             value={
               (table.getColumn(searchKey)?.getFilterValue() as string) ?? ""
@@ -65,7 +65,8 @@ export function DataTable<TData, TValue>({
               table.getColumn(searchKey)?.setFilterValue(event.target.value)
             }
             className="w-full md:max-w-sm"
-          />
+          />}
+
           <ScrollArea className="h-[calc(80vh-220px)] rounded-md border">
             <Table className="relative">
               <TableHeader>
@@ -77,9 +78,9 @@ export function DataTable<TData, TValue>({
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                         </TableHead>
                       );
                     })}

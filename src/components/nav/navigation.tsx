@@ -46,7 +46,7 @@ const Navigation = () => {
           {/* Navigation Links */}
           <div className="relative ">
             <div className="flex flex-col space-y-1">
-              {navItems.map((item, idx) => {
+              {navItems?.map((item, idx) => {
                 if (item.position === "top") {
                   return (
                     <Fragment key={idx}>
