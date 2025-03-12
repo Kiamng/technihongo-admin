@@ -1,6 +1,7 @@
 import {
   GraduationCap,
   LayoutDashboard,
+  LucideAlbum
   MessageSquareWarning,
   MonitorCog,
   User,
@@ -47,6 +48,22 @@ export const NavItems = () => {
         active: isNavItemActive(pathname, "/violation-management"),
         position: "top",
       },
+
+      {
+        name: "Learning Path Management",
+        href: "/learning-path",
+        icon: <GraduationCap size={size} />,
+        active: isNavItemActive(pathname, "/learning-path"),
+        position: "top",
+      },
+      
+    {
+      name: "Achievement Management",
+      href: "/achievement-management",
+      icon: <LucideAlbum size={size} />,
+      active: isNavItemActive(pathname, "/achievement-management"),
+      position: "top",
+    },
 
     ];
   }
