@@ -1,23 +1,6 @@
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { LoaderCircle, UserCheck } from "lucide-react";
-import { toast } from "sonner";
+"use client";
 
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -173,6 +156,4 @@ export default function AddDomainForm({ fetchSubscriptions }: AddDomainFormProps
       </DialogContent>
     </Dialog>
   );
-};
-export default AddSubscriptionPlanPopup;
-
+}

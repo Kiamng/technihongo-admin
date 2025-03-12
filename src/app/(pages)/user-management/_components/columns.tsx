@@ -2,6 +2,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { User } from "@/types/user";
 import { CellAction } from "./cell-action";
+import { format } from "date-fns";
 
 export const columns: ColumnDef<User>[] = [
   // {
@@ -30,6 +31,14 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "email",
     header: "Email",
+  },
+  {
+    accessorKey: "createdAt",
+    header: "Joined date",
+    cell: ({ row }) => {
+      { format(new Date(row.original.createdAt), "dd/MM/yy") }
+    },
+
   },
   {
     id: "actions",
