@@ -1,102 +1,164 @@
-"use client";
-
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { LoaderCircle, UserCheck } from "lucide-react";
+import { toast } from "sonner";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { addDomainSchema } from "@/schema/domain";
+import { useState } from "react";
+import { addSubscriptionPlanSchema } from "@/schema/subscriptionplan";
+import { addSubscriptionPlan } from "@/app/api/subscription/subscription.api";
+import { Textarea } from "@/components/ui/textarea";
 
-type AddDomainFormValues = z.infer<typeof addDomainSchema>;
+const AddSubscriptionPlanPopup = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-export default function AddDomainForm() {
-  const form = useForm<AddDomainFormValues>({
-    resolver: zodResolver(addDomainSchema),
-    defaultValues: {
-      tag: "",
-      name: "",
-      description: "",
-      parentDomainId: undefined,
-      isActive: true,
-    },
+  const form = useForm<z.infer<typeof addSubscriptionPlanSchema>>({
+      resolver: zodResolver(addSubscriptionPlanSchema),
+      defaultValues: {
+          name: "",
+          price: 0,
+          benefits: "",
+          durationDays: 0,
+      },
   });
 
-  const onSubmit = async (data: AddDomainFormValues) => {
-    console.log("Form submitted:", data);
-    // Gọi API để thêm domain vào database
+  const onSubmitForm = async (values: z.infer<typeof addSubscriptionPlanSchema>) => {
+      try {
+          setIsLoading(true);
+          const response = await addSubscriptionPlan(values);
+
+          if (!response || response.success === false) {
+              toast.error("Failed to add new subscription plan!");
+          } else {
+              toast.success("Added new subscription plan successfully!");
+              form.reset(); 
+              
+          }
+      } catch (error) {
+          console.error(error);
+          toast.error("An error occurred while adding the subscription plan.");
+      } finally {
+          setIsLoading(false);
+      }
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        
-        {/* Dòng 1: Tag + Name */}
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="tag"
-            render={({ field }) => (
-              <FormItem>
-                <Label>Tag</Label>
-                <FormControl>
-                  <Input placeholder="Enter tag" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+      <Dialog>
+          <DialogTrigger className="flex items-center gap-2 py-2 px-4 bg-primary rounded-xl hover:bg-primary/90 text-white">
+              <span className="flex items-center gap-2">
+                  <UserCheck className="w-5 h-5" /> Add new Subscription Plan
+              </span>
+          </DialogTrigger>
 
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <Label>Name</Label>
-                <FormControl>
-                  <Input placeholder="Enter name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+          <DialogContent className="max-w-[600px]">
+              <DialogHeader>
+                  <DialogTitle className="text-center">Create subscription plan</DialogTitle>
+              </DialogHeader>
 
-        {/* Dòng 2: Description */}
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <Label>Description</Label>
-              <FormControl>
-                <Textarea placeholder="Enter description" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+              <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmitForm)} className="w-full space-y-6">
+                      {/* Subscription Name */}
+                      <FormField
+                          control={form.control}
+                          name="name"
+                          render={({ field }) => (
+                              <FormItem>
+                                  <FormLabel>Subscription name</FormLabel>
+                                  <FormControl>
+                                      <Input {...field} />
+                                  </FormControl>
+                                  <FormMessage />
+                              </FormItem>
+                          )}
+                      />
 
-        {/* Dòng 3: Parent Domain ID */}
-        <FormField
-          control={form.control}
-          name="parentDomainId"
-          render={({ field }) => (
-            <FormItem>
-              <Label>Parent Domain ID</Label>
-              <FormControl>
-                <Input type="number" placeholder="Enter parent domain ID" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+                      {/* Benefit */}
+                      <FormField
+                          control={form.control}
+                          name="benefits"
+                          render={({ field }) => (
+                              <FormItem>
+                                  <FormLabel>Benefit</FormLabel>
+                                  <FormControl>
+                                      <Textarea {...field} rows={3} />
+                                  </FormControl>
+                                  <FormMessage />
+                              </FormItem>
+                          )}
+                      />
 
-        {/* Submit Button */}
-        <Button type="submit">Add Domain</Button>
-      </form>
-    </Form>
+                      {/* Price & Duration */}
+                      <div className="grid grid-cols-2 gap-4">
+                          <FormField
+                              control={form.control}
+                              name="price"
+                              render={({ field }) => (
+                                  <FormItem>
+                                      <FormLabel>Price</FormLabel>
+                                      <FormControl>
+                                          <Input
+                                              type="number"
+                                              {...field}
+                                              onChange={(e) => field.onChange(Number(e.target.value))}
+                                          />
+                                      </FormControl>
+                                      <FormMessage />
+                                  </FormItem>
+                              )}
+                          />
+                          <FormField
+                              control={form.control}
+                              name="durationDays"
+                              render={({ field }) => (
+                                  <FormItem>
+                                      <FormLabel>Duration days</FormLabel>
+                                      <FormControl>
+                                          <Input
+                                              type="number"
+                                              {...field}
+                                              onChange={(e) => field.onChange(Number(e.target.value))}
+                                          />
+                                      </FormControl>
+                                      <FormMessage />
+                                  </FormItem>
+                              )}
+                          />
+                      </div>
+
+                      {/* Submit Button */}
+                      <div className="w-full flex justify-end">
+                          <Button disabled={isLoading} type="submit">
+                              {isLoading ? (
+                                  <>
+                                      <LoaderCircle className="animate-spin" /> Creating ...
+                                  </>
+                              ) : (
+                                  "Create"
+                              )}
+                          </Button>
+                      </div>
+                  </form>
+              </Form>
+          </DialogContent>
+      </Dialog>
   );
-}
+};
+export default AddSubscriptionPlanPopup;
+

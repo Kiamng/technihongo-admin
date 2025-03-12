@@ -1,5 +1,6 @@
 import {
   LayoutDashboard,
+  LucideAlbum,
   MonitorCog,
   User,
 } from "lucide-react";
@@ -40,6 +41,13 @@ export const NavItems = () => {
       href: "/violation-management",
       icon: <MonitorCog size={size} />,
       active: isNavItemActive(pathname, "/violation-management"),
+      position: "top",
+    },
+    {
+      name: "Achievement Management",
+      href: "/achievement-management",
+      icon: <LucideAlbum size={size} />,
+      active: isNavItemActive(pathname, "/achievement-management"),
       position: "top",
     },
     
