@@ -7,7 +7,7 @@ import { getStudyPlanByCourseId } from "@/app/api/study-plan/study-plan.api";
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { toast } from "sonner";
 
@@ -28,8 +28,9 @@ import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 import CourseUpdateForm from "../_components/course/update-course-component";
 import StudyPlanList from "../_components/study-plan/study-plan-list";
 import { StudyPlan } from "@/types/study-plan";
-import EmptyStudyPlan from "../_components/study-plan/empty-study-plan";
 import CreateStudyPlanPopUp from "../_components/study-plan/create-study-plan-pop-up";
+import EmptyStateComponent from "@/components/empty-state";
+import CustomBreadCrumb from "@/components/bread-cumb";
 interface CourseDetailPageProps {
     params: Promise<{ courseId: number }>;
 }
@@ -44,6 +45,19 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
     const [studyPlans, setStudyPlans] = useState<StudyPlan[]>([])
     const [isPending, setIsPending] = useState<boolean>(false);
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+
+    const breadcrumbData = useMemo(() => [
+        {
+            name: 'Course management',
+            link: `course-management`,
+            isPage: false
+        },
+        {
+            name: course?.title,
+            link: ``,
+            isPage: true
+        }
+    ], [course]);
 
     const fetchStudyPlan = async () => {
         try {
@@ -131,6 +145,7 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
                 <CornerDownLeft className="w-4 h-4" />
                 <span>Quay lại</span>
             </Button>
+            <CustomBreadCrumb data={breadcrumbData} />
             <div className="text-4xl font-bold flex items-center">{course?.title} <PenLine size={28} /></div>
             <CourseUpdateForm course={course} domains={domains} onSubmit={handleSubmit} isPending={isPending} />
             <Separator />
@@ -145,7 +160,7 @@ export default function CourseDetailPage({ params }: CourseDetailPageProps) {
                     </DialogContent>
                 </Dialog>
             </div>
-            {studyPlans ? <StudyPlanList fetchStudyPlan={fetchStudyPlan} StudyPlanList={studyPlans} /> : <EmptyStudyPlan />}
+            {studyPlans ? <StudyPlanList fetchStudyPlan={fetchStudyPlan} StudyPlanList={studyPlans} /> : <EmptyStateComponent imgageUrl="https://allpromoted.co.uk/image/no-data.svg" message="This Course does not have any study plans" size={400} />}
 
         </div>
     )

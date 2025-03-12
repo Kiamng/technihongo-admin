@@ -3,29 +3,37 @@ import { getStudyPlanById } from "@/app/api/study-plan/study-plan.api";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Separator } from "@/components/ui/separator";
+
 
 import { StudyPlan } from "@/types/study-plan";
 
 import { CornerDownLeft, PenLine } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import UpdateStudyPlanForm from "../../_components/study-plan/update-study-plan-form";
 import CustomBreadCrumb from "@/components/bread-cumb";
+import LessonListComponent from "../../_components/lesson/lesson-list";
 
 interface StudPlanDetailPageProps {
     params: Promise<{ studyPlanId: number }>
 }
-function StudPlanDetailPage({ params }: StudPlanDetailPageProps) {
+function StudPlanDetailPage({ params }: Readonly<StudPlanDetailPageProps>) {
     const resolvedParam = use(params);
     const { data: session } = useSession();
     const router = useRouter();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    const [studyPlan, setStudPlan] = useState<StudyPlan>();
+    const [studyPlan, setStudyPlan] = useState<StudyPlan>();
 
-    const breadcrumbData = [
+    const breadcrumbData = useMemo(() => [
+        {
+            name: 'Course management',
+            link: `course-management`,
+            isPage: false
+        },
         {
             name: studyPlan?.course.title,
             link: `course-management/${studyPlan?.course.courseId}`,
@@ -36,22 +44,33 @@ function StudPlanDetailPage({ params }: StudPlanDetailPageProps) {
             link: ``,
             isPage: true
         }
-    ]
+    ], [studyPlan]);
+
+    const fetchStudyPlan = async () => {
+        try {
+            setStudyPlan(await getStudyPlanById(session?.user.token as string, resolvedParam.studyPlanId));
+        } catch (error) {
+            console.error(error);
+            toast.error("Failed to load study plan.");
+        }
+    };
+
     useEffect(() => {
-        if (!session?.user?.token) return;
-        const fetchStudyPlan = async () => {
+        if (!session?.user?.token || studyPlan) return;
+        const fetchData = async () => {
             setIsLoading(true);
             try {
-                setStudPlan(await getStudyPlanById(session.user.token, resolvedParam.studyPlanId))
+                await fetchStudyPlan();
             } catch (error) {
                 console.error(error);
-                toast.error("Failed to load course or study plans.");
+                toast.error("Failed to load study plan.");
             } finally {
                 setIsLoading(false);
             }
-        }
-        fetchStudyPlan()
-    }, [session?.user?.token])
+        };
+        fetchData();
+    }, [session?.user?.token]);
+
 
     if (isLoading) return <Skeleton className="w-full h-screen" />
 
@@ -69,7 +88,11 @@ function StudPlanDetailPage({ params }: StudPlanDetailPageProps) {
             {studyPlan && <div className="w-1/2">
                 <UpdateStudyPlanForm studyPlan={studyPlan} />
             </div>}
+            <Separator />
 
+            {session?.user?.token && (
+                <LessonListComponent studyPlanId={resolvedParam.studyPlanId} token={session.user.token} isDefaultStudyPlan={studyPlan?.default as boolean} />
+            )}
         </div>
     )
 }

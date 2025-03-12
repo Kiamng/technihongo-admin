@@ -36,7 +36,7 @@ export default function CourseManagementPage() {
     const fetchCourses = async () => {
         try {
             setIsloading(true);
-            const response = await getAllCourse({ token: session?.user.token as string, pageNo: currentPage, pageSize: 5, sortBy: "createdAt", sortDir: "desc" });
+            const response = await getAllCourse({ token: session?.user.token as string, pageNo: currentPage, pageSize: 10, sortBy: "createdAt", sortDir: "desc" });
             console.log(response);
             setCoursesList(response);
 
