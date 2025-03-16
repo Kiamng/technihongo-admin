@@ -73,7 +73,7 @@ const StudyPlanCard = ({ plan, fetchStudyPlan }: StudyPlanCardProps) => {
                     <EllipsisVertical />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                    <Link href={`/course-management/${plan.course.courseId}/${plan.studyPlanId}`}>
+                    <Link href={`/course-management/${plan.course.courseId}/study-plan/${plan.studyPlanId}`}>
                         <DropdownMenuItem>
                             <Eye /> View more
                         </DropdownMenuItem>

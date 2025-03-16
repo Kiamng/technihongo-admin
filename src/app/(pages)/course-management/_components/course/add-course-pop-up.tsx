@@ -21,7 +21,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { CreateCourseSchema } from '@/schema/course';
 import { z } from 'zod';
 import { uploadImageCloud } from '@/app/api/image/image.api';
-import { Domain } from '@/types/domain';
+import { DomainList } from '@/types/domain';
 import { getAllDomain } from '@/app/api/system-configuration/system.api';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createCourse } from '@/app/api/course/course.api';
@@ -38,7 +38,7 @@ export default function CreateNewCourseForm({ token, fetchCourses }: CreateNewCo
     const [isPending, setIsPending] = useState<boolean>(false);
     const [imageSrc, setImageSrc] = useState<string | null>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [domains, setDomains] = useState<Domain[]>([]);
+    const [domains, setDomains] = useState<DomainList>();
     // const [uploadData, setUploadData] = useState<UploadResponse | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -130,7 +130,7 @@ export default function CreateNewCourseForm({ token, fetchCourses }: CreateNewCo
         try {
             setIsLoading(true);
 
-            const response = await getAllDomain();
+            const response = await getAllDomain({});
             setDomains(response);
         } catch (err) {
             console.log(err);
@@ -197,11 +197,14 @@ export default function CreateNewCourseForm({ token, fetchCourses }: CreateNewCo
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {domains.map((domain) => (
-                                                    <SelectItem key={domain.domainId} value={domain.domainId.toString()}>
-                                                        {domain.name}
-                                                    </SelectItem>
-                                                ))}
+                                                {
+                                                    domains?.content ?
+                                                        domains?.content.map((domain) => (
+                                                            <SelectItem key={domain.domainId} value={domain.domainId.toString()}>
+                                                                {domain.name}
+                                                            </SelectItem>
+                                                        ))
+                                                        : "loading"}
                                             </SelectContent>
                                         </Select>
 

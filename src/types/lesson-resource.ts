@@ -4,7 +4,7 @@ import { SystemFlashcardSet } from "./system-flashcard-set"
 
 export type LessonResource = {
     lessonResourceId : number,
-    type : "Quiz" | "FlashcardSet" | "Resource",
+    type : "Quiz" | "FlashcardSet" | "LearningResource",
     typeOrder : number,
     learningResource : LearningResource | null,
     systemFlashCardSet : SystemFlashcardSet | null,

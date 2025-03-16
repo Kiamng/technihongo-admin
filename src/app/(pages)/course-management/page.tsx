@@ -20,7 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 import { CourseList } from "@/types/course";
-import { Domain } from "@/types/domain";
+import { DomainList } from "@/types/domain";
 
 import { getAllCourse } from "@/app/api/course/course.api";
 import { getAllDomain } from "@/app/api/system-configuration/system.api";
@@ -37,7 +37,7 @@ export default function CourseManagementPage() {
     const [isLoading, setIsloading] = useState<boolean>(false)
     const [searchValue, setSearchValue] = useState<string>("");
     const [debouncedSearchValue, setDebouncedSearchValue] = useState<string>("");
-    const [domains, setDomains] = useState<Domain[]>([]);
+    const [domains, setDomains] = useState<DomainList>();
     const [selectedDomain, setSelectedDomain] = useState<number | null>(null)
     const [coursesList, setCoursesList] = useState<CourseList>();
 
@@ -60,7 +60,16 @@ export default function CourseManagementPage() {
     const fetchCourses = async () => {
         try {
             setIsloading(true);
-            const response = await getAllCourse({ token: session?.user.token as string, pageNo: currentPage, pageSize: 10, sortBy: "createdAt", sortDir: "desc", keyword: searchValue, domainId: selectedDomain });
+            const response = await
+                getAllCourse({
+                    token: session?.user.token as string,
+                    pageNo: currentPage,
+                    pageSize: 5,
+                    sortBy: "createdAt",
+                    sortDir: "desc",
+                    keyword: searchValue,
+                    domainId: selectedDomain
+                });
             console.log(response);
             setCoursesList(response);
 
@@ -74,9 +83,8 @@ export default function CourseManagementPage() {
     const fetchDomain = async () => {
         try {
             setIsloading(true);
-            const response = await getAllDomain();
+            const response = await getAllDomain({});
             setDomains(response);
-
         } catch (err) {
             console.error(err);
         } finally {
@@ -156,7 +164,7 @@ export default function CourseManagementPage() {
                         <SelectItem value="None">
                             None
                         </SelectItem>
-                        {domains.map((domain) => (
+                        {domains?.content.map((domain) => (
                             <SelectItem key={domain.domainId} value={domain.domainId.toString()}>
                                 {domain.name}
                             </SelectItem>

@@ -23,8 +23,8 @@ export type Course = {
 export type CourseList = {
     content : Course[],
     pageNo: number,
-        pageSize: number,
-        totalElements: number,
-        totalPages: number,
-        last: boolean
+    pageSize: number,
+    totalElements: number,
+    totalPages: number,
+    last: boolean
 }

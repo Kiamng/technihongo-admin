@@ -10,20 +10,18 @@ import { StudyPlan } from "@/types/study-plan";
 
 import { CornerDownLeft, PenLine } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { use, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import UpdateStudyPlanForm from "../../_components/study-plan/update-study-plan-form";
+import UpdateStudyPlanForm from "../../../_components/study-plan/update-study-plan-form";
 import CustomBreadCrumb from "@/components/bread-cumb";
-import LessonListComponent from "../../_components/lesson/lesson-list";
+import LessonListComponent from "../../../_components/lesson/lesson-list";
+import { useParams } from "next/navigation";
+import Link from "next/link";
 
-interface StudPlanDetailPageProps {
-    params: Promise<{ studyPlanId: number }>
-}
-function StudPlanDetailPage({ params }: Readonly<StudPlanDetailPageProps>) {
-    const resolvedParam = use(params);
+function StudPlanDetailPage() {
+    const { studyPlanId } = useParams();
+    const numericStudyPlanId = studyPlanId ? parseInt(studyPlanId as string, 10) : null;
     const { data: session } = useSession();
-    const router = useRouter();
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [studyPlan, setStudyPlan] = useState<StudyPlan>();
@@ -47,8 +45,10 @@ function StudPlanDetailPage({ params }: Readonly<StudPlanDetailPageProps>) {
     ], [studyPlan]);
 
     const fetchStudyPlan = async () => {
+        if (!numericStudyPlanId) return;
         try {
-            setStudyPlan(await getStudyPlanById(session?.user.token as string, resolvedParam.studyPlanId));
+
+            setStudyPlan(await getStudyPlanById(session?.user.token as string, numericStudyPlanId));
         } catch (error) {
             console.error(error);
             toast.error("Failed to load study plan.");
@@ -76,13 +76,14 @@ function StudPlanDetailPage({ params }: Readonly<StudPlanDetailPageProps>) {
 
     return (
         <div className="w-full space-y-6">
-            <Button
-                onClick={() => router.back()}
-                variant="outline"
-            >
-                <CornerDownLeft className="w-4 h-4" />
-                <span>Quay lại</span>
-            </Button>
+            <Link href={`/course-management/${studyPlan?.course.courseId}`}>
+                <Button
+                    variant="outline"
+                >
+                    <CornerDownLeft className="w-4 h-4" />
+                    <span>Quay lại</span>
+                </Button>
+            </Link>
             <CustomBreadCrumb data={breadcrumbData} />
             <div className="text-4xl font-bold flex items-center">{studyPlan?.title} <PenLine size={28} /></div>
             {studyPlan && <div className="w-1/2">
@@ -90,8 +91,8 @@ function StudPlanDetailPage({ params }: Readonly<StudPlanDetailPageProps>) {
             </div>}
             <Separator />
 
-            {session?.user?.token && (
-                <LessonListComponent studyPlanId={resolvedParam.studyPlanId} token={session.user.token} isDefaultStudyPlan={studyPlan?.default as boolean} />
+            {session?.user?.token && numericStudyPlanId && (
+                <LessonListComponent studyPlanId={numericStudyPlanId} token={session.user.token} isDefaultStudyPlan={studyPlan?.default as boolean} />
             )}
         </div>
     )

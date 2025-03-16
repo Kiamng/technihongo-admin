@@ -1,7 +1,10 @@
+import { Domain } from "./domain"
+
 export type LearningResource = {
                 resourceId: number,
                 title: string,
-                description: string
+                description: string,
+                domain : Domain,
                 videoUrl: string,
                 videoFilename: string,
                 pdfUrl: string,

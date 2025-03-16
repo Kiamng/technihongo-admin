@@ -8,13 +8,20 @@ interface LessonResourceListProps {
 
 // Mapping giữa type và thuộc tính tương ứng
 const resourceTypeConfig = {
-    Resource: { color: "#FD5673", icon: Youtube, getTitle: (res: LessonResource) => res.learningResource?.title },
+    LearningResource: { color: "#FD5673", icon: Youtube, getTitle: (res: LessonResource) => res.learningResource?.title },
     Quiz: { color: "#FFB600", icon: BookOpenCheck, getTitle: (res: LessonResource) => res.quiz?.title },
     FlashcardSet: { color: "#3AC6C6", icon: Copy, getTitle: (res: LessonResource) => res.systemFlashCardSet?.title }
 };
 
 const LessonResourceItem = ({ lessonResource }: LessonResourceListProps) => {
-    const { color, icon: Icon, getTitle } = resourceTypeConfig[lessonResource.type];
+    const resource = resourceTypeConfig[lessonResource.type];
+
+    if (!resource) {
+        console.error(`Unsupported lesson resource type: ${lessonResource.type}`);
+        return null;
+    }
+
+    const { color, icon: Icon, getTitle } = resource;
     const title = getTitle(lessonResource) || "Untitled";
 
     return (

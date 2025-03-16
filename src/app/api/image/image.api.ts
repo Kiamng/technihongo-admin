@@ -11,9 +11,9 @@ interface UploadResponse {
     error?: { message: string };
 }
 export const uploadImageCloud = async (formData: FormData) => {
-    formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUD_UPLOAD_PRESET || "default_preset");
+    formData.append('upload_preset', process.env.NEXT_PUBLIC_CLOUD_IMAGE_UPLOAD_PRESET || "default_preset");
     try {
-                const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUD_NAME}/upload`, {
+                const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/upload`, {
                     method: 'POST',
                     body: formData,
                 });

@@ -87,7 +87,6 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan }: LessonL
                 ...prev,
                 [lessonId]: Array.isArray(resources) ? resources : [] // Đảm bảo luôn là mảng
             }));
-
             if (resources === null) {
                 console.warn(`Lesson ${lessonId} has no resources.`);
             }

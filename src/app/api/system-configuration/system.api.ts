@@ -1,6 +1,6 @@
 import axiosClient from "@/lib/axiosClient";
 import { addDomainSchema } from "@/schema/domain";
-import { Domain } from "@/types/domain";
+import { DomainList } from "@/types/domain";
 import { z } from "zod";
 
 const ENDPOINT = {
@@ -13,15 +13,23 @@ const ENDPOINT = {
 
 
 
-export const getAllDomain = async (): Promise<Domain[]> => {
-  
-  try {
-      const response = await axiosClient.get(ENDPOINT.GETALLDOMAIN);
-      return response.data.data as Domain[];
-  } catch (error) {
-      console.error("Error fetching subscriptions:", error);
-      throw error;
-  }
+export const getAllDomain = async ({
+    pageNo,
+    pageSize
+  }: {
+    pageNo? : number,
+    pageSize? : number
+  }): Promise<DomainList> => {
+    const params = new URLSearchParams();
+      if (pageNo) params.append("pageNo", pageNo.toString());
+      if (pageSize) params.append("pageSize", pageSize.toString());
+      try {
+          const response = await axiosClient.get(`${ENDPOINT.GETALLDOMAIN}?${params.toString()}`);
+          return response.data.data as DomainList;
+      } catch (error) {
+          console.error("Error fetching subscriptions:", error);
+          throw error;
+      }
 };
 
 

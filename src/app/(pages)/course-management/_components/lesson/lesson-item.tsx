@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, ChevronRight, SquarePen, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight, Plus, SquarePen, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -7,13 +7,11 @@ import { LessonResource } from "@/types/lesson-resource";
 import LessonPopupForm from "../lesson/create-lesson-pop-up";
 import { Skeleton } from "@/components/ui/skeleton";
 import LessonResourceItem from "./lesson-resource-list";
+import CreateLessonResourcePopup from "../lesson-resource/create-lesson-resource-popup";
+import { Lesson } from "@/types/lesson";
 
 interface LessonItemProps {
-    lesson: {
-        lessonId: number;
-        lessonOrder: number;
-        title: string;
-    };
+    lesson: Lesson
     lessonResources: Record<number, LessonResource[]>;
     expandedLessonId: number | null;
     isLoadingLR: boolean;
@@ -31,8 +29,11 @@ const LessonItem = ({
     fetchLessons,
     isDefaultStudyPlan
 }: LessonItemProps) => {
-    const [editLesson, setEditLesson] = useState<{ lessonId: number; title: string } | null>(null);
-    const [isCreateResourceOpen, setIsCreateResourceOpen] = useState<boolean>(false);
+    const [selectedLesson, setSelectedLesson] = useState<{ lessonId: number; title: string } | null>(null);
+
+    const [openCreateResourceForm, setOpenCreateResourceForm] = useState(false);
+    const [openAddResourceForm, setOpenAddResourceForm] = useState(false);
+
     return (
         <div className="lesson bg-white rounded-2xl space-y-4 px-5 py-4">
             <div className="w-full flex flex-row justify-between items-center">
@@ -42,19 +43,19 @@ const LessonItem = ({
                 </div>
                 <div className="flex flex-row space-x-4">
                     {/* Nút Edit */}
-                    <Dialog open={editLesson?.lessonId === lesson.lessonId} onOpenChange={(isOpen) => {
-                        if (!isOpen) setEditLesson(null);
+                    <Dialog open={selectedLesson?.lessonId === lesson.lessonId} onOpenChange={(isOpen) => {
+                        if (!isOpen) setSelectedLesson(null);
                     }}>
                         <DialogTrigger
                             className="flex items-center gap-2 py-2 px-2 bg-primary rounded-lg hover:bg-primary/90 text-white"
-                            onClick={() => setEditLesson({ lessonId: lesson.lessonId, title: lesson.title })}
+                            onClick={() => setSelectedLesson({ lessonId: lesson.lessonId, title: lesson.title })}
                         >
                             <SquarePen size={18} />
                         </DialogTrigger>
                         <DialogContent width='400px'>
                             <LessonPopupForm
                                 initialData={lesson.title}
-                                setIsDialogOpen={() => setEditLesson(null)}
+                                setIsDialogOpen={() => setSelectedLesson(null)}
                                 fetchLessons={fetchLessons}
                                 studyPlanId={null}
                                 lessonId={lesson.lessonId}
@@ -97,8 +98,32 @@ const LessonItem = ({
                     )}
                     <Separator />
                     {isDefaultStudyPlan
-                        ? <Button className="mx-auto">Create new lesson resource</Button>
-                        : <Button className="mx-auto">Add existing lesson resource</Button>
+                        ? <Dialog open={openCreateResourceForm} onOpenChange={setOpenCreateResourceForm}>
+                            <DialogTrigger className="mx-auto flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90">
+                                <Plus size={18} />
+                                Create new lesson resource
+                            </DialogTrigger>
+                            <DialogContent width='500px'>
+                                <CreateLessonResourcePopup
+                                    lesson={lesson}
+                                    closeForm={setOpenCreateResourceForm}
+                                    fetchLessons={fetchLessons}
+                                />
+                            </DialogContent>
+                        </Dialog>
+                        : <Dialog open={openAddResourceForm} onOpenChange={setOpenAddResourceForm}>
+                            <DialogTrigger className="mx-auto flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90">
+                                <Plus size={18} />
+                                Add existing lesson resource
+                            </DialogTrigger>
+                            <DialogContent width='500px'>
+                                {/* <AddExistingLessonResourcePopup
+                                    lessonId={lesson.lessonId}
+                                    closeForm={() => setOpenAddResourceForm(false)}
+                                    fetchLessons={fetchLessons}
+                                /> */}
+                            </DialogContent>
+                        </Dialog>
                     }
                 </div>
             )}

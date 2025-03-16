@@ -7,3 +7,12 @@ export type Domain = {
     isActive: boolean;
     createdAt: Date;
   };
+
+export type DomainList = {
+  content : Domain [],
+  last : boolean,
+  pageNo : number,
+  pageSize : number,
+  totalElements : number,
+  totalPages : number
+}

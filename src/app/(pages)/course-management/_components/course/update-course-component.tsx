@@ -148,11 +148,14 @@ export default function CourseUpdateForm({ course, domains, onSubmit, isPending 
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        {domains.map((domain) => (
-                                            <SelectItem key={domain.domainId} value={domain.domainId.toString()}>
-                                                {domain.name}
-                                            </SelectItem>
-                                        ))}
+                                        {
+                                            domains ?
+                                                domains.map((domain) => (
+                                                    <SelectItem key={domain.domainId} value={domain.domainId.toString()}>
+                                                        {domain.name}
+                                                    </SelectItem>
+                                                ))
+                                                : "Loading"}
                                     </SelectContent>
                                 </Select>
                                 <FormMessage />
