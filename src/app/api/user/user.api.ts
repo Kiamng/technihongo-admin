@@ -10,6 +10,8 @@ const ENDPOINT = {
   GET_STUDENT: "/user/student/paginated",
   GET_CONTENTMANAGER: "/user/content-managers/paginated",
   GET_USER_BY_ID: "/user/getUser",
+  SEARCHSTUDENT: "/user/searchStudentName",
+  SEARCH_CONTETMANAGER: "/user/searchContentManagerName",
 };
 
 export const getStudent = async ({
@@ -76,4 +78,52 @@ export const getUserById = async (userId :string) :Promise<User> => {
   const response = await axiosClient.get(`${ENDPOINT.GET_USER_BY_ID}/${userId}`);
 
   return response.data.data as User;
+};
+export const searchStudent = async ({
+  pageNo,
+  pageSize,
+  sortBy,
+  sortDir,
+  keyword,
+
+}: {
+  pageNo?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortDir?: string;
+  keyword?: string;
+}): Promise<UserList> => {
+  const params = new URLSearchParams();
+  if (pageNo) params.append("pageNo", pageNo.toString());
+  if (pageSize) params.append("pageSize", pageSize.toString());
+  if (sortBy) params.append("sortBy", sortBy);
+  if (sortDir) params.append("sortDir", sortDir);
+  if (keyword) params.append("keyword", keyword);
+
+  const response = await axiosClient.get(`${ENDPOINT.SEARCHSTUDENT}?${params.toString()}`);
+  return response.data.data as UserList;
+};
+export const searchContentManager = async ({
+  pageNo,
+  pageSize,
+  sortBy,
+  sortDir,
+  keyword,
+
+}: {
+  pageNo?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortDir?: string;
+  keyword?: string;
+}): Promise<UserList> => {
+  const params = new URLSearchParams();
+  if (pageNo) params.append("pageNo", pageNo.toString());
+  if (pageSize) params.append("pageSize", pageSize.toString());
+  if (sortBy) params.append("sortBy", sortBy);
+  if (sortDir) params.append("sortDir", sortDir);
+  if (keyword) params.append("keyword", keyword);
+
+  const response = await axiosClient.get(`${ENDPOINT.SEARCH_CONTETMANAGER}?${params.toString()}`);
+  return response.data.data as UserList;
 };
