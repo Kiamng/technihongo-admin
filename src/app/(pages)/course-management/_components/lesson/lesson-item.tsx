@@ -18,6 +18,8 @@ interface LessonItemProps {
     toggleLessonResource: (lessonId: number) => void;
     fetchLessons: () => Promise<void>;
     isDefaultStudyPlan: boolean;
+    token: string;
+    updateLessonResources: (lessonId: number, resourceId: number) => void
 }
 
 const LessonItem = ({
@@ -27,7 +29,9 @@ const LessonItem = ({
     isLoadingLR,
     toggleLessonResource,
     fetchLessons,
-    isDefaultStudyPlan
+    isDefaultStudyPlan,
+    token,
+    updateLessonResources
 }: LessonItemProps) => {
     const [selectedLesson, setSelectedLesson] = useState<{ lessonId: number; title: string } | null>(null);
 
@@ -89,7 +93,7 @@ const LessonItem = ({
                         <>
                             {lessonResources[lesson.lessonId]?.length ? (
                                 lessonResources[lesson.lessonId].map((resource) => (
-                                    <LessonResourceItem key={resource.lessonResourceId} lessonResource={resource} />
+                                    <LessonResourceItem lessonId={lesson.lessonId} updateLessonResources={updateLessonResources} studyPlanId={lesson.studyPlan.studyPlanId} key={resource.lessonResourceId} lessonResource={resource} />
                                 ))
                             ) : (
                                 <p className="text-gray-500">No resources found</p>
@@ -107,7 +111,7 @@ const LessonItem = ({
                                 <CreateLessonResourcePopup
                                     lesson={lesson}
                                     closeForm={setOpenCreateResourceForm}
-                                    fetchLessons={fetchLessons}
+                                    token={token}
                                 />
                             </DialogContent>
                         </Dialog>

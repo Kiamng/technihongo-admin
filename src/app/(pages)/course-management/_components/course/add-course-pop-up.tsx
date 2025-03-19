@@ -1,6 +1,6 @@
 'use client';
 
-import { ChangeEvent, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -21,24 +21,24 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { CreateCourseSchema } from '@/schema/course';
 import { z } from 'zod';
 import { uploadImageCloud } from '@/app/api/image/image.api';
-import { DomainList } from '@/types/domain';
-import { getAllDomain } from '@/app/api/system-configuration/system.api';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Domain } from '@/types/domain';
 import { createCourse } from '@/app/api/course/course.api';
 import { CirclePlus, LoaderCircle } from 'lucide-react';
 import { toast } from "sonner";
+import { DifficultyLevel } from '@/types/difficulty-level';
 
 interface CreateNewCourseFormProps {
     token: string | undefined;
-    fetchCourses: () => Promise<void>
+    fetchCourses: () => Promise<void>;
+    domains: Domain[] | [];
+    levels: DifficultyLevel[] | [];
+    loading: boolean;
 }
-export default function CreateNewCourseForm({ token, fetchCourses }: CreateNewCourseFormProps) {
+const CreateNewCourseForm = ({ token, fetchCourses, domains, levels, loading }: CreateNewCourseFormProps) => {
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isPending, setIsPending] = useState<boolean>(false);
     const [imageSrc, setImageSrc] = useState<string | null>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [domains, setDomains] = useState<DomainList>();
     // const [uploadData, setUploadData] = useState<UploadResponse | null>(null);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -48,6 +48,7 @@ export default function CreateNewCourseForm({ token, fetchCourses }: CreateNewCo
             title: '',
             description: '',
             domainId: 0,
+            difficultyLevelId: 0,
             estimatedDuration: '',
             thumbnailUrl: ''
         },
@@ -124,32 +125,12 @@ export default function CreateNewCourseForm({ token, fetchCourses }: CreateNewCo
         }
     };
 
-
-
-    const fetchDomains = async () => {
-        try {
-            setIsLoading(true);
-
-            const response = await getAllDomain({});
-            setDomains(response);
-        } catch (err) {
-            console.log(err);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchDomains();
-    }, []);
-
     return (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger className="flex items-center gap-2 py-2 px-4 bg-primary rounded-xl hover:bg-primary/90 text-white">
                 <CirclePlus />Create new course
             </DialogTrigger>
-            <DialogContent width='7000px'>
-                {isLoading && <Skeleton className='w-[700px] h-[500px]' />}
+            <DialogContent width='700px'>
                 <DialogHeader>
                     <DialogTitle>Create new course</DialogTitle>
                 </DialogHeader>
@@ -161,7 +142,10 @@ export default function CreateNewCourseForm({ token, fetchCourses }: CreateNewCo
                                     <FormItem>
                                         <Label>Title</Label>
                                         <FormControl>
-                                            <Input className='w-[300px]' placeholder="Enter Title" {...field} />
+                                            <Input
+                                                disabled={isPending}
+                                                className='w-[300px]'
+                                                placeholder="Enter Title" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -171,7 +155,10 @@ export default function CreateNewCourseForm({ token, fetchCourses }: CreateNewCo
                                     <FormItem>
                                         <Label>Description</Label>
                                         <FormControl>
-                                            <Textarea className='w-[300px]' placeholder="Enter description" {...field} />
+                                            <Textarea
+                                                disabled={isPending}
+                                                className='w-[300px]'
+                                                placeholder="Enter description" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -181,7 +168,10 @@ export default function CreateNewCourseForm({ token, fetchCourses }: CreateNewCo
                                     <FormItem>
                                         <Label>Estimated Duration</Label>
                                         <FormControl>
-                                            <Input className='w-[300px]' placeholder="Enter estimated duration" {...field} />
+                                            <Input
+                                                disabled={isPending}
+                                                className='w-[300px]'
+                                                placeholder="Enter estimated duration" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -190,21 +180,21 @@ export default function CreateNewCourseForm({ token, fetchCourses }: CreateNewCo
                                 <FormField control={form.control} name="domainId" render={({ field }) => (
                                     <FormItem>
                                         <Label>Domain</Label>
-                                        <Select onValueChange={(value) => field.onChange(Number(value))}>
+                                        <Select
+                                            disabled={isPending || loading}
+                                            onValueChange={(value) => field.onChange(Number(value))}>
                                             <FormControl>
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Select a domain" />
+                                                    <SelectValue placeholder={loading ? "loading ..." : "Select a domain"} />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
                                                 {
-                                                    domains?.content ?
-                                                        domains?.content.map((domain) => (
-                                                            <SelectItem key={domain.domainId} value={domain.domainId.toString()}>
-                                                                {domain.name}
-                                                            </SelectItem>
-                                                        ))
-                                                        : "loading"}
+                                                    domains?.map((domain) => (
+                                                        <SelectItem key={domain.domainId} value={domain.domainId.toString()}>
+                                                            {domain.name}
+                                                        </SelectItem>
+                                                    ))}
                                             </SelectContent>
                                         </Select>
 
@@ -212,34 +202,59 @@ export default function CreateNewCourseForm({ token, fetchCourses }: CreateNewCo
                                     </FormItem>
                                 )} />
                             </div>
-                            <FormField control={form.control} name="thumbnailUrl" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Thumbnail Image</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="file"
-                                            id="imageImporter"
-                                            accept="image/*"
-                                            className=""
-                                            ref={fileInputRef}
-                                            onChange={(event) => {
-                                                handleOnChangeImage(event);
-                                                if (event.target.files?.[0]) {
-                                                    field.onChange(event.target.files[0]); // Lưu file vào form
-                                                }
-                                            }}
-                                        />
-                                    </FormControl>
-                                    {imageSrc && <img src={imageSrc} alt="Preview" className="max-w-xs mt-2" />}
-                                    <Button type="button" size="sm" onClick={() => fileInputRef.current?.click()}>
-                                        Choose
-                                    </Button>
+                            <div className='flex flex-col space-y-4'>
+                                <FormField control={form.control} name="difficultyLevelId" render={({ field }) => (
+                                    <FormItem>
+                                        <Label>Level</Label>
+                                        <Select
+                                            disabled={isPending || loading}
+                                            onValueChange={(value) => field.onChange(Number(value))}>
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder={loading ? "loading ..." : "Select a level"} />
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {
+                                                    levels?.map((level) => (
+                                                        <SelectItem key={level.levelId} value={level.levelId.toString()}>
+                                                            {level.tag} : {level.name}
+                                                        </SelectItem>
+                                                    ))}
+                                            </SelectContent>
+                                        </Select>
 
-                                    <FormMessage />
-                                </FormItem>
-                            )} />
+                                        <FormMessage />
+                                    </FormItem>
+                                )} />
+                                <FormField control={form.control} name="thumbnailUrl" render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Thumbnail Image</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                disabled={isPending}
+                                                type="file"
+                                                id="imageImporter"
+                                                accept="image/*"
+                                                className=""
+                                                ref={fileInputRef}
+                                                onChange={(event) => {
+                                                    handleOnChangeImage(event);
+                                                    if (event.target.files?.[0]) {
+                                                        field.onChange(event.target.files[0]); // Lưu file vào form
+                                                    }
+                                                }}
+                                            />
+                                        </FormControl>
+                                        {imageSrc && <img src={imageSrc} alt="Preview" className="max-w-xs mt-2" />}
+                                        <Button disabled={isPending} type="button" size="sm" onClick={() => fileInputRef.current?.click()}>
+                                            Choose
+                                        </Button>
 
-
+                                        <FormMessage />
+                                    </FormItem>
+                                )} />
+                            </div>
                         </div>
                         <div className='w-full flex justify-end'>
                             <Button disabled={isPending} type="submit">
@@ -253,3 +268,5 @@ export default function CreateNewCourseForm({ token, fetchCourses }: CreateNewCo
         </Dialog>
     );
 }
+
+export default CreateNewCourseForm

@@ -1,10 +1,7 @@
-import { Domain } from "./domain"
-
 export type LearningResource = {
                 resourceId: number,
                 title: string,
                 description: string,
-                domain : Domain,
                 videoUrl: string,
                 videoFilename: string,
                 pdfUrl: string,
@@ -13,4 +10,10 @@ export type LearningResource = {
                 updatedAt: Date,
                 public: boolean,
                 premium: boolean
+}
+
+export type CreateLearningResourceResponse = {
+    success : boolean,
+    message : string,
+    data : LearningResource
 }

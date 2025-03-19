@@ -1,6 +1,5 @@
 'use client'
 import { getCourseById, patchCourse } from "@/app/api/course/course.api";
-import { getAllDomain } from "@/app/api/system-configuration/system.api";
 import { uploadImageCloud } from "@/app/api/image/image.api";
 import { getStudyPlanByCourseId } from "@/app/api/study-plan/study-plan.api";
 
@@ -13,7 +12,6 @@ import { toast } from "sonner";
 
 
 import { Course } from "@/types/course";
-import { Domain, DomainList } from "@/types/domain";
 import { updateCourseSchema } from "@/schema/course";
 
 
@@ -39,7 +37,6 @@ export default function CourseDetailPage() {
     const { data: session } = useSession();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [course, setCourse] = useState<Course>();
-    const [domains, setDomains] = useState<DomainList>();
     const [studyPlans, setStudyPlans] = useState<StudyPlan[]>([])
     const [isPending, setIsPending] = useState<boolean>(false);
     const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
@@ -72,9 +69,7 @@ export default function CourseDetailPage() {
         if (!numericCourseId) return
         try {
             const courseResponse = await getCourseById(session?.user.token as string, numericCourseId);
-            const domainData = await getAllDomain({});
             setCourse(courseResponse);
-            setDomains(domainData);
         } catch (error) {
             console.error(error);
             toast.error("Failed to load course details.");
@@ -132,6 +127,8 @@ export default function CourseDetailPage() {
             toast.error(patchResponse.message);
         }
         setIsPending(false);
+        console.log(values);
+
     };
 
     if (isLoading) return <Skeleton className="w-full h-screen" />;
@@ -149,7 +146,7 @@ export default function CourseDetailPage() {
 
             <CustomBreadCrumb data={breadcrumbData} />
             <div className="text-4xl font-bold flex items-center">{course?.title} <PenLine size={28} /></div>
-            <CourseUpdateForm course={course} domains={domains?.content as Domain[]} onSubmit={handleSubmit} isPending={isPending} />
+            <CourseUpdateForm course={course} onSubmit={handleSubmit} isPending={isPending} />
             <Separator />
             <div className="w-full flex justify-between">
                 <div className="text-4xl font-bold flex items-center">Study plans in course</div>

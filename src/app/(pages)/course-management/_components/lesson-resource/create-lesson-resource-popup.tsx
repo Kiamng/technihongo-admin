@@ -5,38 +5,88 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { BookOpenCheck, Copy, LoaderCircle, Youtube } from "lucide-react";
 import { Lesson } from "@/types/lesson";
 import { useRouter } from "next/navigation";
+import { createLearningResource } from "@/app/api/learning-resource/learning-resource.api";
+import { toast } from "sonner";
+import { createLessonResource } from "@/app/api/lesson-resource/lesson-resource.api";
+import { createQuiz } from "@/app/api/quiz/quiz.api";
+
 
 interface CreateLessonResourcePopupProps {
     lesson: Lesson;
     closeForm: (open: boolean) => void;
-    fetchLessons: () => Promise<void>;
+    token: string
 }
 
-const CreateLessonResourcePopup = ({ lesson, fetchLessons, closeForm }: CreateLessonResourcePopupProps) => {
+const CreateLessonResourcePopup = ({ lesson, closeForm, token }: CreateLessonResourcePopupProps) => {
     const [selectedType, setSelectedType] = useState<string>("LearningResource");
     const [isPending, startTransition] = useTransition()
     const router = useRouter();
     const handleSubmit = async () => {
-        if (selectedType === "LearningResource") {
-            router.push(`/course-management/${lesson.studyPlan.course.courseId}/study-plan/${lesson.studyPlan.studyPlanId}/edit-lesson-resource/learning-resource/1`)
-        }
-        // startTransition(async () => {
-        //     try {
-        //         // Giả lập API call để tạo lesson resource
-        //         console.log(`Creating lesson resource: ${selectedType} for lessonId: ${lessonId}`);
+        startTransition(async () => {
+            try {
+                let draftData;
+                let response;
+                if (selectedType === "LearningResource") {
+                    draftData = {
+                        title: "Draft learning resource",
+                        description: "This is a draft learning resource",
+                        pdfFilename: "",
+                        pdfUrl: "",
+                        videoFilename: "",
+                        videoUrl: "",
+                        premium: lesson.studyPlan.course.premium,
+                    };
+                    response = await createLearningResource(token, draftData);
+                    if (response.success) {
+                        const lessonResourceResponse = await createLessonResource({ lessonId: lesson.lessonId, resourceId: response.data.resourceId })
+                        if (lessonResourceResponse.success) {
+                            // If linking resource with lesson was successful, redirect to the edit page
+                            router.push(`/course-management/${lesson.studyPlan.course.courseId}/study-plan/${lesson.studyPlan.studyPlanId}/edit-lesson-resource/learning-resource/${response.data.resourceId}`);
+                        } else {
+                            // Show an error if creating lesson resource fails
+                            toast.error(`Failed to associate resource with lesson: ${lessonResourceResponse.message}`);
+                        }
+                    } else {
+                        // If the creation fails, show an error toast
+                        toast.error(`Failed to create learning resource: ${response.message}`);
+                    }
+                }
 
-        //         // TODO: Gửi `selectedType` lên server qua API POST
-        //         await new Promise((resolve) => setTimeout(resolve, 1000)); // Giả lập delay API
+                if (selectedType === "FlashcardSet") {
+                    draftData = {
+                        title: "Draft flashcard set",
+                        description: "This is a draft flashcard set",
+                        flashcards: [],   // Assuming this is a valid field in FlashcardSet schema
+                    };
+                    // Call your API for FlashcardSet (assuming it exists)
+                    router.push(`/course-management/${lesson.studyPlan.course.courseId}/study-plan/${lesson.studyPlan.studyPlanId}/edit-lesson-resource/flashcard-set/2`);
+                }
 
-        //         // Cập nhật danh sách tài nguyên sau khi tạo thành công
-        //         // await fetchLessons();
+                if (selectedType === "Quiz") {
+                    draftData = {
+                        title: "Draft quiz",
+                        description: "This is a draft quiz",
+                        difficultyLevelId: 1,
+                        passingScore: 0.5
+                    };
+                    response = await createQuiz(token, draftData);
+                    if (response.success) {
+                        const lessonResourceResponse = await createLessonResource({ lessonId: lesson.lessonId, quizId: response.data.quizId })
+                        if (lessonResourceResponse.success) {
+                            router.push(`/course-management/${lesson.studyPlan.course.courseId}/study-plan/${lesson.studyPlan.studyPlanId}/edit-lesson-resource/quiz/${response.data.quizId}`);
+                        } else {
+                            toast.error(`Failed to associate quiz with lesson: ${lessonResourceResponse.message}`);
+                        }
+                    } else {
+                        // If the creation fails, show an error toast
+                        toast.error(`Failed to create quiz: ${response.message}`);
+                    }
+                }
 
-        //         // Đóng popup sau khi submit
-        //         closeForm(false);
-        //     } catch (error) {
-        //         console.error("Failed to create lesson resource", error);
-        //     }
-        // })
+            } catch (error) {
+                console.error("Failed to create lesson resource", error);
+            }
+        });
     };
 
     return (

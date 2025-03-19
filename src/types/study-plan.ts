@@ -2,7 +2,8 @@ export type StudyPlan = {
     studyPlanId : number,
     course : {
         courseId : number,
-        title : string
+        title : string,
+        premium : boolean
     }
     title: string,
     description: string,

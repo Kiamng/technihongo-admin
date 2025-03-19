@@ -25,7 +25,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getLearningResourceById, updateLearningResource } from "@/app/api/learning-resource/learning-resource.api";
 
 
-const EditLearningResourcePage = () => {
+export default function EditLearningResourcePage() {
     const params = useParams(); // Lấy dữ liệu từ URL
     const { courseId, studyPlanId, learningResourceId } = params;
     const [learningResource, setLearningResource] = useState<LearningResource>();
@@ -41,7 +41,6 @@ const EditLearningResourcePage = () => {
         defaultValues: {
             title: "",
             description: "",
-            domainId: 0,
             videoUrl: "",
             videoFilename: "",
             pdfUrl: "",
@@ -58,15 +57,17 @@ const EditLearningResourcePage = () => {
             try {
                 setIsLoading(true)
                 const response = await getLearningResourceById(session?.user.token as string, parseInt(learningResourceId as string, 10));
+                console.log(response);
                 setLearningResource(response)
                 form.setValue("title", response.title);
                 form.setValue("description", response.description);
-                form.setValue("domainId", response.domain.domainId);
                 form.setValue("videoUrl", response.videoUrl || "");
                 form.setValue("videoFilename", response.videoFilename || "");
                 form.setValue("pdfUrl", response.pdfUrl || "");
                 form.setValue("pdfFilename", response.pdfFilename || "");
                 form.setValue("premium", response.premium);
+                setPdfSrc(response.pdfUrl);
+                setVideoSrc(response.videoUrl)
             }
             catch (error) {
                 console.log(error);
@@ -232,4 +233,3 @@ const EditLearningResourcePage = () => {
     );
 };
 
-export default EditLearningResourcePage;

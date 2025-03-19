@@ -21,15 +21,16 @@ import { Input } from "@/components/ui/input";
 
 import { CourseList } from "@/types/course";
 import { DomainList } from "@/types/domain";
+import { DifficultyLevel } from "@/types/difficulty-level";
 
 import { getAllCourse } from "@/app/api/course/course.api";
-import { getAllDomain } from "@/app/api/system-configuration/system.api";
+import { getChildrenDomain } from "@/app/api/system-configuration/system.api";
+import { getAllDifficultyLevel } from "@/app/api/difficulty-level/difficulty-level.api";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-
 
 export default function CourseManagementPage() {
     const { data: session } = useSession();
@@ -40,8 +41,14 @@ export default function CourseManagementPage() {
     const [domains, setDomains] = useState<DomainList>();
     const [selectedDomain, setSelectedDomain] = useState<number | null>(null)
     const [coursesList, setCoursesList] = useState<CourseList>();
+    const [difficultyLevels, setDifficultyLevels] = useState<DifficultyLevel[]>([])
+    const [selectedLevel, setSelectedLevel] = useState<number | null>(null)
+
 
     const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+
+    const memoizedDomains = useMemo(() => domains, [domains]);
+    const memoizedDifficultyLevels = useMemo(() => difficultyLevels, [difficultyLevels]);
 
     const handleNextPage = () => {
         if (coursesList?.last) {
@@ -68,11 +75,10 @@ export default function CourseManagementPage() {
                     sortBy: "createdAt",
                     sortDir: "desc",
                     keyword: searchValue,
-                    domainId: selectedDomain
+                    domainId: selectedDomain,
+                    difficultyLevelId: selectedLevel
                 });
-            console.log(response);
             setCoursesList(response);
-
         } catch (err) {
             console.error(err);
         } finally {
@@ -82,13 +88,19 @@ export default function CourseManagementPage() {
 
     const fetchDomain = async () => {
         try {
-            setIsloading(true);
-            const response = await getAllDomain({});
+            const response = await getChildrenDomain({ pageNo: 0, pageSize: 20, sortBy: "createdAt", sortDir: "desc" });
             setDomains(response);
         } catch (err) {
             console.error(err);
-        } finally {
-            setIsloading(false);
+        }
+    };
+
+    const fetchDifficultyLevel = async () => {
+        try {
+            const response = await getAllDifficultyLevel();
+            setDifficultyLevels(response);
+        } catch (error) {
+            console.log(error);
         }
     };
 
@@ -116,13 +128,22 @@ export default function CourseManagementPage() {
         setCurrentPage(0)
     };
 
+    const handleLevelChange = (value: string) => {
+        setSelectedLevel(value === "None" ? null : parseInt(value, 10));
+        if (currentPage === 0) {
+            return
+        }
+        setCurrentPage(0)
+    };
+
     useEffect(() => {
         if (!session?.user?.token) return;
 
         const fetchData = async () => {
             setIsloading(true);
             try {
-                await Promise.all([fetchCourses(), fetchDomain()]);
+                await fetchCourses();
+                await Promise.all([fetchDomain(), fetchDifficultyLevel()]);
             } catch (error) {
                 console.error(error);
                 toast.error("Failed to load course or study plans.");
@@ -139,14 +160,21 @@ export default function CourseManagementPage() {
             return;
         }
         fetchCourses();
-    }, [debouncedSearchValue, selectedDomain, currentPage]);
+    }, [debouncedSearchValue, selectedDomain, currentPage, selectedLevel]);
+
+    const loading = isLoading || !memoizedDomains || !memoizedDifficultyLevels.length;
 
     return (
         <div className="w-full space-y-6">
 
             <div className="flex justify-between items-center w-full">
                 <h1 className="text-4xl font-bold">Course Management</h1>
-                <CreateNewCourseForm fetchCourses={fetchCourses} token={session?.user?.token} />
+                <CreateNewCourseForm
+                    loading={loading}
+                    levels={memoizedDifficultyLevels}
+                    domains={memoizedDomains?.content || []}
+                    fetchCourses={fetchCourses}
+                    token={session?.user?.token} />
 
             </div>
             <div className="w-full flex flex-row justify-between">
@@ -156,21 +184,38 @@ export default function CourseManagementPage() {
                     value={searchValue}
                     onChange={handleSearchChange}
                 />
-                <Select onValueChange={handleDomainChange}>
-                    <SelectTrigger className="w-[300px]">
-                        <SelectValue placeholder="Select a domain" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="None">
-                            None
-                        </SelectItem>
-                        {domains?.content.map((domain) => (
-                            <SelectItem key={domain.domainId} value={domain.domainId.toString()}>
-                                {domain.name}
+                <div className="flex flex-row space-x-4">
+                    <Select onValueChange={handleDomainChange} disabled={loading}>
+                        <SelectTrigger className="w-[300px]">
+                            <SelectValue placeholder={loading ? "Loading domains ..." : "Select a domain"} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="None">
+                                None
                             </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+                            {memoizedDomains?.content.map((domain) => (
+                                <SelectItem key={domain.domainId} value={domain.domainId.toString()}>
+                                    {domain.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                    <Select onValueChange={handleLevelChange} disabled={loading}>
+                        <SelectTrigger className="w-[300px]">
+                            <SelectValue placeholder={loading ? "Loading level ..." : "Select a level"} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="None">
+                                None
+                            </SelectItem>
+                            {memoizedDifficultyLevels.map((level) => (
+                                <SelectItem key={level.levelId} value={level.levelId.toString()}>
+                                    {level.tag} : {level.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
             </div>
             <DataTable columns={columns} data={coursesList?.content || []} isLoading={isLoading} />
             <Pagination className="space-x-6">

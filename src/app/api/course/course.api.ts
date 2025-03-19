@@ -28,6 +28,7 @@ export const getAllCourse = async ({
   sortDir,
   keyword,
   domainId,
+  difficultyLevelId
 }: {
   token: string;
   pageNo?: number;
@@ -35,7 +36,8 @@ export const getAllCourse = async ({
   sortBy?: string;
   sortDir?: string;
   keyword? : string;
-  domainId? : number | null
+  domainId? : number | null;
+  difficultyLevelId? : number | null
 }) :Promise<CourseList> => {
   const params = new URLSearchParams();
   if (pageNo) params.append("pageNo", pageNo.toString());
@@ -44,6 +46,7 @@ export const getAllCourse = async ({
   if (sortDir) params.append("sortDir", sortDir);
   if (keyword) params.append("keyword", keyword);
   if (domainId) params.append("domainId", domainId.toString());
+  if (difficultyLevelId) params.append("difficultyLevelId", difficultyLevelId.toString());
   
   const response = await axiosClient.get(`${ENDPOINT.ALL}?${params.toString()}`,{
     headers: {
@@ -61,7 +64,7 @@ export const createCourse = async (values:z.infer<typeof CreateCourseSchema>, to
     title : values.title,
     description : values.description,
     domainId : values.domainId,
-    difficultyLevelId : 1,
+    difficultyLevelId : values.difficultyLevelId,
     attachmentUrl : "",
     thumbnailUrl : values.thumbnailUrl,
     estimatedDuration : values.estimatedDuration,
@@ -92,7 +95,7 @@ export const patchCourse = async (values:z.infer<typeof updateCourseSchema>, tok
     title : values.title,
     description : values.description,
     domainId : values.domainId,
-    difficultyLevelId : 1,
+    difficultyLevelId : values.difficultyLevelId,
     attachmentUrl : "",
     thumbnailUrl : values.thumbnailUrl,
     estimatedDuration : values.estimatedDuration,

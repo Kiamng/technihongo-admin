@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { updateCourseSchema } from "@/schema/course";
 import { z } from "zod";
-import { useRef, ChangeEvent, useState } from "react";
+import { useRef, ChangeEvent, useState, useEffect } from "react";
 import { LoaderCircle } from "lucide-react";
 import { toast } from "sonner";
 
@@ -17,20 +17,25 @@ import { Button } from "@/components/ui/button";
 
 
 import { Course } from "@/types/course";
-import { Domain } from "@/types/domain";
+import { DomainList } from "@/types/domain";
+import { DifficultyLevel } from "@/types/difficulty-level";
+import { getAllDifficultyLevel } from "@/app/api/difficulty-level/difficulty-level.api";
+import { getChildrenDomain } from "@/app/api/system-configuration/system.api";
 
 
 interface CourseFormProps {
     course?: Course;
-    domains: Domain[];
     onSubmit: (values: z.infer<typeof updateCourseSchema>, selectedFile: File | null) => void;
     isPending: boolean;
 }
 
-export default function CourseUpdateForm({ course, domains, onSubmit, isPending }: CourseFormProps) {
+export default function CourseUpdateForm({ course, onSubmit, isPending }: CourseFormProps) {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [imageSrc, setImageSrc] = useState<string | null>(course?.thumbnailUrl || null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [levels, setLevels] = useState<DifficultyLevel[]>();
+    const [domains, setDomains] = useState<DomainList>();
+    const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const form = useForm({
         resolver: zodResolver(updateCourseSchema),
@@ -38,6 +43,7 @@ export default function CourseUpdateForm({ course, domains, onSubmit, isPending 
             title: course?.title || '',
             description: course?.description || '',
             domainId: course?.domain?.domainId || 0,
+            difficultyLevelId: course?.difficultyLevel.levelId || 0,
             estimatedDuration: course?.estimatedDuration || '',
             thumbnailUrl: course?.thumbnailUrl || '',
             isPremium: course?.premium || false,
@@ -66,6 +72,24 @@ export default function CourseUpdateForm({ course, domains, onSubmit, isPending 
         }
     };
 
+    useEffect(() => {
+        const fetchDomainAndLevel = async () => {
+            try {
+                setIsLoading(true)
+                const levelResponse = await getAllDifficultyLevel();
+                setLevels(levelResponse)
+                const domainResponse = await getChildrenDomain({ pageNo: 0, pageSize: 20, sortBy: "createdAt", sortDir: "desc" });
+                setDomains(domainResponse)
+            }
+            catch (error) {
+                console.log(error);
+            } finally {
+                setIsLoading(false)
+            }
+        }
+        fetchDomainAndLevel()
+    }, [course])
+
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit((values) => onSubmit(values, selectedFile))} className="space-y-4 w-full">
@@ -75,7 +99,7 @@ export default function CourseUpdateForm({ course, domains, onSubmit, isPending 
                             <FormItem>
                                 <Label>Title</Label>
                                 <FormControl>
-                                    <Input placeholder="Enter Title" {...field} />
+                                    <Input disabled={isPending} placeholder="Enter Title" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -85,7 +109,7 @@ export default function CourseUpdateForm({ course, domains, onSubmit, isPending 
                             <FormItem>
                                 <Label>Description</Label>
                                 <FormControl>
-                                    <Textarea className='min-h-[100px]' placeholder="Enter description" {...field} />
+                                    <Textarea disabled={isPending} className='min-h-[100px]' placeholder="Enter description" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -95,7 +119,7 @@ export default function CourseUpdateForm({ course, domains, onSubmit, isPending 
                             <FormItem>
                                 <Label>Estimated Duration</Label>
                                 <FormControl>
-                                    <Input placeholder="Enter estimated duration" {...field} />
+                                    <Input disabled={isPending} placeholder="Enter estimated duration" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -104,7 +128,7 @@ export default function CourseUpdateForm({ course, domains, onSubmit, isPending 
                             <FormField control={form.control} name="isPublic" render={({ field }) => (
                                 <FormItem className="w-full">
                                     <Label>Public status</Label>
-                                    <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(value === "true")}>
+                                    <Select disabled={isPending} value={field.value?.toString()} onValueChange={(value) => field.onChange(value === "true")}>
                                         <FormControl>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Public" />
@@ -122,7 +146,7 @@ export default function CourseUpdateForm({ course, domains, onSubmit, isPending 
                             <FormField control={form.control} name="isPremium" render={({ field }) => (
                                 <FormItem className="w-full">
                                     <Label>Premium</Label>
-                                    <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(value === "true")}>
+                                    <Select disabled={isPending} value={field.value?.toString()} onValueChange={(value) => field.onChange(value === "true")}>
                                         <FormControl>
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Premium" />
@@ -141,7 +165,7 @@ export default function CourseUpdateForm({ course, domains, onSubmit, isPending 
                         <FormField control={form.control} name="domainId" render={({ field }) => (
                             <FormItem>
                                 <Label>Domain</Label>
-                                <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(Number(value))}>
+                                <Select disabled={isPending} value={field.value?.toString()} onValueChange={(value) => field.onChange(Number(value))}>
                                     <FormControl>
                                         <SelectTrigger>
                                             <SelectValue placeholder="Select a domain" />
@@ -149,41 +173,68 @@ export default function CourseUpdateForm({ course, domains, onSubmit, isPending 
                                     </FormControl>
                                     <SelectContent>
                                         {
-                                            domains ?
-                                                domains.map((domain) => (
+                                            isLoading ?
+                                                "loading"
+                                                : domains?.content.map((domain) => (
                                                     <SelectItem key={domain.domainId} value={domain.domainId.toString()}>
                                                         {domain.name}
                                                     </SelectItem>
-                                                ))
-                                                : "Loading"}
+                                                ))}
                                     </SelectContent>
                                 </Select>
                                 <FormMessage />
                             </FormItem>
                         )} />
                     </div>
-
-                    <FormField control={form.control} name="thumbnailUrl" render={() => (
-                        <FormItem>
-                            <FormLabel className="flex flex-row items-center justify-between">
-                                <div>Thumbnail Image </div>
-                            </FormLabel>
-                            <FormControl>
-                                <Input
-                                    type="file"
-                                    accept="image/*"
-                                    className="w-[510px]"
-                                    ref={fileInputRef}
-                                    onChange={handleOnChangeImage}
-                                />
-                            </FormControl>
-                            {imageSrc && <img src={imageSrc} alt="Preview" className="max-w-xs mt-2" />}
-                            <Button type="button" size="sm" onClick={() => fileInputRef.current?.click()}>
-                                Choose
-                            </Button>
-                            <FormMessage />
-                        </FormItem>
-                    )} />
+                    <div className="flex flex-col space-y-4">
+                        <FormField control={form.control} name="difficultyLevelId" render={({ field }) => (
+                            <FormItem>
+                                <Label>Level</Label>
+                                <Select disabled={isPending} value={field.value?.toString()} onValueChange={(value) => field.onChange(Number(value))}>
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select a domain" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        {
+                                            isLoading ?
+                                                "Loading"
+                                                :
+                                                levels?.map((level) => (
+                                                    <SelectItem key={level.levelId} value={level.levelId.toString()}>
+                                                        {level.tag} : {level.name}
+                                                    </SelectItem>
+                                                ))}
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        <FormField control={form.control} name="thumbnailUrl" render={() => (
+                            <FormItem>
+                                <FormLabel className="flex flex-row items-center justify-between">
+                                    <div>Thumbnail Image </div>
+                                </FormLabel>
+                                <FormControl>
+                                    <Input
+                                        disabled={isPending}
+                                        type="file"
+                                        accept="image/*"
+                                        className="w-[510px]"
+                                        ref={fileInputRef}
+                                        onChange={handleOnChangeImage}
+                                    />
+                                </FormControl>
+                                {imageSrc && <img src={imageSrc} alt="Preview" className="max-w-xs mt-2" />}
+                                <Button
+                                    disabled={isPending} type="button" size="sm" onClick={() => fileInputRef.current?.click()}>
+                                    Choose
+                                </Button>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                    </div>
                 </div>
 
                 <Button disabled={isPending} type="submit">

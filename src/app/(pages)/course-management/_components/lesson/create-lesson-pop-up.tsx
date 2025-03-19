@@ -17,7 +17,7 @@ interface CreateLessonPopupProps {
     fetchLessons: () => Promise<void>,
     setIsDialogOpen: Dispatch<SetStateAction<boolean>>,
     initialData: string | null,
-    lessonId: number | null
+    lessonId: number | null,
 }
 
 const LessonPopupForm = ({ studyPlanId, fetchLessons, setIsDialogOpen, initialData, lessonId }: CreateLessonPopupProps) => {

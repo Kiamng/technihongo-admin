@@ -9,6 +9,7 @@ const ENDPOINT = {
     ADDDOMAIN: "domain/create",
     UPDATEDOMAIN: "domain/update/{domainId}",
     DELETEDOMAIN: "domain/delete/{domainId}",
+    GET_CHILDREN_DOMAIN : '/domain/childrenDomain',
 };
 
 
@@ -92,3 +93,25 @@ export const deleteDomain = async (domainId: number) => {
     throw new Error("An error occurred while deleting the Domain.");
   }
 };
+
+export const getChildrenDomain = async (
+  {
+    pageNo,
+    pageSize,
+    sortBy,
+    sortDir
+  }: {
+    pageNo? : number,
+    pageSize? : number,
+    sortBy? : string,
+    sortDir?: string
+  }
+) : Promise<DomainList> => {
+   const params = new URLSearchParams();
+      if (pageNo) params.append("pageNo", pageNo.toString());
+      if (pageSize) params.append("pageSize", pageSize.toString());
+      if (sortBy) params.append("sortBy", sortBy);
+      if (sortDir) params.append("sortDir", sortDir);
+  const response = await axiosClient.get(ENDPOINT.GET_CHILDREN_DOMAIN)
+  return response.data.data
+}

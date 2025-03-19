@@ -1,12 +1,13 @@
 import axiosClient from "@/lib/axiosClient";
 import { LearningResourceSchema } from "@/schema/learning-resource";
-import { LearningResource } from "@/types/learning-resource";
+import { CreateLearningResourceResponse, LearningResource } from "@/types/learning-resource";
 import { z } from "zod";
 
 const ENDPOINT = {
-    GET_LEARNING_RESOURCE_BY_ID : '/learning-resource/',
+    GET_LEARNING_RESOURCE_BY_ID : '/learning-resource',
     UPDATE_LEARNING_RESOURCE : '/learning-resource/update',
     UPDATE_LEARNING_RESOURCE_STATUS : '/learning-resource/update-status/',
+    CREATE_LEARNING_RESOURCE_STATUS: '/learning-resource/create'
 }
 
 export const getLearningResourceById = async (token : string, learningResourceId : number) : Promise<LearningResource> => {
@@ -24,7 +25,26 @@ export const updateLearningResource = async (token : string, learningResourceId 
         {
             title : values.title,
             description : values.description,
-            domainId : values.domainId,
+            videoUrl : values.videoUrl,
+            videoFilename : values.videoFilename,
+            pdfUrl : values.pdfUrl,
+            pdfFilename : values.pdfFilename,
+            isPremium : values.premium
+        },
+        {
+            headers: {
+                    Authorization: `Bearer ${token}`
+                    }
+        }
+    )
+    return response.data
+}
+
+export const createLearningResource = async (token : string, values : z.infer<typeof LearningResourceSchema>) : Promise<CreateLearningResourceResponse> => {
+    const response = await axiosClient.post(ENDPOINT.CREATE_LEARNING_RESOURCE_STATUS,
+        {
+            title : values.title,
+            description : values.description,
             videoUrl : values.videoUrl,
             videoFilename : values.videoFilename,
             pdfUrl : values.pdfUrl,

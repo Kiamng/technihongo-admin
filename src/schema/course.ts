@@ -4,6 +4,7 @@ export const CreateCourseSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
   domainId: z.number().int().min(1, "Domain is required"),
+  difficultyLevelId: z.number().int().min(1, "Difficulty level is required"),
   thumbnailUrl: z.union([
     z.string().url("Invalid URL"), // Nếu là URL từ Cloudinary
     z.instanceof(File, { message: "File is required" }), // Nếu là file tải lên
@@ -15,6 +16,7 @@ export const updateCourseSchema = z.object({
   title: z.string().min(1, "Title is required"),
   description: z.string().min(1, "Description is required"),
   domainId: z.number().int().min(1, "Domain is required"),
+  difficultyLevelId: z.number().int().min(1, "Difficulty level is required"),
   thumbnailUrl: z.union([
     z.string().url("Invalid URL"), // Nếu là URL từ Cloudinary
     z.instanceof(File, { message: "File is required" }), // Nếu là file tải lên

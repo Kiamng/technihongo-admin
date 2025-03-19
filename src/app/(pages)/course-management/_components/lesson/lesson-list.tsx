@@ -33,6 +33,8 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan }: LessonL
 
     const [expandedLessonId, setExpandedLessonId] = useState<number | null>(null);
     const [lessonResources, setLessonResources] = useState<Record<number, LessonResource[]>>({});
+    const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+    const [debouncedSearchValue, setDebouncedSearchValue] = useState<string>("");
 
 
     const fetchLessons = async () => {
@@ -58,7 +60,7 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan }: LessonL
 
     useEffect(() => {
         fetchLessons();
-    }, [sortDir, searchValue]);
+    }, [sortDir, debouncedSearchValue]);
 
     const handleSortChange = () => {
         setSortDir(prevSortDir => (prevSortDir === "asc" ? "desc" : "asc"));
@@ -66,6 +68,18 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan }: LessonL
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchValue(event.target.value);
+
+        // Hủy bỏ timeout cũ (nếu có)
+        if (timeoutId) {
+            clearTimeout(timeoutId);
+        }
+
+        // Thiết lập timeout mới
+        const id = setTimeout(() => {
+            setDebouncedSearchValue(event.target.value);
+        }, 500); // 500ms delay
+
+        setTimeoutId(id); // Lưu lại timeoutID để có thể hủy sau
     };
 
     const toggleLessonResource = async (lessonId: number) => {
@@ -102,6 +116,21 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan }: LessonL
         }
     };
 
+    const updateLessonResources = (lessonId: number, resourceId: number) => {
+        setLessonResources(prev => {
+            const updatedResources = prev[lessonId]
+                .filter(resource => resource.lessonResourceId !== resourceId)
+                .map((resource, index) => ({
+                    ...resource,
+                    typeOrder: index + 1,
+                }));
+
+            return {
+                ...prev,
+                [lessonId]: updatedResources,
+            };
+        });
+    };
 
     return (
         <>
@@ -149,6 +178,8 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan }: LessonL
                                     toggleLessonResource={toggleLessonResource}
                                     fetchLessons={fetchLessons}
                                     isDefaultStudyPlan={isDefaultStudyPlan}
+                                    token={token}
+                                    updateLessonResources={updateLessonResources}
                                 />
                             ))
                         ) : (

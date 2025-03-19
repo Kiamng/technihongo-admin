@@ -1,29 +1,9 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Course } from "@/types/course";
 import { CellAction } from "./cell-action";
 
 export const columns: ColumnDef<Course>[] = [
-    {
-        id: "select",
-        header: ({ table }) => (
-            <Checkbox
-                checked={table.getIsAllPageRowsSelected()}
-                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                aria-label="Select all"
-            />
-        ),
-        cell: ({ row }) => (
-            <Checkbox
-                checked={row.getIsSelected()}
-                onCheckedChange={(value) => row.toggleSelected(!!value)}
-                aria-label="Select row"
-            />
-        ),
-        enableSorting: false,
-        enableHiding: false,
-    },
     {
         accessorKey: "title",
         header: "Title",
@@ -32,6 +12,12 @@ export const columns: ColumnDef<Course>[] = [
         header: "Domain",
         cell: ({ row }) => {
             return row.original.domain.name
+        },
+    },
+    {
+        header: "Level",
+        cell: ({ row }) => {
+            return row.original.difficultyLevel.tag
         },
     },
     {
