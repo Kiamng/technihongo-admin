@@ -24,3 +24,12 @@ export type Student = {
   difficultyLevel: DifficultyLevel;
   updatedAt: string;
 };
+
+export type UserList = {
+  content : User[],
+  pageNo: number,
+  pageSize: number,
+  totalElements: number,
+  totalPages: number,
+  last: boolean
+}
