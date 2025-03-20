@@ -4,6 +4,7 @@ import {
   LucideAlbum,
   MessageSquareWarning,
   MonitorCog,
+  Target,
   User,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
@@ -62,6 +63,13 @@ export const NavItems = () => {
         href: "/achievement-management",
         icon: <LucideAlbum size={size} />,
         active: isNavItemActive(pathname, "/achievement-management"),
+        position: "top",
+      },
+      {
+        name: "Difficulty Level Management",
+        href: "/difficultylevel-management",
+        icon: <Target size={size} />,
+        active: isNavItemActive(pathname, "/difficultylevel-management"),
         position: "top",
       },
 
