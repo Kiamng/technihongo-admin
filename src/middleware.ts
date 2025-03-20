@@ -6,7 +6,7 @@ import { getToken } from "next-auth/jwt";
 const publicRoutes = ["/"];
 
 // Các trang dành cho Admin
-const authRoutes = ["/dashboard", "/system-configuration", "/user-management", "/violation-management", "/learning-path" ];
+const authRoutes = ["/dashboard", "/system-configuration", "/user-management", "/violation-management", "/learning-path", "/difficultylevel-management" ];
 
 // Các trang dành cho Content Manager
 const CMRoutes = ["/course-management"];
