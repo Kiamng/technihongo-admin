@@ -2,20 +2,16 @@
 "use client";
 import { useEffect, useState } from "react";
 import { DataTable } from "@/components/data-table";
-
-
 import { useSession } from "next-auth/react";
 import { LearningPath } from "@/types/learningPath";
-
 import { getAllLearningPaths } from "@/app/api/learning-path/learning-path.api";
 import { columns } from "./_components/columns";
 import AddLearningPathPopup from "./_components/addlearning-path";
-console.log("Columns:", columns);
+
 export default function LearningPathManagementPage() {
   const { data: session } = useSession();
   const [loading, setLoading] = useState<boolean>(true);
   const [learningPaths, setLearningPaths] = useState<LearningPath[]>([]);
-
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
@@ -36,8 +32,9 @@ export default function LearningPathManagementPage() {
     fetchLearningPaths();
   }, [session, refreshTrigger]);
 
-  // Trong component con (ví dụ như EditLearningPathPopup), truyền một hàm để refresh
+  // Hàm để refresh data sau khi có thay đổi
   const handleUpdate = () => {
+    console.log("Refreshing data...");
     setRefreshTrigger(prev => prev + 1);
   };
 
@@ -45,13 +42,13 @@ export default function LearningPathManagementPage() {
     <div className="w-full space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-4xl font-bold">Learning Path Management</h1>
-        <AddLearningPathPopup />
+        <AddLearningPathPopup onUpdate={handleUpdate} />
       </div>
 
       <div className="space-y-6">
         <div className="font-medium">Total learning paths: {learningPaths.length}</div>
         <DataTable
-          columns={columns}
+          columns={columns(handleUpdate)}
           searchKey="title"
           data={learningPaths}
           isLoading={loading}

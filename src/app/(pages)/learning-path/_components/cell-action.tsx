@@ -15,10 +15,11 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import axios, { AxiosError } from "axios";
+import { useSession } from "next-auth/react";
 
 interface CellActionProps {
   data: LearningPath;
-  onUpdate: () => void;
+  onUpdate: () => void; // Callback để refresh dữ liệu
 }
 
 // Định nghĩa interface phù hợp với API response
@@ -32,23 +33,33 @@ export const CellAction: React.FC<CellActionProps> = ({ data, onUpdate }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const { data: session } = useSession();
 
   const handleDelete = async () => {
+    // Kiểm tra token
+    if (!session?.user?.token) {
+      toast.error("Authentication required. Please log in again.");
+      setConfirmOpen(false);
+      return;
+    }
+
     try {
       setIsDeleting(true);
       
       // Sử dụng try-catch để bắt tất cả các lỗi nhưng không hiển thị lỗi HTTP
       try {
-        const response = await deleteLearningPath(data.pathId);
+        const response = await deleteLearningPath(data.pathId, session.user.token);
         
         if (response && response.success === true) {
           toast.success("Learning path deleted successfully!");
+          
+          // Gọi callback để refresh dữ liệu
           onUpdate();
         } else {
           // Kiểm tra thông báo lỗi liên quan đến active learning path
           if (response?.message?.toLowerCase().includes('active') || 
               response?.message?.toLowerCase().includes('cannot delete')) {
-            toast.error("Không thể xóa học trình đang hoạt động. Vui lòng hủy kích hoạt trước.");
+            toast.error("Cannot delete an active learning path. Please deactivate it first.");
           } else {
             toast.error(response?.message || "Failed to delete learning path!");
           }
@@ -58,11 +69,15 @@ export const CellAction: React.FC<CellActionProps> = ({ data, onUpdate }) => {
         if (axios.isAxiosError(error)) {
           const axiosError = error as AxiosError<ApiResponse>;
           const errorMessage = axiosError.response?.data?.message || "Failed to delete learning path";
+          console.error("Delete error details:", {
+            status: axiosError.response?.status,
+            data: axiosError.response?.data
+          });
           
           // Kiểm tra nếu là lỗi active learning path
           if (errorMessage.toLowerCase().includes('active') || 
               errorMessage.toLowerCase().includes('cannot delete')) {
-            toast.error("Không thể xóa học trình đang hoạt động. Vui lòng hủy kích hoạt trước.");
+            toast.error("Cannot delete an active learning path. Please deactivate it first.");
           } else {
             toast.error("Failed to delete learning path. Please try again later.");
           }
@@ -105,7 +120,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data, onUpdate }) => {
           learningPath={data}
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
-          onUpdate={onUpdate}
+          onUpdate={onUpdate} // Truyền callback để refresh dữ liệu
         />
       )}
 

@@ -1,17 +1,21 @@
+/* learning-path.api.ts */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axiosClient from "@/lib/axiosClient";
 import { CreateLearningPathSchema } from "@/schema/learning-path";
-
 import { LearningPath } from "@/types/learningPath";
 import { z } from "zod";
+import axios, { AxiosError } from "axios";
+
 const ENDPOINT = {
   ALL: '/learning-path/all',
   ADD: '/learning-path/create',
   UPDATELEARNINGPATH: '/learning-path/update/{pathId}',
   DELETELEARNINGPATH: 'learning-path/delete/{id}',
   GETBYID: '/learning-path/{id}',
-  
+  GET_PARENT_DOMAINS: 'https://technihongo-hueze5fkd5g2f7bk.centralindia-01.azurewebsites.net/api/domain/all',
 };
-
+const BASE_URL = "https://technihongo-hueze5fkd5g2f7bk.centralindia-01.azurewebsites.net/api";
 export const getAllLearningPaths = async (token: string): Promise<LearningPath[]> => {
   const response = await axiosClient.get(ENDPOINT.ALL, {
     headers: {
@@ -36,29 +40,28 @@ export const getLearningPathById = async (id: number, token: string): Promise<Le
   return response.data.data as LearningPath;
 };
 
-export const addLearningPath = async (values: z.infer<typeof CreateLearningPathSchema>,token:string) => {
-    try {
-      // Validate data against schema before sending to backend
-      CreateLearningPathSchema.parse(values);
-      
-      // Send request to backend
-      const response = await axiosClient.post(ENDPOINT.ADD, {
-          title: values.title,
-          description: values.description, // Fixed typo: removed duplicate "descrition" field
-          domainId: Number(values.domainId),
-          isPublic: values.isPublic,
-      },
-      { headers: {
+export const addLearningPath = async (values: z.infer<typeof CreateLearningPathSchema>, token: string) => {
+  try {
+    CreateLearningPathSchema.parse(values);
+    
+    const response = await axiosClient.post(ENDPOINT.ADD, {
+      title: values.title,
+      description: values.description,
+      domainId: Number(values.domainId),
+      isPublic: values.isPublic,
+    }, {
+      headers: {
         Authorization: `Bearer ${token}`
-      }}
-    );
+      }
+    });
 
-      return response.data;
-    } catch (error) {
-        console.error("Error adding Learning Path:", error);
-        throw error; // Throw the actual error for better debugging
-    }
+    return response.data;
+  } catch (error) {
+    console.error("Error adding Learning Path:", error);
+    throw error;
+  }
 };
+
 export const updateLearningPath = async (
   pathId: number,
   values: {
@@ -66,25 +69,28 @@ export const updateLearningPath = async (
     description: string;
     domainId: number;
     isPublic: boolean;
-  }
+  },
+  token: string
 ) => {
   try {
+    const requestData = {
+      title: values.title,
+      description: values.description,
+      domainId: values.domainId,
+      isPublic: values.isPublic !== undefined ? values.isPublic : false
+    };
+    
     const response = await axiosClient.patch(
       ENDPOINT.UPDATELEARNINGPATH.replace("{pathId}", String(pathId)),
+      requestData,
       {
-        title: values.title,
-        description: values.description,
-        domainId: values.domainId,
-        isPublic: values.isPublic,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
       }
     );
 
-    // Kiểm tra response từ server
-    if (!response.data) {
-      throw new Error("No response data received");
-    }
-
-    // Kiểm tra trạng thái thành công
     if (response.data.success === false) {
       throw new Error(response.data.message || "Failed to update learning path");
     }
@@ -92,24 +98,57 @@ export const updateLearningPath = async (
     return response.data;
   } catch (error) {
     console.error("Error updating learning path:", error);
-    throw error; // Throw the actual error for better debugging
+    throw error;
   }
 };
 
-export const deleteLearningPath = async (pathId: number) => {
+export const deleteLearningPath = async (pathId: number, token: string) => {
   try {
     const response = await axiosClient.delete(
-      ENDPOINT.DELETELEARNINGPATH.replace("{id}", String(pathId))
+      ENDPOINT.DELETELEARNINGPATH.replace("{id}", String(pathId)),
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      }
     );
     
     return response.data;
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error("Error deleting Learning Path:", {
-        message: error.message,
-        name: error.name
-      });
+  } catch (error) {
+    console.error("Error deleting Learning Path:", error);
+    throw error;
+  }
+};
+
+export interface Domain {
+  domainId: number;
+  tag: string;
+  name: string;
+  description: string;
+  parentDomainId: number | null;
+}
+
+export const getParentDomains = async (token: string): Promise<Domain[]> => {
+  try {
+    const response = await axios.get(ENDPOINT.GET_PARENT_DOMAINS, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      params: {
+        pageNo: 0,
+        pageSize: 100,
+        sortDir: "desc"
+      }
+    });
+
+    if (response.data.success && response.data.data?.content) {
+      return response.data.data.content.filter((domain: Domain) => domain.parentDomainId === null);
+    } else {
+      throw new Error(response.data.message || "Failed to fetch parent domains");
     }
+  } catch (error) {
+    console.error("Error fetching parent domains:", error);
     throw error;
   }
 };
