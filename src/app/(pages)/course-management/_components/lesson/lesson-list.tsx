@@ -180,6 +180,7 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan }: LessonL
                                     isDefaultStudyPlan={isDefaultStudyPlan}
                                     token={token}
                                     updateLessonResources={updateLessonResources}
+                                    setLessonResources={setLessonResources}
                                 />
                             ))
                         ) : (

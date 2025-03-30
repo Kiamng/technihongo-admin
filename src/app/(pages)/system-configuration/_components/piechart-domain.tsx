@@ -11,12 +11,12 @@ const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#FF4081", "#7B1FA2"
 
 export default function DomainPieChart() {
   const [domains, setDomains] = useState<Domain[]>([]);
-  
+
   useEffect(() => {
     const fetchDomains = async () => {
       try {
-        const response = await getAllDomain();
-        setDomains(response);
+        // const response = await getAllDomain();
+        // setDomains(response);
       } catch (error) {
         console.error("Error fetching domains:", error);
       }

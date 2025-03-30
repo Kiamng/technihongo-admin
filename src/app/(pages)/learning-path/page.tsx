@@ -18,43 +18,43 @@ export default function LearningPathManagementPage() {
 
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-useEffect(() => {
-  const fetchLearningPaths = async () => {
-    if (!session?.user?.token) return;
+  useEffect(() => {
+    const fetchLearningPaths = async () => {
+      if (!session?.user?.token) return;
 
-    try {
-      setLoading(true);
-      const response = await getAllLearningPaths(session.user.token);
-      setLearningPaths(response);
-    } catch (err) {
-      console.error("Error fetching learning paths:", err);
-    } finally {
-      setLoading(false);
-    }
+      try {
+        setLoading(true);
+        const response = await getAllLearningPaths(session.user.token);
+        setLearningPaths(response);
+      } catch (err) {
+        console.error("Error fetching learning paths:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLearningPaths();
+  }, [session, refreshTrigger]);
+
+  // Trong component con (ví dụ như EditLearningPathPopup), truyền một hàm để refresh
+  const handleUpdate = () => {
+    setRefreshTrigger(prev => prev + 1);
   };
-
-  fetchLearningPaths();
-}, [session, refreshTrigger]);
-
-// Trong component con (ví dụ như EditLearningPathPopup), truyền một hàm để refresh
-const handleUpdate = () => {
-  setRefreshTrigger(prev => prev + 1);
-};
 
   return (
     <div className="w-full space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-4xl font-bold">Learning Path Management</h1>
-        <AddLearningPathPopup/>
+        <AddLearningPathPopup />
       </div>
 
       <div className="space-y-6">
         <div className="font-medium">Total learning paths: {learningPaths.length}</div>
-        <DataTable 
-          columns={columns} 
-          searchKey="title" 
-          data={learningPaths} 
-          isLoading={loading} 
+        <DataTable
+          columns={columns}
+          searchKey="title"
+          data={learningPaths}
+          isLoading={loading}
         />
       </div>
     </div>

@@ -1,0 +1,68 @@
+import { deleteDomain } from "@/app/api/system-configuration/system.api";
+import {
+    AlertDialog,
+    AlertDialogContent,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogFooter,
+    AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+
+import { Domain } from "@/types/domain";
+
+import { useTransition } from "react";
+import { toast } from "sonner";
+
+interface DeleteAlertProps {
+    domain: Domain;
+    fetchParentDomains?: () => Promise<void>;
+    fetchChildrenDomains?: (parentId: number) => Promise<void>;
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+}
+
+const DeleteAlert = ({ domain, fetchParentDomains, fetchChildrenDomains, open, onOpenChange }: DeleteAlertProps) => {
+    const [isPending, startTransition] = useTransition();
+
+    const handleDelete = async () => {
+        startTransition(async () => {
+            try {
+                const response = await deleteDomain(domain.domainId);
+                if (response?.success) {
+                    toast.success("Domain deleted successfully!");
+                    onOpenChange(false);
+                    if (domain.parentDomainId === null && fetchParentDomains) {
+                        await fetchParentDomains();
+                    } else if (domain.parentDomainId && fetchChildrenDomains) {
+                        await fetchChildrenDomains(domain.parentDomainId);
+                    }
+                } else {
+                    toast.error(response.message);
+                }
+            } catch (error) {
+                console.error(error);
+                toast.error("An error occurred while deleting the domain.");
+            }
+        });
+    };
+
+    return (
+        <AlertDialog open={open} onOpenChange={onOpenChange}>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                    <p>This action cannot be undone. This will permanently delete this domain.</p>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+                    <Button variant="destructive" onClick={handleDelete} disabled={isPending}>
+                        {isPending ? "Deleting..." : "Delete"}
+                    </Button>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    );
+};
+
+export default DeleteAlert;

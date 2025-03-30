@@ -1,54 +1,68 @@
 "use client";
+import { getParentDomains } from "@/app/api/system-configuration/system.api";
+
+import DomainFormPopup from "./_components/add-domain-popup";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
+
+import { DomainList } from "@/types/domain";
+
+import { CirclePlus } from "lucide-react";
+
 import { useEffect, useState } from "react";
-import AddDomainPopup from "./_components/add-domain-popup";
-import { DataTable } from "@/components/data-table";
-import { Pagination } from "./_components/Pagination";
-import { getAllDomain } from "@/app/api/system-configuration/system.api";
-import { columns } from "./_components/columns"; // Gọi columns dưới dạng hàm
-import React from "react";
-import { Domain } from "@/types/domain";
-import DomainPieChart from "./_components/piechart-domain";
+import ParentDomainsList from "./_components/parent-domains-list";
 
 export default function DomainManagement() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [domains, setDomains] = useState<Domain[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [parentDomains, setParentDomains] = useState<DomainList>();
 
-  const itemsPerPage = 5;
-  const totalPages = Math.ceil(domains.length / itemsPerPage);
-  const paginatedDomain = domains.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState<boolean>(false);
 
-  // 🛠️ Thêm hàm fetchDomains để gọi API và cập nhật state
-  const fetchDomains = async () => {
+  const fetchParentDomains = async () => {
     try {
-      setLoading(true);
-      console.log("Fetching domains...");
-
-      const response = await getAllDomain();
-      setDomains(response);
+      setIsLoading(true);
+      const response = await getParentDomains({
+        pageNo: 0,
+        pageSize: 10,
+        sortBy: 'createdAt',
+        sortDir: 'desc'
+      });
+      setParentDomains(response);
     } catch (err) {
       console.log(err);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
-
   useEffect(() => {
-    fetchDomains();
-  }, []);
+    if (!parentDomains) {
+      fetchParentDomains();
+    }
+  }, [parentDomains]);
 
   return (
-    <div className="p-6">
-      {/* Tiêu đề trang */}
+    <div className="w-full space-y-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-4xl font-bold">Domain</h1>
-        <AddDomainPopup onUpdate={fetchDomains} />
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <DialogTrigger
+            className="flex items-center gap-2 py-2 px-2 bg-primary rounded-lg hover:bg-primary/90 text-white"
+          >
+            <CirclePlus />Create new domain
+          </DialogTrigger>
+          <DialogContent width='400px'>
+            <DomainFormPopup
+              initialData={null}
+              setIsDialogOpen={setIsCreateDialogOpen}
+              parentDomainList={parentDomains?.content}
+              fetchParentDomains={fetchParentDomains}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
-      <DomainPieChart />
 
-      {/* Bảng dữ liệu + Phân trang */}
-      <DataTable columns={columns(fetchDomains)} searchKey="name" data={paginatedDomain} isLoading={loading} />
-      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
+      {isLoading && <Skeleton className="w-full h-[500px]" />}
+      {parentDomains && <ParentDomainsList fetchParentDomains={fetchParentDomains} parentDomains={parentDomains} />}
     </div>
   );
 }

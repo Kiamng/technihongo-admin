@@ -5,7 +5,9 @@ import { z } from "zod";
 
 const ENDPOINT = {
     CREATE : '/quiz/create',
-    GET_BY_ID : '/quiz'
+    GET_BY_ID : '/quiz',
+    UPDATE : '/quiz/update',
+    UPDATE_ACTIVE_STATUS : '/quiz/update-status'
 }
 
 export const createQuiz = async (token : string, values:z.infer<typeof QuizSchema>) : Promise<CreateQuizResponse> => {
@@ -14,7 +16,8 @@ export const createQuiz = async (token : string, values:z.infer<typeof QuizSchem
             title: values.title,
             description : values.description,
             difficultyLevelId : values.difficultyLevelId,
-            passingScore : values.passingScore
+            passingScore : values.passingScore,
+            isPremium : values.isPremium
         },
         {
             headers: {
@@ -34,4 +37,36 @@ export const getQuizById = async (token : string, quizId : number) : Promise<Qui
         }
     )
     return response.data.data
+}
+
+export const updateQuiz = async (token: string, quizId : number, values:z.infer<typeof QuizSchema>) => {
+    const response = await axiosClient.patch(`${ENDPOINT.UPDATE}/${quizId}`,
+        {
+            title: values.title,
+            description : values.description,
+            difficultyLevelId : values.difficultyLevelId,
+            passingScore : values.passingScore
+        },
+        {
+            headers: {
+            Authorization: `Bearer ${token}`
+            }
+        }
+    )
+    return response.data
+}
+
+export const updateQuizStatus = async (token : string, quizId : number, isPublic : boolean, isDeleted : boolean) => {
+    const response = await axiosClient.patch(`${ENDPOINT.UPDATE_ACTIVE_STATUS}/${quizId}`,
+        {
+            isPublic : isPublic,
+            isDeleted : isDeleted
+        },
+        {
+            headers: {
+            Authorization: `Bearer ${token}`
+            }
+        }
+    )
+    return response.data
 }

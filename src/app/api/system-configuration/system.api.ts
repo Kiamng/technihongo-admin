@@ -5,11 +5,12 @@ import { z } from "zod";
 
 const ENDPOINT = {
     GETALLDOMAIN: "domain/all",
-    GETDOMAIN: "",
+    GETDOMAIN: "/domain",
     ADDDOMAIN: "domain/create",
-    UPDATEDOMAIN: "domain/update/{domainId}",
-    DELETEDOMAIN: "domain/delete/{domainId}",
+    UPDATEDOMAIN: "domain/update/",
+    DELETEDOMAIN: "domain/delete",
     GET_CHILDREN_DOMAIN : '/domain/childrenDomain',
+    GET_PARENT_DOMAIN: '/domain/parentDomain'
 };
 
 
@@ -55,17 +56,11 @@ export const addDomain = async (values: z.infer<typeof addDomainSchema>) => {
 
 export const updateDomain = async (
   domainId: number,
-  values: {
-    tag: string;
-    name: string;
-    description: string;
-    parentDomainId: number;
-    isActive: boolean;
-  }
+  values: z.infer<typeof addDomainSchema>
 ) => {
   try {
     const response = await axiosClient.patch(
-      ENDPOINT.UPDATEDOMAIN.replace("{domainId}", String(domainId)),
+      `${ENDPOINT.UPDATEDOMAIN}/${domainId}`,
       {
         tag: values.tag,
         name: values.name,
@@ -82,16 +77,11 @@ export const updateDomain = async (
   }
 };
 export const deleteDomain = async (domainId: number) => {
-  try {
     const response = await axiosClient.delete(
-      `${ENDPOINT.DELETEDOMAIN.replace("{domainId}", String(domainId))}`
+      `${ENDPOINT.DELETEDOMAIN}/${domainId}`
     );
     
     return response.data;
-  } catch (error) {
-    console.error("Error deleting Domain:", error);
-    throw new Error("An error occurred while deleting the Domain.");
-  }
 };
 
 export const getChildrenDomain = async (
@@ -112,6 +102,52 @@ export const getChildrenDomain = async (
       if (pageSize) params.append("pageSize", pageSize.toString());
       if (sortBy) params.append("sortBy", sortBy);
       if (sortDir) params.append("sortDir", sortDir);
-  const response = await axiosClient.get(ENDPOINT.GET_CHILDREN_DOMAIN)
+  const response = await axiosClient.get(`${ENDPOINT.GET_CHILDREN_DOMAIN}?${params.toString()}`)
+  return response.data.data
+}
+
+export const getParentDomains = async (
+  {
+    pageNo,
+    pageSize,
+    sortBy,
+    sortDir
+  } : {
+    pageNo? : number,
+    pageSize? : number,
+    sortBy? : string,
+    sortDir?: string
+  }
+) : Promise<DomainList> => {
+  const params = new URLSearchParams();
+      if (pageNo) params.append("pageNo", pageNo.toString());
+      if (pageSize) params.append("pageSize", pageSize.toString());
+      if (sortBy) params.append("sortBy", sortBy);
+      if (sortDir) params.append("sortDir", sortDir);
+  const response = await axiosClient.get(`${ENDPOINT.GET_PARENT_DOMAIN}?${params.toString()}`)
+  return response.data.data
+}
+
+export const getChildrenDomainsByParentId = async (
+  {
+    parentId,
+    pageNo,
+    pageSize,
+    sortBy,
+    sortDir
+  }: {
+    parentId: number
+    pageNo? : number,
+    pageSize? : number,
+    sortBy? : string,
+    sortDir?: string
+  }
+) : Promise<DomainList> => {
+  const params = new URLSearchParams();
+      if (pageNo) params.append("pageNo", pageNo.toString());
+      if (pageSize) params.append("pageSize", pageSize.toString());
+      if (sortBy) params.append("sortBy", sortBy);
+      if (sortDir) params.append("sortDir", sortDir);
+  const response = await axiosClient.get(`${ENDPOINT.GETDOMAIN}/${parentId}/getChildrenTag`)
   return response.data.data
 }

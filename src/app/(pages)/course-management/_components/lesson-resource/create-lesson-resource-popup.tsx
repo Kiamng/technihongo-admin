@@ -38,7 +38,7 @@ const CreateLessonResourcePopup = ({ lesson, closeForm, token }: CreateLessonRes
                     };
                     response = await createLearningResource(token, draftData);
                     if (response.success) {
-                        const lessonResourceResponse = await createLessonResource({ lessonId: lesson.lessonId, resourceId: response.data.resourceId })
+                        const lessonResourceResponse = await createLessonResource({ token: token, lessonId: lesson.lessonId, resourceId: response.data.resourceId })
                         if (lessonResourceResponse.success) {
                             // If linking resource with lesson was successful, redirect to the edit page
                             router.push(`/course-management/${lesson.studyPlan.course.courseId}/study-plan/${lesson.studyPlan.studyPlanId}/edit-lesson-resource/learning-resource/${response.data.resourceId}`);
@@ -67,11 +67,12 @@ const CreateLessonResourcePopup = ({ lesson, closeForm, token }: CreateLessonRes
                         title: "Draft quiz",
                         description: "This is a draft quiz",
                         difficultyLevelId: 1,
-                        passingScore: 0.5
+                        passingScore: 0.5,
+                        isPremium: lesson.studyPlan.course.premium
                     };
                     response = await createQuiz(token, draftData);
                     if (response.success) {
-                        const lessonResourceResponse = await createLessonResource({ lessonId: lesson.lessonId, quizId: response.data.quizId })
+                        const lessonResourceResponse = await createLessonResource({ token: token, lessonId: lesson.lessonId, quizId: response.data.quizId })
                         if (lessonResourceResponse.success) {
                             router.push(`/course-management/${lesson.studyPlan.course.courseId}/study-plan/${lesson.studyPlan.studyPlanId}/edit-lesson-resource/quiz/${response.data.quizId}`);
                         } else {

@@ -89,18 +89,53 @@ const LessonResourceItem = ({ lessonResource, studyPlanId, updateLessonResources
         setConfirmOpen(false); // Close the confirmation dialog without deleting
     };
 
+    // const handleUpdateStatus = async (status: string) => {
+    //     startTransition(async () => {
+    //         try {
+    //             const response = await updateLessonResourceStatus(lessonResource.lessonResourceId, status === 'true');
+    //             if (response && response.success) {
+    //                 toast.success("Lesson resource status updated successfully!");
+    //                 updateLessonResources(lessonId, lessonResource.lessonResourceId);
+    //             } else {
+    //                 toast.error("Failed to update lesson resource active status!");
+    //             }
+    //         } catch (error) {
+    //             toast.error("An error occurred while updating the lesson resource active status.");
+    //             console.error("Failed to update lesson resource active status!", error);
+    //         }
+    //     });
+    // }
+
     return (
         <>
-            <div className="px-3 flex justify-between items-center">
+            <div className="p-3 flex justify-between items-center hover:bg-slate-50 rounded-2xl">
                 <div className="flex items-center space-x-3 text-base">
                     <span>{lessonResource.typeOrder}</span>
                     <div className="p-[6px] rounded-full" style={{ backgroundColor: `${color}1A`, color }}>
                         <Icon size={20} />
                     </div>
                     <span>{title}</span>
-                    <span className={lessonResource.active ? "text-green-500" : "text-red-500"}>
-                        {lessonResource.active ? "Active" : "Not active"}
-                    </span>
+                    <div className={`bg-opacity-10 px-3 py-[6px] text-base rounded-lg ${lessonResource.active ? "bg-[#56D071] text-[#56D071]" : "bg-[#FD5673] text-[#FD5673]"}`}>
+                        {lessonResource.active ? "ACTIVE" : "INACTIVE"}
+                    </div>
+                    {/* <div>
+                        <Select
+                            disabled={isPending}
+                            value={lessonResource?.active.toString()}
+                            onValueChange={(value) => handleUpdateStatus(value)}>
+                            <SelectTrigger
+                                className={lessonResource?.active
+                                    ? "bg-[#56D071] text-[#56D071] bg-opacity-10"
+                                    : "bg-[#FD5673] text-[#FD5673] bg-opacity-10"}>
+                                <SelectValue
+                                    placeholder="Public" />
+                            </SelectTrigger>
+                            <SelectContent >
+                                <SelectItem className="bg-[#56D071] text-[#56D071] bg-opacity-10" value="true">ACTIVE</SelectItem>
+                                <SelectItem className="bg-[#FD5673] text-[#FD5673] bg-opacity-10" value="false">INACTIVE</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div> */}
                 </div>
                 <div className="flex space-x-2">
                     <Link href={editLink(lessonResource, studyPlanId)}>
