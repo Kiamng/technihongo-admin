@@ -9,6 +9,7 @@ import { createLearningResource } from "@/app/api/learning-resource/learning-res
 import { toast } from "sonner";
 import { createLessonResource } from "@/app/api/lesson-resource/lesson-resource.api";
 import { createQuiz } from "@/app/api/quiz/quiz.api";
+import { createSysFlashcardSet } from "@/app/api/system-flashcard-set/system-flashcard-set.api";
 
 
 interface CreateLessonResourcePopupProps {
@@ -56,10 +57,22 @@ const CreateLessonResourcePopup = ({ lesson, closeForm, token }: CreateLessonRes
                     draftData = {
                         title: "Draft flashcard set",
                         description: "This is a draft flashcard set",
-                        flashcards: [],   // Assuming this is a valid field in FlashcardSet schema
+                        difficultyLevel: lesson.studyPlan.course.difficultyLevel.tag,
+                        isPublic: false,
+                        isPremium: lesson.studyPlan.course.premium
                     };
-                    // Call your API for FlashcardSet (assuming it exists)
-                    router.push(`/course-management/${lesson.studyPlan.course.courseId}/study-plan/${lesson.studyPlan.studyPlanId}/edit-lesson-resource/flashcard-set/2`);
+                    response = await createSysFlashcardSet(token, draftData);
+                    if (response.success) {
+                        const lessonResourceResponse = await createLessonResource({ token: token, lessonId: lesson.lessonId, systemSetId: response.data.systemSetId })
+                        if (lessonResourceResponse.success) {
+                            router.push(`/course-management/${lesson.studyPlan.course.courseId}/study-plan/${lesson.studyPlan.studyPlanId}/edit-lesson-resource/flashcard-set/${response.data.systemSetId}`);
+                        } else {
+                            toast.error(`Failed to associate flashcard set with lesson: ${lessonResourceResponse.message}`);
+                        }
+                    } else {
+                        // If the creation fails, show an error toast
+                        toast.error(`Failed to create flashcard set: ${response.message}`);
+                    }
                 }
 
                 if (selectedType === "Quiz") {

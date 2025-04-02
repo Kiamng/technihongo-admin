@@ -8,7 +8,7 @@ import Link from "next/link";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CornerDownLeft, LoaderCircle, PenLine } from "lucide-react";
+import { CornerDownLeft, LoaderCircle, Youtube } from "lucide-react";
 import { toast } from "sonner";
 
 import { useSession } from "next-auth/react";
@@ -23,6 +23,7 @@ import { LearningResource } from "@/types/learning-resource";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { getLearningResourceById, updateLearningResource } from "@/app/api/learning-resource/learning-resource.api";
+import LearningResourceUpdatePublicStatus from "@/app/(pages)/course-management/_components/learning-resource/update-public-status";
 
 
 export default function EditLearningResourcePage() {
@@ -79,6 +80,10 @@ export default function EditLearningResourcePage() {
     }, [learningResourceId])
 
     const onSubmit = async (values: z.infer<typeof LearningResourceSchema>) => {
+        if (learningResource?.public === true) {
+            toast.error("You can not update a public learning resource!");
+            return
+        }
         startTransition(async () => {
             try {
                 const response = await updateLearningResource(session?.user.token as string, parseInt(learningResourceId as string, 10), values)
@@ -108,12 +113,24 @@ export default function EditLearningResourcePage() {
                     <span>Quay lại</span>
                 </Button>
             </Link>
+
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
-                    <div className="w-full flex flex-row justify-between items-center">
-                        <div className="text-4xl font-bold flex items-center">
-                            Learning resource edit page<PenLine size={28} />
+                <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-10">
+                    <div className="w-full flex flex-row justify-between">
+                        <div className="flex flex-row space-x-4 items-center">
+                            <div className="rounded-full p-2 bg-[#FD5673] bg-opacity-10">
+                                <Youtube className="text-[#FD5673]" size={28} />
+                            </div>
+                            <span className="text-4xl font-bold ">Edit Learning Resource Details</span>
+                            {learningResource
+                                ? <LearningResourceUpdatePublicStatus
+                                    learningResource={learningResource}
+                                    setLearningResource={setLearningResource}
+                                    token={session?.user.token as string} />
+                                : <LoaderCircle className="animate-spin" />}
+
                         </div>
+
                         <Button disabled={isPending} type="submit">
                             {isPending ? <><LoaderCircle className="animate-spin" /> Saving ...</> : "Save changes"}
                         </Button>

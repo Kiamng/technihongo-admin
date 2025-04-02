@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowDown01, ArrowUp01, CirclePlus, LoaderCircle, } from "lucide-react";
+import { ArrowDown01, ArrowUp01, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, CirclePlus, LoaderCircle, } from "lucide-react";
 import { toast } from "sonner";
 
 import { getLessonsByStudyPlanId } from "@/app/api/lesson/lesson.api";
@@ -14,6 +14,7 @@ import LessonPopupForm from "./create-lesson-pop-up";
 import { LessonResource } from "@/types/lesson-resource";
 import { getLessonResourceByLessonId } from "@/app/api/lesson-resource/lesson-resource.api";
 import LessonItem from "./lesson-item";
+import { Pagination, PaginationContent, PaginationItem } from "@/components/ui/pagination";
 
 
 interface LessonListProps {
@@ -26,6 +27,7 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan }: LessonL
     const [lessonList, setLessonList] = useState<LessonList>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isLoadingLR, setIsLoadingLR] = useState<boolean>(false);
+    const [currentPage, setCurrentPage] = useState<number>(0);
     const [sortDir, setSortDir] = useState<string>("asc");
     const [searchValue, setSearchValue] = useState<string>("");
 
@@ -43,7 +45,7 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan }: LessonL
             const lessonsData = await getLessonsByStudyPlanId({
                 token,
                 studyPlanId,
-                pageNo: 0,
+                pageNo: currentPage,
                 pageSize: 10,
                 sortBy: "lessonOrder",
                 sortDir,
@@ -60,10 +62,11 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan }: LessonL
 
     useEffect(() => {
         fetchLessons();
-    }, [sortDir, debouncedSearchValue]);
+    }, [sortDir, debouncedSearchValue, currentPage]);
 
     const handleSortChange = () => {
         setSortDir(prevSortDir => (prevSortDir === "asc" ? "desc" : "asc"));
+        setCurrentPage(0);
     };
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,6 +79,7 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan }: LessonL
 
         // Thiết lập timeout mới
         const id = setTimeout(() => {
+            setCurrentPage(0)
             setDebouncedSearchValue(event.target.value);
         }, 500); // 500ms delay
 
@@ -132,6 +136,35 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan }: LessonL
         });
     };
 
+
+    const handleNextPage = () => {
+        if (lessonList?.last) {
+            return
+        }
+        setCurrentPage(currentPage + 1)
+    }
+
+    const handlePreviousPage = () => {
+        if (currentPage === 0) {
+            return
+        }
+        setCurrentPage(currentPage - 1)
+    }
+
+    const handleLastPage = () => {
+        if (lessonList?.last) {
+            return
+        }
+        if (lessonList?.totalPages)
+            setCurrentPage(lessonList?.totalPages - 1)
+    }
+    const handleFirstPage = () => {
+        if (currentPage === 0) {
+            return
+        }
+        setCurrentPage(0)
+    }
+
     return (
         <>
             <div className="w-full flex justify-between">
@@ -143,7 +176,15 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan }: LessonL
                         <CirclePlus />Create new lesson
                     </DialogTrigger>
                     <DialogContent width='400px'>
-                        <LessonPopupForm initialData={null} setIsDialogOpen={setIsCreateDialogOpen} fetchLessons={fetchLessons} studyPlanId={studyPlanId} lessonId={null} />
+                        <LessonPopupForm
+                            initialData={null}
+                            setIsDialogOpen={setIsCreateDialogOpen}
+                            fetchLessons={fetchLessons}
+                            studyPlanId={studyPlanId}
+                            lessonId={null}
+                            initialOrder={null}
+                            token={token}
+                        />
                     </DialogContent>
                 </Dialog>
 
@@ -181,6 +222,7 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan }: LessonL
                                     token={token}
                                     updateLessonResources={updateLessonResources}
                                     setLessonResources={setLessonResources}
+                                    studyPlanId={studyPlanId}
                                 />
                             ))
                         ) : (
@@ -193,7 +235,25 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan }: LessonL
                         )}
                     </div>
                 }
-
+                <Pagination className="space-x-6">
+                    <PaginationContent>
+                        <PaginationItem >
+                            <Button disabled={currentPage === 0} onClick={handleFirstPage} variant={"ghost"}><ChevronsLeft /></Button>
+                        </PaginationItem>
+                        <PaginationItem >
+                            <Button disabled={currentPage === 0} onClick={handlePreviousPage} variant={"ghost"}><ChevronLeft /></Button>
+                        </PaginationItem>
+                        <PaginationItem>
+                            {currentPage + 1}/{lessonList?.totalPages}
+                        </PaginationItem>
+                        <PaginationItem onClick={handleNextPage}>
+                            <Button disabled={lessonList?.last === true} onClick={handleNextPage} variant={"ghost"}><ChevronRight /></Button>
+                        </PaginationItem>
+                        <PaginationItem >
+                            <Button disabled={lessonList?.last === true} onClick={handleLastPage} variant={"ghost"}><ChevronsRight /></Button>
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
             </div>
         </>
     );

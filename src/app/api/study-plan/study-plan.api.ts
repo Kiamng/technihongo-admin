@@ -44,14 +44,20 @@ export const createStudyPlan = async (values : z.infer<typeof StudyPlanSchema>, 
     return response.data
 }
 
-export const updateStudyPlan = async (values: z.infer<typeof StudyPlanSchema>  ,studyplanId : number) => {
+export const updateStudyPlan = async (token : string, values: z.infer<typeof StudyPlanSchema>  ,studyplanId : number) => {
     const response = await axiosClient.patch(`${ENDPOINT.UPDATE_STUDYPLAN}/${studyplanId}`,{
         title : values.title,
         description : values.description,
         hoursPerDay : values.hoursPerDay,
         isDefault : values.isDefault,
         isActive : values.isActive
-    })
+    },
+    {
+            headers: {
+            Authorization: `Bearer ${token}`
+            }
+        }
+    )
     return response.data
 }
 

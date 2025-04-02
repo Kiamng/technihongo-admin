@@ -10,10 +10,11 @@ interface QuestionRender {
     addChangedQuestion: (index: number) => void,
     handleImageUpload: (index: number, imageUrl: string) => void,
     handleDeleteImage: (index: number) => void,
-    isSaving: boolean
+    isSaving: boolean,
+    hasAttempt: boolean
 }
 
-const QuestionRender = ({ field, index, addChangedQuestion, handleImageUpload, handleDeleteImage, isSaving }: QuestionRender) => {
+const QuestionRender = ({ field, index, addChangedQuestion, handleImageUpload, handleDeleteImage, isSaving, hasAttempt }: QuestionRender) => {
     return (
         <div className="w-full flex flex-row space-x-4">
             <FormField control={field.control} name={`questions.${index}.questionText`} render={({ field }) => (
@@ -21,9 +22,9 @@ const QuestionRender = ({ field, index, addChangedQuestion, handleImageUpload, h
                     <FormLabel>Question Text</FormLabel>
                     <FormControl>
                         <Textarea  {...field}
-                            disabled={isSaving}
+                            disabled={isSaving || hasAttempt}
                             placeholder="Enter question text"
-                            className="resize-none w-full white-space: pre-line text-slate-500"
+                            className="resize-none w-full white-space: pre-line "
                             onChange={(e) => {
                                 field.onChange(e);
                                 addChangedQuestion(index);
@@ -39,9 +40,9 @@ const QuestionRender = ({ field, index, addChangedQuestion, handleImageUpload, h
                     <FormLabel>Explanation(Optional)</FormLabel>
                     <FormControl>
                         <Textarea  {...field}
-                            disabled={isSaving}
+                            disabled={isSaving || hasAttempt}
                             placeholder="Enter explanation"
-                            className="resize-none w-full white-space: pre-line text-slate-500"
+                            className="resize-none w-full white-space: pre-line "
                             onChange={(e) => {
                                 field.onChange(e);
                                 addChangedQuestion(index);
@@ -51,7 +52,9 @@ const QuestionRender = ({ field, index, addChangedQuestion, handleImageUpload, h
                 </FormItem>
             )} />
             {!field.url ?
-                <QuestionImageUpload isSaving={isSaving} handleImageUpload={handleImageUpload} index={index} />
+                (!hasAttempt &&
+                    <QuestionImageUpload isSaving={isSaving} handleImageUpload={handleImageUpload} index={index} />
+                )
                 :
                 <div
                     className={`border-dashed border-[2px] rounded-lg h-[92px] w-32 flex justify-end text-slate-500  ${!isSaving ? "hover:cursor-not-allowed" : "hover:cursor-pointer hover:text-green-500 hover:scale-105 duration-100"}`}
@@ -62,9 +65,11 @@ const QuestionRender = ({ field, index, addChangedQuestion, handleImageUpload, h
                         backgroundPosition: "center"
                     }}
                 >
-                    <button disabled={isSaving} type="button" onClick={() => handleDeleteImage(index)} className="bg-slate-700 text-white hover:bg-red-500 p-1 h-fit">
-                        <Trash size={16} />
-                    </button>
+                    {!hasAttempt &&
+                        <button disabled={isSaving} type="button" onClick={() => handleDeleteImage(index)} className="bg-slate-700 text-white hover:bg-red-500 p-1 h-fit">
+                            <Trash size={16} />
+                        </button>
+                    }
                 </div>
             }
 

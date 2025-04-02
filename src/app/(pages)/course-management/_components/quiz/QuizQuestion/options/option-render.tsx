@@ -12,23 +12,22 @@ interface OptionRenderProps {
     index: number;
     handleOptionClick: (questionIndex: number, optionIndex: number) => void;
     addChangedQuestion: (index: number) => void;
-    isSaving: boolean
+    isSaving: boolean;
+    hasAttempt: boolean;
 }
 
-const OptionRender = ({ field, index, handleOptionClick, addChangedQuestion, isSaving }: OptionRenderProps) => {
-    const [options, setOptions] = useState<OptionType[]>(field.options || []); // Luôn khởi tạo thành mảng nếu undefined
+const OptionRender = ({ field, index, handleOptionClick, addChangedQuestion, isSaving, hasAttempt }: OptionRenderProps) => {
+    const [options, setOptions] = useState<OptionType[]>(field.options || []);
 
     useEffect(() => {
-        setOptions(field.options || []); // Đồng bộ lại options khi có thay đổi từ props
+        setOptions(field.options || []);
     }, [field.options]);
 
     const handleOptionToggle = (optionIndex: number) => {
-        // Kiểm tra số lượng đáp án đúng hiện tại
         const correctOptionsCount = options.filter(option => option.isCorrect).length;
 
-        // Nếu chỉ còn 1 đáp án đúng và người dùng đang cố bỏ chọn nó, thì không cho phép
         if (correctOptionsCount === 1 && options[optionIndex].isCorrect) {
-            return; // Nếu chỉ còn 1 đáp án đúng, không cho phép thay đổi
+            return;
         }
 
         const updatedOptions = options.map((option, idx) => {
@@ -38,7 +37,7 @@ const OptionRender = ({ field, index, handleOptionClick, addChangedQuestion, isS
             return option;
         });
 
-        setOptions(updatedOptions); // Cập nhật state options tại local
+        setOptions(updatedOptions);
     };
     return (
         <>
@@ -55,9 +54,9 @@ const OptionRender = ({ field, index, handleOptionClick, addChangedQuestion, isS
                                 <FormItem className="w-full">
                                     <FormControl>
                                         <Textarea
-                                            disabled={isSaving}
+                                            disabled={isSaving || hasAttempt}
                                             {...field}
-                                            className="resize-none w-full white-space: pre-line text-slate-500"
+                                            className="resize-none w-full white-space: pre-line"
                                             placeholder="Enter answer option"
                                             onChange={(e) => {
                                                 field.onChange(e);
@@ -76,7 +75,7 @@ const OptionRender = ({ field, index, handleOptionClick, addChangedQuestion, isS
                                 handleOptionToggle(optionIndex);
                                 handleOptionClick(index, optionIndex);
                             }}
-                            className={`cursor-pointer p-2 rounded-full transition-all duration-100 hover:scale-125 ${option.isCorrect ? "text-green-500" : "text-gray-400"}`}
+                            className={`p-2 rounded-full  ${hasAttempt ? "cursor-not-allowed" : "transition-all cursor-pointer duration-100 hover:scale-125"} ${option.isCorrect ? "text-green-500" : "text-gray-400"}`}
                         >
                             <CircleCheckBig />
                         </button>

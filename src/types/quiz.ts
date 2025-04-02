@@ -9,6 +9,7 @@ export type Quiz = {
                 passingScore: number,
                 createdAt: Date,
                 updatedAt: Date,
+                hasAttempt : boolean,
                 public: boolean,
                 deleted: boolean
             }

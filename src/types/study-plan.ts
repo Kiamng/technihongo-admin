@@ -1,9 +1,12 @@
+import { DifficultyLevel } from "./difficulty-level"
+
 export type StudyPlan = {
     studyPlanId : number,
     course : {
         courseId : number,
         title : string,
-        premium : boolean
+        premium : boolean,
+        difficultyLevel : DifficultyLevel
     }
     title: string,
     description: string,

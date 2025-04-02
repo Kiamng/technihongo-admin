@@ -1,4 +1,4 @@
-import { createLesson, updateLesson } from "@/app/api/lesson/lesson.api";
+import { createLesson, updateLesson, updateLessonOrder } from "@/app/api/lesson/lesson.api";
 import { Button } from "@/components/ui/button";
 import { DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { toast } from "sonner";
 
 interface CreateLessonForm {
     title: string,
+    order: number
 }
 
 interface CreateLessonPopupProps {
@@ -18,11 +19,12 @@ interface CreateLessonPopupProps {
     setIsDialogOpen: Dispatch<SetStateAction<boolean>>,
     initialData: string | null,
     lessonId: number | null,
+    initialOrder: number | null,
+    token: string
 }
 
-const LessonPopupForm = ({ studyPlanId, fetchLessons, setIsDialogOpen, initialData, lessonId }: CreateLessonPopupProps) => {
+const LessonPopupForm = ({ studyPlanId, fetchLessons, setIsDialogOpen, initialData, lessonId, initialOrder, token }: CreateLessonPopupProps) => {
     const [isPending, startTransition] = useTransition();
-
     const {
         register,
         handleSubmit,
@@ -34,18 +36,33 @@ const LessonPopupForm = ({ studyPlanId, fetchLessons, setIsDialogOpen, initialDa
         if (initialData) {
             setValue("title", initialData);
         }
-    }, [initialData, setValue]);
+        if (initialOrder !== null) {
+            setValue("order", initialOrder);
+        }
+    }, [initialData, initialOrder, setValue]);
 
     const onSubmit: SubmitHandler<CreateLessonForm> = async (data) => {
         startTransition(async () => {
             try {
                 let response;
-                if (initialData) {
+                let orderResponse;
+                if (initialData && data.title !== initialData) {
                     // Nếu có initialData, gọi API update
-                    response = await updateLesson(data.title, lessonId!);
-                } else {
+                    response = await updateLesson(token, data.title, lessonId!);
+                } else if (!initialData) {
                     // Nếu không có, gọi API create
-                    response = await createLesson(data.title, studyPlanId!);
+                    response = await createLesson(token, data.title, studyPlanId!);
+                }
+
+                if (data.order !== initialOrder && lessonId) {
+                    orderResponse = await updateLessonOrder(token, studyPlanId!, lessonId, data.order)
+                    if (!orderResponse || orderResponse.success === false) {
+                        toast.error(`Failed to update lesson order!`);
+                    } else {
+                        fetchLessons();
+                        toast.success(`Lesson order updated successfully!`);
+                        setIsDialogOpen(false);
+                    }
                 }
 
                 if (!response || response.success === false) {
@@ -88,6 +105,26 @@ const LessonPopupForm = ({ studyPlanId, fetchLessons, setIsDialogOpen, initialDa
                         </p>
                     )}
                 </div>
+                {initialOrder &&
+                    <div className="flex flex-col space-y-4">
+                        <Label>Order:</Label>
+                        <Input
+                            className=""
+                            disabled={isPending}
+                            id="title"
+                            placeholder="Enter order here"
+                            type="text"
+                            {...register("order", {
+                                required: "Order is required",
+                            })}
+                        />
+                        {errors.title && (
+                            <p className="text-red-500 text-sm mt-1">
+                                {errors.title.message}
+                            </p>
+                        )}
+                    </div>
+                }
 
                 <div className="w-full flex justify-end">
                     <Button disabled={isPending} type="submit">

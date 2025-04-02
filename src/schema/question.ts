@@ -10,7 +10,7 @@ export const QuestionSchema = z.object({
   questionId: z.number().nullable(),
   questionText: z.string().min(1, "Question is required"),
   explanation: z.string(),
-  url: z.string(),
+  url: z.string().nullable(),
   initialIndex: z.number().nullable(),
   questionType: z.enum(["Single_choice", "Multiple_choice"]),
   options: z.array(OptionSchema)

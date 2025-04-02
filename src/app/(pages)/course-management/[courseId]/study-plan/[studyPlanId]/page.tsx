@@ -87,7 +87,7 @@ function StudPlanDetailPage() {
             <CustomBreadCrumb data={breadcrumbData} />
             <div className="text-4xl font-bold flex items-center">{studyPlan?.title} <PenLine size={28} /></div>
             {studyPlan && <div className="w-1/2">
-                <UpdateStudyPlanForm studyPlan={studyPlan} />
+                <UpdateStudyPlanForm token={session?.user?.token as string} studyPlan={studyPlan} />
             </div>}
             <Separator />
 

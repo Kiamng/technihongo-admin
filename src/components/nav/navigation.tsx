@@ -11,14 +11,22 @@ const Navigation = () => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
 
+  // Cập nhật khi component đã mounted
   useEffect(() => {
     setIsMounted(true);
-    const saved = window.localStorage.getItem("sidebarExpanded");
-    if (saved !== null) {
-      setIsSidebarExpanded(JSON.parse(saved));
-    }
   }, []);
 
+  // Chỉ chạy effect sau khi mounted
+  useEffect(() => {
+    if (isMounted) {
+      const saved = window.localStorage.getItem("sidebarExpanded");
+      if (saved !== null) {
+        setIsSidebarExpanded(JSON.parse(saved));
+      }
+    }
+  }, [isMounted]);
+
+  // Lưu vào localStorage khi isSidebarExpanded thay đổi
   useEffect(() => {
     if (isMounted) {
       window.localStorage.setItem(

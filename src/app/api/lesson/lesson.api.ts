@@ -4,7 +4,8 @@ import { LessonList } from "@/types/lesson";
 const ENDPOINT = {
     GET_LESSON_BY_STUDY_PLAN_ID : '/lesson/study-plan/paginated',
     CREATE_LESSON: '/lesson/create',
-    UPDATE_LESSON: 'lesson/update'
+    UPDATE_LESSON: 'lesson/update',
+    UPDATE_LESSON_ORDER : '/lesson/set-order'
 };
 
 export const getLessonsByStudyPlanId= async ({
@@ -40,19 +41,40 @@ export const getLessonsByStudyPlanId= async ({
   return response.data.data as LessonList;
 };
 
-export const createLesson = async (title : string, studyPlanId : number) => {
+export const createLesson = async (token : string, title : string, studyPlanId : number) => {
     const response = await axiosClient.post(ENDPOINT.CREATE_LESSON, {
             studyPlanId : studyPlanId,
             title : title
-        }   
+        },
+        {
+          headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
     )
     return response.data
 }
 
-export const updateLesson = async (title : string, lessonId : number) => {
+export const updateLesson = async (token : string ,title : string, lessonId : number) => {
     const response = await axiosClient.patch(`${ENDPOINT.UPDATE_LESSON}/${lessonId}`, {
             title : title
-        }   
+        },
+        {
+          headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
     )
     return response.data
+}
+
+export const updateLessonOrder = async (token : string , studyPlanId : number, lessonId : number, newOrder : number,) => {
+  const response = await axiosClient.patch(`${ENDPOINT.UPDATE_LESSON_ORDER}/${studyPlanId}?lessonId=${lessonId}&newOrder=${newOrder}`,
+    {
+      headers: {
+      Authorization: `Bearer ${token}`
+    }
+    }
+  )
+  return response.data
 }

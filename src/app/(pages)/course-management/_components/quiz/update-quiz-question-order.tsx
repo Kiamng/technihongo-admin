@@ -10,7 +10,7 @@ interface UpdateQuizQuestionOrderProps {
             quizQuestionId: number | null;
             questionId: number | null;
             explanation: string;
-            url: string;
+            url: string | null;
             initialIndex: number | null;
             options: {
                 optionText: string;
@@ -39,7 +39,7 @@ const UpdateQuizQuestionOrder = ({ fields, handleDragEnd, handleDelete }: Update
                                         ref={provided.innerRef}
                                         {...provided.draggableProps}
                                         {...provided.dragHandleProps}
-                                        className="flex flex-col space-y-5 p-5 rounded-lg border-[1px] shadow-md"
+                                        className="flex flex-col space-y-5 p-5 rounded-lg border-[1px] shadow-md hover:scale-105 duration-100"
                                     >
                                         <div className="flex justify-between">
                                             <div className="text-lg font-semibold text-slate-500">{index + 1}</div>

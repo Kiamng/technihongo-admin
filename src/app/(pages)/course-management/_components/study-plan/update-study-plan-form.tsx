@@ -18,8 +18,9 @@ import { toast } from "sonner";
 
 interface UpdateStudyPlanFormProps {
     studyPlan: StudyPlan,
+    token: string
 }
-const UpdateStudyPlanForm = ({ studyPlan }: UpdateStudyPlanFormProps) => {
+const UpdateStudyPlanForm = ({ studyPlan, token }: UpdateStudyPlanFormProps) => {
     const [isPending, startTransition] = useTransition();
     const form = useForm({
         resolver: zodResolver(StudyPlanSchema),
@@ -35,7 +36,7 @@ const UpdateStudyPlanForm = ({ studyPlan }: UpdateStudyPlanFormProps) => {
         form.setValue("isDefault", studyPlan.default);
         startTransition(async () => {
             try {
-                const response = await updateStudyPlan(values, studyPlan.studyPlanId);
+                const response = await updateStudyPlan(token, values, studyPlan.studyPlanId);
                 if (!response || response.success === false) {
                     toast.error("Failed to update study plan!");
                 } else {
@@ -43,7 +44,7 @@ const UpdateStudyPlanForm = ({ studyPlan }: UpdateStudyPlanFormProps) => {
                 }
             } catch (error) {
                 console.error(error);
-                toast.error("An error occurred while deleting.");
+                toast.error("An error occurred while updating.");
             }
         })
     }

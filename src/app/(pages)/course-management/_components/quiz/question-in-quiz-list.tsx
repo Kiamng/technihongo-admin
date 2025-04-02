@@ -2,6 +2,7 @@
 import { Form } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import EmptyStateComponent from "@/components/empty-state";
 
 import { Plus, Trash2 } from "lucide-react";
 
@@ -22,6 +23,9 @@ import FormAction from "./QuizQuestion/actions/form-action";
 import QuestionRender from "./QuizQuestion/questions/question-render";
 import OptionRender from "./QuizQuestion/options/option-render";
 import { updateQuestionWithOptions } from "@/app/api/question/question.api";
+
+import { handleFileUpload } from "../spreadsheet-import/quiz-import-csv-action";
+import ImportCSVPopup from "../spreadsheet-import/import-csv-popup";
 
 
 interface QuestionInQuizListProps {
@@ -46,6 +50,7 @@ interface QuestionInQuizListProps {
 
 type QuestionInForm = z.infer<typeof QuestionSchema>;
 const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQuizQuestion, token }: QuestionInQuizListProps) => {
+
     const [isSaving, startTransition] = useTransition();
     const [imageUrls, setImageUrls] = useState<(string | null)[]>([]);
     const [changedQuestions, setChangedQuestions] = useState<QuestionInForm[]>([]);
@@ -67,6 +72,25 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
         control: form.control,
         name: "questions",
     });
+
+    const handleFileImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+
+        if (!file) {
+            return;
+        }
+        handleFileUpload(file)
+            .then((questions) => {
+                console.log("Imported Questions:", questions);
+                questions.forEach((question) => {
+                    append(question);
+                });
+            })
+            .catch((error) => {
+                console.error("Error importing CSV:", error);
+            });
+        e.target.value = '';
+    };
 
     const handleUpdateOrderToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
@@ -127,10 +151,11 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
     const handleDelete = (index: number) => {
         const selectedQuestion = form.getValues().questions[index];
 
+        remove(index);
+
         if (selectedQuestion.quizQuestionId) {
             deleteQuizQestion(selectedQuestion.quizQuestionId)
                 .then(() => {
-                    remove(index);
                     toast.success('Question deleted successfully!');
                 })
                 .catch((error) => {
@@ -138,7 +163,7 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
                     toast.error('Failed to delete question');
                 });
         } else {
-            remove(index);
+            toast.success('Question deleted successfully!');
         }
     };
 
@@ -146,11 +171,11 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
         append({
             quizQuestionId: null,
             questionId: null,
-            questionType: "Single_choice",
             questionText: "",
             explanation: "",
             url: "",
             initialIndex: null,
+            questionType: "Single_choice",
             options: [
                 { optionText: "", isCorrect: true },
                 { optionText: "", isCorrect: false },
@@ -187,6 +212,10 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
             question.questionType = "Multiple_choice";
         }
 
+        if (!question.quizQuestionId) {
+            return;
+        }
+
         const existingIndex = changedQuestions.findIndex(q => q.quizQuestionId === question.quizQuestionId);
 
         if (existingIndex > -1) {
@@ -203,10 +232,6 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
             setChangedQuestions(prev => [...prev, newChangedQuestion]);
         }
     };
-
-
-
-
 
     const getBorderClass = (field: FieldValues) => {
         if (!field.quizQuestionId) {
@@ -243,9 +268,9 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
         // const oldQuestion = updatedQuestions.filter((question) => question.quizQuestionId);
         // console.log("Old question:", oldQuestion);
         // console.log("Changed question:", changedQuestions);
-        // console.log("Option state :", optionsStateRef);
         // const newQuestions = updatedQuestions.filter((question) => !question.quizQuestionId);
         // console.log("New question:", newQuestions);
+
         startTransition(async () => {
             const newQuestions = values.questions.filter((question) => !question.quizQuestionId);
 
@@ -280,6 +305,7 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
             await fetchQuizQuestion();
         });
     };
+
     useEffect(() => {
         if (initialData && initialData.length > 0) {
             const formattedQuestions = initialData.map((quizQuestion) => ({
@@ -311,6 +337,15 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
         const updatedQuestions = [...form.getValues().questions];
         updatedQuestions[index].url = imageUrl;
         form.setValue("questions", updatedQuestions);
+
+        const updatedChangedQuestions = [...changedQuestions];
+        const existingIndex = updatedChangedQuestions.findIndex(q => q.quizQuestionId === updatedQuestions[index].quizQuestionId);
+        if (existingIndex > -1) {
+            updatedChangedQuestions[existingIndex] = { ...updatedQuestions[index] };
+        } else {
+            updatedChangedQuestions.push({ ...updatedQuestions[index] });
+        }
+        setChangedQuestions(updatedChangedQuestions);
     };
 
     const handleDeleteImage = (index: number) => {
@@ -320,6 +355,15 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
         const updatedQuestions = [...form.getValues().questions];
         updatedQuestions[index].url = "";
         form.setValue("questions", updatedQuestions);
+
+        const updatedChangedQuestions = [...changedQuestions];
+        const existingIndex = updatedChangedQuestions.findIndex(q => q.quizQuestionId === updatedQuestions[index].quizQuestionId);
+        if (existingIndex > -1) {
+            updatedChangedQuestions[existingIndex] = { ...updatedQuestions[index] };
+        } else {
+            updatedChangedQuestions.push({ ...updatedQuestions[index] });
+        }
+        setChangedQuestions(updatedChangedQuestions);
     };
 
     if (isQuizQuestionsLoading) {
@@ -337,10 +381,34 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
             <form onSubmit={form.handleSubmit(onSubmit)}>
                 <div className="flex flex-col space-y-6">
                     <div className="w-full flex justify-between">
-                        <span className="text-lg font-bold ">
-                            Questions In Quiz ({isQuizQuestionsLoading ? "..." : newQuestionOrder.length})
-                        </span>
-                        <FormAction isEditingOrder={isEditingOrder} handleCancelUpdateOrder={handleCancelUpdateOrder} handleSaveNewOrder={handleSaveNewOrder} handleUpdateOrderToggle={handleUpdateOrderToggle} isSaving={isSaving} isSavingNewOrder={isSavingNewOrder} />
+                        <div className="flex space-x-4 items-center">
+                            <span className="text-lg font-bold ">
+                                Questions In Quiz ({isQuizQuestionsLoading ? "..." : newQuestionOrder.length})
+                            </span>
+                            <ImportCSVPopup type="quiz" />
+
+                        </div>
+                        {quiz.hasAttempt
+                            ? (<div className="px-3 py-2 bg-orange-400 text-white font-medium text-base rounded-lg">
+                                Cannot update a quiz once taken by a student
+                            </div>
+                            )
+                            : (
+                                <FormAction
+                                    isEditingOrder={isEditingOrder}
+                                    handleCancelUpdateOrder={handleCancelUpdateOrder}
+                                    handleSaveNewOrder={handleSaveNewOrder}
+                                    handleUpdateOrderToggle={handleUpdateOrderToggle}
+                                    isSaving={isSaving}
+                                    isSavingNewOrder={isSavingNewOrder} />
+                            )
+                        }
+                        <input
+                            type="file"
+                            accept=".csv"
+                            onChange={handleFileImport}
+                            className="hidden"
+                        />
                     </div>
                     <div className="w-full space-y-8">
                         {isEditingOrder
@@ -355,23 +423,41 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
                                     >
                                         <div className="flex justify-between">
                                             <div className="text-lg font-semibold text-slate-500">{index + 1}</div>
-                                            <button disabled={isSaving} type="button" onClick={() => handleDelete(index)} className="text-red-400 hover:text-red-500 duration-100 hover:scale-125">
-                                                <Trash2 />
-                                            </button>
+                                            {!quiz.hasAttempt &&
+                                                <button disabled={isSaving} type="button" onClick={() => handleDelete(index)} className="text-red-400 hover:text-red-500 duration-100 hover:scale-125">
+                                                    <Trash2 />
+                                                </button>
+                                            }
                                         </div>
                                         <Separator />
-                                        <QuestionRender isSaving={isSaving} field={field} index={index} addChangedQuestion={addChangedQuestion} handleImageUpload={handleImageUpload} handleDeleteImage={handleDeleteImage} />
+                                        <QuestionRender
+                                            hasAttempt={quiz.hasAttempt}
+                                            isSaving={isSaving}
+                                            field={field}
+                                            index={index}
+                                            addChangedQuestion={addChangedQuestion}
+                                            handleImageUpload={handleImageUpload}
+                                            handleDeleteImage={handleDeleteImage} />
                                         <Separator />
-                                        <OptionRender isSaving={isSaving} addChangedQuestion={addChangedQuestion} field={field} index={index} handleOptionClick={handleOptionClick} />
+                                        <OptionRender
+                                            hasAttempt={quiz.hasAttempt}
+                                            isSaving={isSaving}
+                                            addChangedQuestion={addChangedQuestion}
+                                            field={field}
+                                            index={index}
+                                            handleOptionClick={handleOptionClick} />
                                     </div>
                                 ))
                             )}
                     </div>
-                    <button onClick={handleInsertNew} className="w-full flex h-[70px] justify-center items-center rounded-lg shadow-md border-[1px] hover:scale-105 duration-100 transition-all ease-in-out">
-                        <div className="flex space-x-4">
-                            <Plus /> <span className="font-medium">Add question</span>
-                        </div>
-                    </button>
+                    {fields.length === 0 && <EmptyStateComponent imgageUrl="https://allpromoted.co.uk/image/no-data.svg" message="This quiz does not have any questions" size={400} />}
+                    {!quiz.hasAttempt &&
+                        <button type="button" onClick={handleInsertNew} className="w-full flex h-[70px] justify-center items-center rounded-lg shadow-md border-[1px] hover:scale-95 duration-100 transition-all ease-in-out">
+                            <div className="flex space-x-4">
+                                <Plus /> <span className="font-medium">Add question</span>
+                            </div>
+                        </button>
+                    }
                 </div>
             </form>
         </Form>

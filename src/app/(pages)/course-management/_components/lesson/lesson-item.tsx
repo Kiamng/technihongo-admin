@@ -24,6 +24,7 @@ interface LessonItemProps {
     token: string;
     updateLessonResources: (lessonId: number, resourceId: number) => void;
     setLessonResources: Dispatch<SetStateAction<Record<number, LessonResource[]>>>;
+    studyPlanId: number
 }
 
 const LessonItem = ({
@@ -36,14 +37,14 @@ const LessonItem = ({
     isDefaultStudyPlan,
     token,
     updateLessonResources,
-    setLessonResources
+    setLessonResources,
+    studyPlanId
 }: LessonItemProps) => {
     const [selectedLesson, setSelectedLesson] = useState<{ lessonId: number; title: string } | null>(null);
     const [openCreateResourceForm, setOpenCreateResourceForm] = useState(false);
     const [openAddResourceForm, setOpenAddResourceForm] = useState(false);
     const [isOrderUpdated, setIsOrderUpdated] = useState(false);
     const [isUpdatingOrder, startTransition] = useTransition();
-
     const handleUpdateOrder = async (lessonId: number, newOrder: number[]) => {
         startTransition(async () => {
             try {
@@ -105,8 +106,10 @@ const LessonItem = ({
                                 initialData={lesson.title}
                                 setIsDialogOpen={() => setSelectedLesson(null)}
                                 fetchLessons={fetchLessons}
-                                studyPlanId={null}
+                                studyPlanId={studyPlanId}
                                 lessonId={lesson.lessonId}
+                                initialOrder={lesson.lessonOrder}
+                                token={token}
                             />
                         </DialogContent>
                     </Dialog>

@@ -3,42 +3,40 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Dispatch, SetStateAction, useTransition } from "react";
 
-import { Quiz } from "@/types/quiz";
+import { LearningResource } from "@/types/learning-resource";
+import { updateLearningResourceStatus } from "@/app/api/learning-resource/learning-resource.api";
 
-import { updateQuizStatus } from "@/app/api/quiz/quiz.api";
-
-interface QuizUpdateStatusProps {
-    quiz: Quiz,
+interface LearningResourceUpdatePublicStatusProps {
+    learningResource: LearningResource,
     token: string,
-    setQuiz: Dispatch<SetStateAction<Quiz | undefined>>
+    setLearningResource: Dispatch<SetStateAction<LearningResource | undefined>>
 }
-const QuizUpdateStatus = ({ quiz, token, setQuiz }: QuizUpdateStatusProps) => {
+const LearningResourceUpdatePublicStatus = ({ learningResource, token, setLearningResource }: LearningResourceUpdatePublicStatusProps) => {
     const [isUSPending, startUSTransition] = useTransition();
 
     const handleChangePublicStatus = async (publicStatus: string) => {
-        if (!quiz) {
+        if (!learningResource) {
             return;
         }
         startUSTransition(async () => {
             try {
-                const response = await updateQuizStatus(
+                const response = await updateLearningResourceStatus(
                     token,
-                    quiz.quizId,
+                    learningResource.resourceId,
                     publicStatus === 'true',
-                    quiz?.deleted
                 );
 
                 if (response.success) {
-                    toast.success("Quiz public status updated successfully!");
+                    toast.success("Learning resource public status updated successfully!");
 
                     // Safely update the quiz state
-                    setQuiz((prevQuiz) => prevQuiz ? { ...prevQuiz, public: publicStatus === 'true' } : prevQuiz);
+                    setLearningResource((prevQuiz) => prevQuiz ? { ...prevQuiz, public: publicStatus === 'true' } : prevQuiz);
                 } else {
-                    toast.error(response.message || "Failed to update quiz public status.");
+                    toast.error(response.message || "Failed to update Learning resource public status.");
                 }
             } catch (error) {
-                console.error("Error updating quiz public status:", error);
-                toast.error("An error occurred while updating quiz public status.");
+                console.error("Error updating Learning resource public status:", error);
+                toast.error("An error occurred while updating Learning resource public status.");
             }
         })
     };
@@ -47,10 +45,10 @@ const QuizUpdateStatus = ({ quiz, token, setQuiz }: QuizUpdateStatusProps) => {
         <div>
             <Select
                 disabled={isUSPending}
-                value={quiz?.public.toString()}
+                value={learningResource?.public.toString()}
                 onValueChange={(value) => handleChangePublicStatus(value)}>
                 <SelectTrigger
-                    className={quiz?.public
+                    className={learningResource?.public
                         ? "bg-[#56D071] text-[#56D071] bg-opacity-10"
                         : "bg-[#FD5673] text-[#FD5673] bg-opacity-10"}>
                     <SelectValue
@@ -65,4 +63,4 @@ const QuizUpdateStatus = ({ quiz, token, setQuiz }: QuizUpdateStatusProps) => {
     )
 }
 
-export default QuizUpdateStatus
+export default LearningResourceUpdatePublicStatus

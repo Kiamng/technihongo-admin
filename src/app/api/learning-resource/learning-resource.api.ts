@@ -7,7 +7,8 @@ const ENDPOINT = {
     GET_LEARNING_RESOURCE_BY_ID : '/learning-resource',
     UPDATE_LEARNING_RESOURCE : '/learning-resource/update',
     UPDATE_LEARNING_RESOURCE_STATUS : '/learning-resource/update-status/',
-    CREATE_LEARNING_RESOURCE_STATUS: '/learning-resource/create'
+    CREATE_LEARNING_RESOURCE_STATUS: '/learning-resource/create',
+    UPDATE_PUBLIC_STATUS : '/learning-resource/update-status'
 }
 
 export const getLearningResourceById = async (token : string, learningResourceId : number) : Promise<LearningResource> => {
@@ -55,6 +56,20 @@ export const createLearningResource = async (token : string, values : z.infer<ty
             headers: {
                     Authorization: `Bearer ${token}`
                     }
+        }
+    )
+    return response.data
+}
+
+export const updateLearningResourceStatus = async (token : string, learningResourceId : number, isPublic : boolean) => {
+    const response = await axiosClient.patch(`${ENDPOINT.UPDATE_PUBLIC_STATUS}/${learningResourceId}`,
+        {
+            isPublic : isPublic,
+        },
+        {
+            headers: {
+            Authorization: `Bearer ${token}`
+            }
         }
     )
     return response.data
