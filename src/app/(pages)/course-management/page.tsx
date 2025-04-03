@@ -35,7 +35,7 @@ import { toast } from "sonner";
 export default function CourseManagementPage() {
     const { data: session } = useSession();
     const [currentPage, setCurrentPage] = useState<number>(0)
-    const [isLoading, setIsloading] = useState<boolean>(false)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const [searchValue, setSearchValue] = useState<string>("");
     const [debouncedSearchValue, setDebouncedSearchValue] = useState<string>("");
     const [domains, setDomains] = useState<DomainList>();
@@ -66,7 +66,7 @@ export default function CourseManagementPage() {
 
     const fetchCourses = async () => {
         try {
-            setIsloading(true);
+            setIsLoading(true);
             const response = await
                 getAllCourse({
                     token: session?.user.token as string,
@@ -82,7 +82,7 @@ export default function CourseManagementPage() {
         } catch (err) {
             console.error(err);
         } finally {
-            setIsloading(false);
+            setIsLoading(false);
         }
     };
 
@@ -140,7 +140,7 @@ export default function CourseManagementPage() {
         if (!session?.user?.token) return;
 
         const fetchData = async () => {
-            setIsloading(true);
+            setIsLoading(true);
             try {
                 await fetchCourses();
                 await Promise.all([fetchDomain(), fetchDifficultyLevel()]);
@@ -148,7 +148,7 @@ export default function CourseManagementPage() {
                 console.error(error);
                 toast.error("Failed to load course or study plans.");
             } finally {
-                setIsloading(false);
+                setIsLoading(false);
             }
         };
 

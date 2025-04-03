@@ -1,6 +1,7 @@
 'use client'
 
-import FlashcardRender from "@/app/(pages)/course-management/_components/system-flashcard-set/flashcard/flashcard";
+import FlashcardRender from "@/app/(pages)/course-management/_components/system-flashcard-set/flashcard/flashcard-in-form-render";
+import FlashcardList from "@/app/(pages)/course-management/_components/system-flashcard-set/flashcard/flashcard-list-review";
 import SetPublicStatusUpdate from "@/app/(pages)/course-management/_components/system-flashcard-set/set-public-status-update";
 import SetUpdateForm from "@/app/(pages)/course-management/_components/system-flashcard-set/set-update-form";
 import { getSysFlashcardSetById } from "@/app/api/system-flashcard-set/system-flashcard-set.api";
@@ -76,6 +77,9 @@ const EditFlashcardSetPage = () => {
                 <Skeleton className="w-full h-[500px]" />
             }
             <Separator />
+            {flashcardSet?.flashcards &&
+                <FlashcardList FlashcardList={flashcardSet.flashcards} />
+            }
             {flashcardSet &&
                 <FlashcardRender fetchSet={fetchSet} initialData={flashcardSet?.flashcards} token={session?.user.token as string} flashcardSetId={parseInt(flashcardSetId as string, 10)} />
             }
