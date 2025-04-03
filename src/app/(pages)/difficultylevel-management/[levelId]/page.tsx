@@ -7,11 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRouter, useParams } from "next/navigation";
 import { getDifficultyLevelByTag } from "@/app/api/difficulty-level/difficulty-level.api";
+import { useSession } from "next-auth/react";
 
 export default function DifficultyLevelDetailPage() {
   const [difficultyLevel, setDifficultyLevel] = useState<DifficultyLevel | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { data: session } = useSession()
   const router = useRouter();
   const params = useParams();
 
@@ -20,9 +22,7 @@ export default function DifficultyLevelDetailPage() {
       try {
         if (params.levelId) {
           const levelId = Array.isArray(params.levelId) ? params.levelId[0] : params.levelId;
-          console.log("Fetching difficulty level with ID:", levelId); // Debug log
-          const data = await getDifficultyLevelByTag(levelId);
-          console.log("Fetched data:", data); // Debug log
+          const data = await getDifficultyLevelByTag(session?.user.token as string, levelId);
           setDifficultyLevel(data);
         }
       } catch (err) {
@@ -34,7 +34,7 @@ export default function DifficultyLevelDetailPage() {
     };
 
     fetchDifficultyLevel();
-  }, [params.levelId]);
+  }, [params.levelId, session?.user.token]);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -54,22 +54,14 @@ export default function DifficultyLevelDetailPage() {
           <CardTitle>{difficultyLevel.name}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <p className="font-semibold">Level ID</p>
-              <p>{difficultyLevel.levelId}</p>
-            </div>
-            <div>
-              <p className="font-semibold">Tag</p>
-              <p>{difficultyLevel.tag}</p>
-            </div>
+          <div>
+            <p className="font-semibold">Tag</p>
+            <p>{difficultyLevel.tag}</p>
           </div>
-          
           <div>
             <p className="font-semibold">Description</p>
             <p>{difficultyLevel.description}</p>
           </div>
-          
           <div>
             <p className="font-semibold">Created At</p>
             <p>{format(new Date(difficultyLevel.createdAt), "HH:mm, dd/MM/yyyy")}</p>

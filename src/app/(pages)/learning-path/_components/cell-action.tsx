@@ -42,23 +42,21 @@ export const CellAction: React.FC<CellActionProps> = ({ data, onUpdate }) => {
       setConfirmOpen(false);
       return;
     }
-
     try {
       setIsDeleting(true);
-      
       // Sử dụng try-catch để bắt tất cả các lỗi nhưng không hiển thị lỗi HTTP
       try {
         const response = await deleteLearningPath(data.pathId, session.user.token);
-        
+
         if (response && response.success === true) {
           toast.success("Learning path deleted successfully!");
-          
+
           // Gọi callback để refresh dữ liệu
           onUpdate();
         } else {
           // Kiểm tra thông báo lỗi liên quan đến active learning path
-          if (response?.message?.toLowerCase().includes('active') || 
-              response?.message?.toLowerCase().includes('cannot delete')) {
+          if (response?.message?.toLowerCase().includes('active') ||
+            response?.message?.toLowerCase().includes('cannot delete')) {
             toast.error("Cannot delete an active learning path. Please deactivate it first.");
           } else {
             toast.error(response?.message || "Failed to delete learning path!");
@@ -73,10 +71,10 @@ export const CellAction: React.FC<CellActionProps> = ({ data, onUpdate }) => {
             status: axiosError.response?.status,
             data: axiosError.response?.data
           });
-          
+
           // Kiểm tra nếu là lỗi active learning path
-          if (errorMessage.toLowerCase().includes('active') || 
-              errorMessage.toLowerCase().includes('cannot delete')) {
+          if (errorMessage.toLowerCase().includes('active') ||
+            errorMessage.toLowerCase().includes('cannot delete')) {
             toast.error("Cannot delete an active learning path. Please deactivate it first.");
           } else {
             toast.error("Failed to delete learning path. Please try again later.");
@@ -85,7 +83,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data, onUpdate }) => {
           toast.error("An error occurred. Please try again later.");
         }
       }
-      
+
       // Luôn đóng dialog bất kể kết quả
       setConfirmOpen(false);
     } finally {
@@ -97,17 +95,18 @@ export const CellAction: React.FC<CellActionProps> = ({ data, onUpdate }) => {
     <>
       <div className="flex gap-2">
         {/* Edit Button */}
-        <Button 
-          onClick={() => setIsOpen(true)} 
-          className="bg-gray-900 text-white hover:bg-gray-700"
+        <Button
+          size="icon"
+          onClick={() => setIsOpen(true)}
         >
           <Pencil className="w-4 h-4" />
         </Button>
 
         {/* Delete Button */}
-        <Button 
-          onClick={() => setConfirmOpen(true)} 
-          className="bg-red-500 text-white hover:bg-red-700"
+        <Button
+          size="icon"
+          onClick={() => setConfirmOpen(true)}
+          variant={"destructive"}
           disabled={isDeleting}
         >
           {isDeleting ? "..." : <Trash className="w-4 h-4" />}
@@ -125,8 +124,8 @@ export const CellAction: React.FC<CellActionProps> = ({ data, onUpdate }) => {
       )}
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog 
-        open={confirmOpen} 
+      <AlertDialog
+        open={confirmOpen}
         onOpenChange={(open) => {
           if (!isDeleting) {
             setConfirmOpen(open);

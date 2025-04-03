@@ -16,8 +16,9 @@ import { toast } from "sonner";
 
 interface AddDomainFormProps {
   fetchSubscriptions: () => Promise<void>
+  token: string
 }
-export default function AddDomainForm({ fetchSubscriptions }: AddDomainFormProps) {
+const EditSubscriptionPlanPopup: React.FC<AddDomainFormProps> = ({ fetchSubscriptions, token }) => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -36,7 +37,7 @@ export default function AddDomainForm({ fetchSubscriptions }: AddDomainFormProps
 
     try {
       setIsLoading(true);
-      const response = await addSubscriptionPlan(values);
+      const response = await addSubscriptionPlan(token, values);
 
       if (!response || response.success === false) {
         toast.error("Failed to add new subscription plan!");
@@ -157,3 +158,5 @@ export default function AddDomainForm({ fetchSubscriptions }: AddDomainFormProps
     </Dialog>
   );
 }
+
+export default EditSubscriptionPlanPopup;

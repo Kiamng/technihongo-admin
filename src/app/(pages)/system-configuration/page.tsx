@@ -11,17 +11,19 @@ import { CirclePlus } from "lucide-react";
 
 import { useEffect, useState } from "react";
 import ParentDomainsList from "./_components/parent-domains-list";
+import { useSession } from "next-auth/react";
 
 export default function DomainManagement() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [parentDomains, setParentDomains] = useState<DomainList>();
-
+  const { data: session } = useSession();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState<boolean>(false);
 
   const fetchParentDomains = async () => {
     try {
       setIsLoading(true);
       const response = await getParentDomains({
+        token: session?.user.token as string,
         pageNo: 0,
         pageSize: 10,
         sortBy: 'createdAt',
@@ -38,7 +40,7 @@ export default function DomainManagement() {
     if (!parentDomains) {
       fetchParentDomains();
     }
-  }, [parentDomains]);
+  }, [parentDomains, session?.user.token]);
 
   return (
     <div className="w-full space-y-6">
@@ -52,6 +54,7 @@ export default function DomainManagement() {
           </DialogTrigger>
           <DialogContent width='400px'>
             <DomainFormPopup
+              token={session?.user.token as string}
               initialData={null}
               setIsDialogOpen={setIsCreateDialogOpen}
               parentDomainList={parentDomains?.content}
@@ -62,7 +65,7 @@ export default function DomainManagement() {
       </div>
 
       {isLoading && <Skeleton className="w-full h-[500px]" />}
-      {parentDomains && <ParentDomainsList fetchParentDomains={fetchParentDomains} parentDomains={parentDomains} />}
+      {parentDomains && <ParentDomainsList token={session?.user.token as string} fetchParentDomains={fetchParentDomains} parentDomains={parentDomains} />}
     </div>
   );
 }

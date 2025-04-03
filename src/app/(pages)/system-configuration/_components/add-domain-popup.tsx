@@ -35,9 +35,10 @@ interface DomainFormPopupProps {
     fetchParentDomains?: () => Promise<void>
     parentId?: number
     fetchChildrenDomains?: (parentId: number) => Promise<void>
+    token: string
 }
 
-const DomainFormPopup: React.FC<DomainFormPopupProps> = ({ initialData, setIsDialogOpen, parentDomainList, fetchParentDomains, parentId, fetchChildrenDomains }) => {
+const DomainFormPopup: React.FC<DomainFormPopupProps> = ({ initialData, setIsDialogOpen, parentDomainList, fetchParentDomains, parentId, fetchChildrenDomains, token }) => {
     const [isPending, startTransition] = useTransition();
 
     const getDefaultParentDomainId = () => {
@@ -65,9 +66,9 @@ const DomainFormPopup: React.FC<DomainFormPopupProps> = ({ initialData, setIsDia
             try {
                 let response;
                 if (initialData) {
-                    response = await updateDomain(initialData.domainId, values);
+                    response = await updateDomain(token, initialData.domainId, values);
                 } else {
-                    response = await addDomain(values)
+                    response = await addDomain(token, values)
                 }
                 if (!response || response.success === false) {
                     toast.error(`Failed to ${initialData ? "update" : "create new"} domain`);
@@ -134,7 +135,7 @@ const DomainFormPopup: React.FC<DomainFormPopupProps> = ({ initialData, setIsDia
                             </FormItem>
                         )}
                     />
-                    {initialData?.parentDomainId !== null &&
+                    {parentId &&
                         <FormField control={form.control} name="parentDomainId" render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Parent domain</FormLabel>

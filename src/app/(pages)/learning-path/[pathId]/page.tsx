@@ -121,7 +121,7 @@ export default function LearningPathDetailPage() {
     }
 
     loadInitialData();
-  }, [pathId, session]);
+  }, [pathId, session?.user.token]);
 
   const onSubmit = async (values: z.infer<typeof CreateLearningPathSchema>) => {
     if (!session?.user?.token) {
@@ -148,7 +148,7 @@ export default function LearningPathDetailPage() {
         toast.error(response?.message || "Failed to update learning path!");
       } else {
         toast.success("Learning path updated successfully!");
-        await fetchLearningPath(); // Làm mới dữ liệu sau khi lưu
+        await fetchLearningPath();
       }
     } catch (error: any) {
       console.error("Update error:", error);
@@ -220,7 +220,7 @@ export default function LearningPathDetailPage() {
                         <Book className="inline mr-2 h-5 w-5" /> Title
                       </FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input disabled={isSaving} {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -235,7 +235,7 @@ export default function LearningPathDetailPage() {
                         <Book className="inline mr-2 h-5 w-5" /> Description
                       </FormLabel>
                       <FormControl>
-                        <Textarea {...field} rows={4} />
+                        <Textarea disabled={isSaving} {...field} rows={4} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

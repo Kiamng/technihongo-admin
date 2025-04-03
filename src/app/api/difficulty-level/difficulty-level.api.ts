@@ -7,15 +7,26 @@ const ENDPOINT = {
     GET_BY_TAG: '/difficulty-level/tag'
 }
 
-export const getAllDifficultyLevel = async (): Promise<DifficultyLevel[]> => {
-    const response = await axiosClient.get(ENDPOINT.GET_ALL)
+export const getAllDifficultyLevel = async (token : string): Promise<DifficultyLevel[]> => {
+    const response = await axiosClient.get(ENDPOINT.GET_ALL,
+        {
+            headers: {
+            Authorization: `Bearer ${token}`
+            }
+        }
+    )
     return response.data.data
 }
 
-export const getDifficultyLevelByTag = async (tag: string): Promise<DifficultyLevel> => {
+export const getDifficultyLevelByTag = async (token : string ,tag: string): Promise<DifficultyLevel> => {
     try {
-        const response = await axiosClient.get(`/difficulty-level/tag/${tag}`);
-        console.log("API Response:", response); // Debug log
+        const response = await axiosClient.get(`/difficulty-level/tag/${tag}`,
+            {
+                headers: {
+                Authorization: `Bearer ${token}`
+                }
+            }
+        );
         return response.data.data;
     } catch (error) {
         console.error("API Error:", error);

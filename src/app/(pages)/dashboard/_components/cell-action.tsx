@@ -14,18 +14,19 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 
 interface CellActionProps {
   data: SubscriptionPlan;
+  fetchSubscriptions: () => void;
 }
 
-export const CellAction: React.FC<CellActionProps> = ({ data }) => {
-  const router = useRouter();
+export const CellAction: React.FC<CellActionProps> = ({ data, fetchSubscriptions }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const { data: session } = useSession()
 
   const handleClose = () => {
     setIsOpen(false);
@@ -34,12 +35,12 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const handleDelete = async () => {
     try {
       setIsDeleting(true);
-      const response = await deleteSubscriptionPlan(data.subPlanId);
+      const response = await deleteSubscriptionPlan(session?.user.token as string, data.subPlanId);
       if (!response || response.success === false) {
         toast.error("Failed to delete subscription plan!");
       } else {
         toast.success("Subscription plan deleted successfully!");
-        router.refresh();
+        fetchSubscriptions();
       }
     } catch (error) {
       console.error(error);
@@ -65,6 +66,8 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
       {/* Modal Update Subscription Plan */}
       {isOpen && (
         <EditSubscriptionPlanPopup
+          fetchSubscriptions={fetchSubscriptions}
+          token={session?.user.token as string}
           subscriptionPlan={data}
           isOpen={isOpen}
           onClose={handleClose}

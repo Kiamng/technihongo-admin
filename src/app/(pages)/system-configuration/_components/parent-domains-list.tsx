@@ -13,10 +13,11 @@ import DeleteAlert from "./delete-alert";
 interface ParentDomainsListProps {
     parentDomains: DomainList
     fetchParentDomains: () => Promise<void>
+    token: string
 }
 
 
-const ParentDomainsList = ({ parentDomains, fetchParentDomains }: ParentDomainsListProps) => {
+const ParentDomainsList = ({ parentDomains, fetchParentDomains, token }: ParentDomainsListProps) => {
     const [selectedParentDomain, setSelectedParentDomain] = useState<{ domainId: number } | null>(null);
     const [childrenDomains, setChildrenDomains] = useState<{ [key: number]: DomainList }>({});
     const [loadingChildren, setLoadingChildren] = useState<{ [key: number]: boolean }>({});
@@ -37,7 +38,7 @@ const ParentDomainsList = ({ parentDomains, fetchParentDomains }: ParentDomainsL
     const fetchChildrenDomains = async (parentId: number) => {
         try {
             setLoadingChildren((prev) => ({ ...prev, [parentId]: true }));
-            const response = await getChildrenDomainsByParentId({ parentId });
+            const response = await getChildrenDomainsByParentId({ token: token, parentId: parentId });
             setChildrenDomains((prev) => ({
                 ...prev,
                 [parentId]: response,
@@ -75,6 +76,7 @@ const ParentDomainsList = ({ parentDomains, fetchParentDomains }: ParentDomainsL
                                 </DialogTrigger>
                                 <DialogContent width='400px'>
                                     <DomainFormPopup
+                                        token={token}
                                         initialData={parent}
                                         setIsDialogOpen={() => setSelectedParentDomain(null)}
                                         fetchParentDomains={fetchParentDomains}
@@ -110,6 +112,7 @@ const ParentDomainsList = ({ parentDomains, fetchParentDomains }: ParentDomainsL
                     </div>
                     {isChildrenVisible[parent.domainId] && childrenDomains[parent.domainId] &&
                         <ChildrenDomainList
+                            token={token}
                             fetchChildrenDomains={fetchChildrenDomains}
                             list={childrenDomains[parent.domainId]}
                             parentDomains={parentDomains}
@@ -121,6 +124,7 @@ const ParentDomainsList = ({ parentDomains, fetchParentDomains }: ParentDomainsL
 
             {domainToDelete && (
                 <DeleteAlert
+                    token={token}
                     open={isDeleteDialogOpen}
                     onOpenChange={setIsDeleteDialogOpen}
                     domain={domainToDelete}

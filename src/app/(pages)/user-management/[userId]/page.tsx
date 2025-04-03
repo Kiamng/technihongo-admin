@@ -26,6 +26,7 @@ import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 import { User as UserType } from "@/types/user";
 import { getUserById } from "@/app/api/user/user.api";
+import { useSession } from "next-auth/react";
 
 interface UserDetailPageProps {
     params: Promise<{ userId: string }>;
@@ -163,15 +164,15 @@ export default function UserDetailPage({ params }: UserDetailPageProps) {
     const [user, setUser] = useState<UserType | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-
+    const { data: session } = useSession()
     useEffect(() => {
         const fetchUserID = async () => {
             try {
                 setLoading(true);
                 setError(null);
-                
+
                 if (resolvedParams.userId) {
-                    const userData = await getUserById(resolvedParams.userId);
+                    const userData = await getUserById(session?.user.token as string, resolvedParams.userId);
                     setUser(userData);
                 }
             } catch (err) {
@@ -181,16 +182,16 @@ export default function UserDetailPage({ params }: UserDetailPageProps) {
                 setLoading(false);
             }
         };
-    
+
         fetchUserID();
     }, [resolvedParams.userId]);
 
-   
+
     if (error) {
         return <div className="text-center text-red-500 p-4">{error}</div>;
     }
 
-    
+
     if (loading) {
         return <p className="text-center text-gray-500">Đang tải dữ liệu...</p>;
     }
@@ -212,7 +213,7 @@ export default function UserDetailPage({ params }: UserDetailPageProps) {
     const groupedActivities = groupActivitiesByDate(activityLogs);
     const sortedDates = Object.keys(groupedActivities).sort((a, b) => b.localeCompare(a));
 
-    
+
     const formatJoinDate = (date: Date | string | undefined) => {
         if (!date) return "";
         const formattedDate = typeof date === 'string' ? new Date(date) : date;

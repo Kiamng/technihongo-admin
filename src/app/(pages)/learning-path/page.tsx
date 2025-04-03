@@ -30,7 +30,7 @@ export default function LearningPathManagementPage() {
     };
 
     fetchLearningPaths();
-  }, [session, refreshTrigger]);
+  }, [session?.user.token, refreshTrigger]);
 
   // Hàm để refresh data sau khi có thay đổi
   const handleUpdate = () => {

@@ -13,12 +13,15 @@ const ENDPOINT = {
 
 
 
-export const getAllSubscription = async (): Promise<SubscriptionPlan[]> => {
-  console.log("Fetching from:", axiosClient.defaults.baseURL + ENDPOINT.GETALLSUBCRIPTION);
-  
+export const getAllSubscription = async (token : string): Promise<SubscriptionPlan[]> => {
   try {
-      const response = await axiosClient.get(ENDPOINT.GETALLSUBCRIPTION);
-      console.log("Fetched Data:", response.data); // Kiểm tra dữ liệu nhận được
+      const response = await axiosClient.get(ENDPOINT.GETALLSUBCRIPTION,
+        {
+            headers: {
+            Authorization: `Bearer ${token}`
+            }
+        }
+      );
       return response.data.data as SubscriptionPlan[];
   } catch (error) {
       console.error("Error fetching subscriptions:", error);
@@ -27,17 +30,22 @@ export const getAllSubscription = async (): Promise<SubscriptionPlan[]> => {
 };
 
 
-export const addSubscriptionPlan = async (values: z.infer<typeof addSubscriptionPlanSchema>) => {
+export const addSubscriptionPlan = async (token : string, values: z.infer<typeof addSubscriptionPlanSchema>) => {
     try {
         addSubscriptionPlanSchema.parse(values);
-        // Gửi request lên backend
         const response = await axiosClient.post(ENDPOINT.ADDSUBSCRIPTIONPLAN, {
             name: values.name,
             price: Number(values.price) ,
             benefits: values.benefits,
             durationDays: Number(values.durationDays),
             isActive: false,
-        });
+        },
+        {
+              headers: {
+              Authorization: `Bearer ${token}`
+              }
+          }
+      );
 
         return response.data.data;
     } catch (error) {
@@ -46,7 +54,7 @@ export const addSubscriptionPlan = async (values: z.infer<typeof addSubscription
     }
 };
 
-export const updateSubscriptionPlan = async (subPlanId: number, values: { name: string; price: number; benefits: string; durationDays: number; active: boolean }) => {
+export const updateSubscriptionPlan = async (token : string, subPlanId: number, values: { name: string; price: number; benefits: string; durationDays: number; active: boolean }) => {
   try {
     const response = await axiosClient.patch(`${ENDPOINT.UPDATESUBSCRIPTIONPLAN.replace("{subPlanId}", String(subPlanId))}`, {
       name: values.name,
@@ -54,7 +62,13 @@ export const updateSubscriptionPlan = async (subPlanId: number, values: { name: 
       benefits: values.benefits,
       durationDays: values.durationDays,
       active: values.active, 
-    });
+    },
+    {
+              headers: {
+              Authorization: `Bearer ${token}`
+              }
+          }
+  );
 
     return response.data.data;
   } catch (error) {
@@ -63,10 +77,15 @@ export const updateSubscriptionPlan = async (subPlanId: number, values: { name: 
   }
 };
 
-export const deleteSubscriptionPlan = async (subPlanId: number) => {
+export const deleteSubscriptionPlan = async (token : string, subPlanId: number) => {
   try {
     const response = await axiosClient.delete(
-      `${ENDPOINT.DELETESUBSCRIPTIONPLAN.replace("{subPlanId}", String(subPlanId))}`
+      `${ENDPOINT.DELETESUBSCRIPTIONPLAN.replace("{subPlanId}", String(subPlanId))}`,
+      {
+              headers: {
+              Authorization: `Bearer ${token}`
+              }
+          }
     );
     
     return response.data;

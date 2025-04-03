@@ -17,13 +17,17 @@ import { SubscriptionPlan } from "@/types/subscription";
 interface EditSubscriptionPlanPopupProps {
   subscriptionPlan: SubscriptionPlan;
   isOpen: boolean;
-  onClose: () => void; 
+  onClose: () => void;
+  token: string;
+  fetchSubscriptions: () => void;
 }
 
 const EditSubscriptionPlanPopup: React.FC<EditSubscriptionPlanPopupProps> = ({
   subscriptionPlan,
   isOpen,
   onClose,
+  token,
+  fetchSubscriptions
 }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -47,12 +51,13 @@ const EditSubscriptionPlanPopup: React.FC<EditSubscriptionPlanPopupProps> = ({
   const onSubmitForm = async (values: z.infer<typeof addSubscriptionPlanSchema> & { active: boolean }) => {
     try {
       setIsLoading(true);
-      const response = await updateSubscriptionPlan(subscriptionPlan.subPlanId, values);
+      const response = await updateSubscriptionPlan(token, subscriptionPlan.subPlanId, values);
 
       if (!response || response.success === false) {
         toast.error("Failed to update subscription plan!");
       } else {
         toast.success("Updated subscription plan successfully!");
+        fetchSubscriptions()
         onClose(); // Đóng modal khi thành công
       }
     } catch (error) {
@@ -79,7 +84,7 @@ const EditSubscriptionPlanPopup: React.FC<EditSubscriptionPlanPopupProps> = ({
                 <FormItem>
                   <FormLabel>Subscription Name</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input disabled={isLoading} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -92,7 +97,7 @@ const EditSubscriptionPlanPopup: React.FC<EditSubscriptionPlanPopupProps> = ({
                 <FormItem>
                   <FormLabel>Benefit</FormLabel>
                   <FormControl>
-                    <Textarea {...field} rows={3} />
+                    <Textarea disabled={isLoading} {...field} rows={3} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -106,7 +111,7 @@ const EditSubscriptionPlanPopup: React.FC<EditSubscriptionPlanPopupProps> = ({
                   <FormItem>
                     <FormLabel>Price</FormLabel>
                     <FormControl>
-                      <Input type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
+                      <Input disabled={isLoading} type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -119,7 +124,7 @@ const EditSubscriptionPlanPopup: React.FC<EditSubscriptionPlanPopupProps> = ({
                   <FormItem>
                     <FormLabel>Duration days</FormLabel>
                     <FormControl>
-                      <Input type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
+                      <Input disabled={isLoading} type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -134,7 +139,7 @@ const EditSubscriptionPlanPopup: React.FC<EditSubscriptionPlanPopupProps> = ({
                 <FormItem className="flex items-center gap-2">
                   <FormLabel>Active</FormLabel>
                   <FormControl>
-                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                    <Switch disabled={isLoading} checked={field.value} onCheckedChange={field.onChange} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

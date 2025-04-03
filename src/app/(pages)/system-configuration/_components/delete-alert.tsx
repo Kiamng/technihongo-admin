@@ -20,15 +20,16 @@ interface DeleteAlertProps {
     fetchChildrenDomains?: (parentId: number) => Promise<void>;
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    token: string
 }
 
-const DeleteAlert = ({ domain, fetchParentDomains, fetchChildrenDomains, open, onOpenChange }: DeleteAlertProps) => {
+const DeleteAlert = ({ domain, fetchParentDomains, fetchChildrenDomains, open, onOpenChange, token }: DeleteAlertProps) => {
     const [isPending, startTransition] = useTransition();
 
     const handleDelete = async () => {
         startTransition(async () => {
             try {
-                const response = await deleteDomain(domain.domainId);
+                const response = await deleteDomain(token, domain.domainId);
                 if (response?.success) {
                     toast.success("Domain deleted successfully!");
                     onOpenChange(false);

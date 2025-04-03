@@ -14,8 +14,9 @@ interface ChildrenDomainListProps {
     parentId: number
     parentDomains: DomainList
     fetchChildrenDomains: (parentId: number) => Promise<void>
+    token: string
 }
-const ChildrenDomainList = ({ list, parentId, parentDomains, fetchChildrenDomains }: ChildrenDomainListProps) => {
+const ChildrenDomainList = ({ list, parentId, parentDomains, fetchChildrenDomains, token }: ChildrenDomainListProps) => {
     const [isCreateChildrenDialogOpen, setIsCreateChildrenDialogOpen] = useState<boolean>(false);
     const [selectedChildDomain, setSelectedChildDomain] = useState<{ domainId: number } | null>(null);
 
@@ -56,6 +57,7 @@ const ChildrenDomainList = ({ list, parentId, parentDomains, fetchChildrenDomain
                                 </DialogTrigger>
                                 <DialogContent width='400px'>
                                     <DomainFormPopup
+                                        token={token}
                                         initialData={child}
                                         setIsDialogOpen={() => setSelectedChildDomain(null)}
                                         fetchChildrenDomains={fetchChildrenDomains}
@@ -81,6 +83,7 @@ const ChildrenDomainList = ({ list, parentId, parentDomains, fetchChildrenDomain
                 </DialogTrigger>
                 <DialogContent width='400px'>
                     <DomainFormPopup
+                        token={token}
                         initialData={null}
                         setIsDialogOpen={setIsCreateChildrenDialogOpen}
                         parentDomainList={parentDomains.content}
@@ -92,6 +95,7 @@ const ChildrenDomainList = ({ list, parentId, parentDomains, fetchChildrenDomain
 
             {domainToDelete && (
                 <DeleteAlert
+                    token={token}
                     open={isDeleteDialogOpen}
                     onOpenChange={setIsDeleteDialogOpen}
                     domain={domainToDelete}

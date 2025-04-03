@@ -7,7 +7,7 @@ const ENDPOINT = {
     GETALLDOMAIN: "domain/all",
     GETDOMAIN: "/domain",
     ADDDOMAIN: "domain/create",
-    UPDATEDOMAIN: "domain/update/",
+    UPDATEDOMAIN: "domain/update",
     DELETEDOMAIN: "domain/delete",
     GET_CHILDREN_DOMAIN : '/domain/childrenDomain',
     GET_PARENT_DOMAIN: '/domain/parentDomain'
@@ -35,7 +35,7 @@ export const getAllDomain = async ({
 };
 
 
-export const addDomain = async (values: z.infer<typeof addDomainSchema>) => {
+export const addDomain = async (token :string, values: z.infer<typeof addDomainSchema>) => {
     try {
         addDomainSchema.parse(values);
         // Gửi request lên backend
@@ -45,7 +45,12 @@ export const addDomain = async (values: z.infer<typeof addDomainSchema>) => {
             parentDomainId: Number(values.parentDomainId) ,
             description: values.description,
             isActive: false,
-        });
+        },
+      {
+              headers: {
+              Authorization: `Bearer ${token}`
+              }
+      });
 
         return response.data.data;
     } catch (error) {
@@ -55,6 +60,7 @@ export const addDomain = async (values: z.infer<typeof addDomainSchema>) => {
 };
 
 export const updateDomain = async (
+  token :string,
   domainId: number,
   values: z.infer<typeof addDomainSchema>
 ) => {
@@ -67,6 +73,11 @@ export const updateDomain = async (
         description: values.description,
         parentDomainId: values.parentDomainId, 
         isActive: values.isActive,
+      },
+      {
+              headers: {
+              Authorization: `Bearer ${token}`
+              }
       }
     );
 
@@ -76,9 +87,14 @@ export const updateDomain = async (
     throw new Error("An error occurred while updating the domain.");
   }
 };
-export const deleteDomain = async (domainId: number) => {
+export const deleteDomain = async (token : string ,domainId: number) => {
     const response = await axiosClient.delete(
-      `${ENDPOINT.DELETEDOMAIN}/${domainId}`
+      `${ENDPOINT.DELETEDOMAIN}/${domainId}`,
+      {
+              headers: {
+              Authorization: `Bearer ${token}`
+              }
+          }
     );
     
     return response.data;
@@ -108,11 +124,13 @@ export const getChildrenDomain = async (
 
 export const getParentDomains = async (
   {
+    token,
     pageNo,
     pageSize,
     sortBy,
     sortDir
   } : {
+    token : string
     pageNo? : number,
     pageSize? : number,
     sortBy? : string,
@@ -124,18 +142,26 @@ export const getParentDomains = async (
       if (pageSize) params.append("pageSize", pageSize.toString());
       if (sortBy) params.append("sortBy", sortBy);
       if (sortDir) params.append("sortDir", sortDir);
-  const response = await axiosClient.get(`${ENDPOINT.GET_PARENT_DOMAIN}?${params.toString()}`)
+  const response = await axiosClient.get(`${ENDPOINT.GET_PARENT_DOMAIN}?${params.toString()}`,
+    {
+              headers: {
+              Authorization: `Bearer ${token}`
+              }
+          }
+)
   return response.data.data
 }
 
 export const getChildrenDomainsByParentId = async (
   {
+    token,
     parentId,
     pageNo,
     pageSize,
     sortBy,
     sortDir
   }: {
+    token: string
     parentId: number
     pageNo? : number,
     pageSize? : number,
@@ -148,6 +174,12 @@ export const getChildrenDomainsByParentId = async (
       if (pageSize) params.append("pageSize", pageSize.toString());
       if (sortBy) params.append("sortBy", sortBy);
       if (sortDir) params.append("sortDir", sortDir);
-  const response = await axiosClient.get(`${ENDPOINT.GETDOMAIN}/${parentId}/getChildrenTag`)
+  const response = await axiosClient.get(`${ENDPOINT.GETDOMAIN}/${parentId}/getChildrenTag`,
+    {
+      headers: {
+              Authorization: `Bearer ${token}`
+              }
+    }
+  )
   return response.data.data
 }

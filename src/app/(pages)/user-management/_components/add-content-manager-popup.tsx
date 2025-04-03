@@ -26,10 +26,9 @@ import { useState } from "react";
 import { addContentManager } from "@/app/api/user/user.api";
 import { useSession } from "next-auth/react";
 
-
 const AddContentManagerPopup = () => {
     const { data: session } = useSession();
-    const [isLoadind, setIsLoading] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const form = useForm<z.infer<typeof addContentManagerSchema>>({
         resolver: zodResolver(addContentManagerSchema),
         defaultValues: {
@@ -43,7 +42,7 @@ const AddContentManagerPopup = () => {
     const onSubmitForm = async (values: z.infer<typeof addContentManagerSchema>) => {
         try {
             setIsLoading(true)
-            const response = await addContentManager(session?.user.id as number, values);
+            const response = await addContentManager(session?.user.token as string, session?.user.id as number, values);
             if (response.success === false) {
                 toast.error("Failed to add new content manager!!");
             } else {
@@ -76,7 +75,7 @@ const AddContentManagerPopup = () => {
                                     <FormItem>
                                         <FormLabel>Username</FormLabel>
                                         <FormControl>
-                                            <Input  {...field} />
+                                            <Input disabled={isLoading}  {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -89,7 +88,7 @@ const AddContentManagerPopup = () => {
                                     <FormItem>
                                         <FormLabel>Email</FormLabel>
                                         <FormControl>
-                                            <Input  {...field} />
+                                            <Input disabled={isLoading}  {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -102,7 +101,7 @@ const AddContentManagerPopup = () => {
                                     <FormItem>
                                         <FormLabel>Password</FormLabel>
                                         <FormControl>
-                                            <Input type="password"  {...field} />
+                                            <Input disabled={isLoading} type="password"  {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -115,7 +114,7 @@ const AddContentManagerPopup = () => {
                                     <FormItem>
                                         <FormLabel>Confirm password</FormLabel>
                                         <FormControl>
-                                            <Input type="password"  {...field} />
+                                            <Input disabled={isLoading} type="password"  {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -125,8 +124,8 @@ const AddContentManagerPopup = () => {
 
                         <div className="w-full flex justify-end">
 
-                            <Button disabled={isLoadind} type="submit">
-                                {isLoadind ? <><LoaderCircle className="animate-spin" /> Creating ...</> : "Create"}
+                            <Button disabled={isLoading} type="submit">
+                                {isLoading ? <><LoaderCircle className="animate-spin" /> Creating ...</> : "Create"}
                             </Button>
                         </div>
                     </form>

@@ -15,6 +15,7 @@ const ENDPOINT = {
 };
 
 export const getStudent = async ({
+  token,
   pageNo,
   pageSize,
   sortBy,
@@ -22,6 +23,7 @@ export const getStudent = async ({
   keyword,
 
 }: {
+  token: string
   pageNo?: number;
   pageSize?: number;
   sortBy?: string;
@@ -35,17 +37,25 @@ export const getStudent = async ({
   if (sortDir) params.append("sortDir", sortDir);
   if (keyword) params.append("keyword", keyword);
 
-  const response = await axiosClient.get(`${ENDPOINT.GET_STUDENT}?${params.toString()}`);
+  const response = await axiosClient.get(`${ENDPOINT.GET_STUDENT}?${params.toString()}`,
+    {
+              headers: {
+              Authorization: `Bearer ${token}`
+              }
+          }
+  );
   return response.data.data as UserList;
 };
 
 export const getContentManager = async ({
+  token,
   pageNo,
   pageSize,
   sortBy,
   sortDir,
   keyword,
 }: {
+  token : string
   pageNo?: number;
   pageSize?: number;
   sortBy?: string;
@@ -59,11 +69,18 @@ export const getContentManager = async ({
   if (sortDir) params.append("sortDir", sortDir);
   if (keyword) params.append("keyword", keyword);
 
-  const response = await axiosClient.get(`${ENDPOINT.GET_CONTENTMANAGER}?${params.toString()}`);
+  const response = await axiosClient.get(`${ENDPOINT.GET_CONTENTMANAGER}?${params.toString()}`,
+    {
+              headers: {
+              Authorization: `Bearer ${token}`
+              }
+          }
+  );
   return response.data.data as UserList;
 };
 
 export const addContentManager = async (
+  token : string,
   adminId: number,
   values: z.infer<typeof addContentManagerSchema>
 ) => {
@@ -71,15 +88,27 @@ export const addContentManager = async (
     userName: values.userName,
     email: values.email,
     password: values.password,
-  });
+  },
+  {
+              headers: {
+              Authorization: `Bearer ${token}`
+              }
+          });
   return response.data;
 };
-export const getUserById = async (userId :string) :Promise<User> => {
-  const response = await axiosClient.get(`${ENDPOINT.GET_USER_BY_ID}/${userId}`);
+export const getUserById = async (token : string, userId :string) :Promise<User> => {
+  const response = await axiosClient.get(`${ENDPOINT.GET_USER_BY_ID}/${userId}`,
+    {
+              headers: {
+              Authorization: `Bearer ${token}`
+              }
+          }
+  );
 
   return response.data.data as User;
 };
 export const searchStudent = async ({
+  token,
   pageNo,
   pageSize,
   sortBy,
@@ -87,6 +116,7 @@ export const searchStudent = async ({
   keyword,
 
 }: {
+  token : string,
   pageNo?: number;
   pageSize?: number;
   sortBy?: string;
@@ -100,10 +130,16 @@ export const searchStudent = async ({
   if (sortDir) params.append("sortDir", sortDir);
   if (keyword) params.append("keyword", keyword);
 
-  const response = await axiosClient.get(`${ENDPOINT.SEARCHSTUDENT}?${params.toString()}`);
+  const response = await axiosClient.get(`${ENDPOINT.SEARCHSTUDENT}?${params.toString()}`,
+          {
+              headers: {
+              Authorization: `Bearer ${token}`
+              }
+          });
   return response.data.data as UserList;
 };
 export const searchContentManager = async ({
+  token,
   pageNo,
   pageSize,
   sortBy,
@@ -111,6 +147,7 @@ export const searchContentManager = async ({
   keyword,
 
 }: {
+  token : string,
   pageNo?: number;
   pageSize?: number;
   sortBy?: string;
@@ -124,6 +161,12 @@ export const searchContentManager = async ({
   if (sortDir) params.append("sortDir", sortDir);
   if (keyword) params.append("keyword", keyword);
 
-  const response = await axiosClient.get(`${ENDPOINT.SEARCH_CONTETMANAGER}?${params.toString()}`);
+  const response = await axiosClient.get(`${ENDPOINT.SEARCH_CONTETMANAGER}?${params.toString()}`,
+      {
+              headers: {
+              Authorization: `Bearer ${token}`
+              }
+          }
+  );
   return response.data.data as UserList;
 };

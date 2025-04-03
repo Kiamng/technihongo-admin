@@ -1,10 +1,12 @@
-"use client";
 import { ColumnDef } from "@tanstack/react-table";
 import { SubscriptionPlan } from "@/types/subscription";
 import { CellAction } from "./cell-action";
 
-export const columns: ColumnDef<SubscriptionPlan>[] = [
+interface ColumnProps {
+  fetchSubscriptions: () => void;
+}
 
+export const columns = ({ fetchSubscriptions }: ColumnProps): ColumnDef<SubscriptionPlan>[] => [
   {
     accessorKey: "name",
     header: "Name",
@@ -33,6 +35,8 @@ export const columns: ColumnDef<SubscriptionPlan>[] = [
   },
   {
     id: "actions",
-    cell: ({ row }) => <CellAction data={row.original} />,
+    cell: ({ row }) => {
+      return <CellAction data={row.original} fetchSubscriptions={fetchSubscriptions} />; // Truyền fetchSubscriptions vào CellAction
+    },
   },
 ];

@@ -9,6 +9,7 @@ import React from "react";
 import { getAllSubscription } from "@/app/api/subscription/subscription.api";
 import AddSubscriptionPlanPopup from "./_components/add-subscription-popup";
 import { Pagination } from "@/components/Pagination";
+import { useSession } from "next-auth/react";
 
 export default function Dashboard() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -17,34 +18,32 @@ export default function Dashboard() {
   const itemsPerPage = 5;
   const totalPages = Math.ceil(subscriptions.length / itemsPerPage);
   const paginatedUsers = subscriptions.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const { data: session } = useSession()
+
   const fetchSubscriptions = async () => {
     try {
 
       setLoading(true)
-      // Gọi API với axios
-      const response = await getAllSubscription();
+      const response = await getAllSubscription(session?.user.token as string);
       setSubscriptions(response);
 
     } catch (err) {
       console.log(err);
 
     } finally {
-      // Đổi trạng thái loading thành false khi hoàn thành
       setLoading(false);
     }
   }
   useEffect(() => {
-
-
     fetchSubscriptions();
-  }, [])
+  }, [session?.user.token])
 
   return (
     <div className=" w-full">
       {/* Tiêu đề trang */}
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-4xl font-bold">Dashboard</h1>
-        <AddSubscriptionPlanPopup fetchSubscriptions={fetchSubscriptions} />
+        <AddSubscriptionPlanPopup token={session?.user.token as string} fetchSubscriptions={fetchSubscriptions} />
       </div>
       {/* Thống kê */}
       <div className="grid grid-cols-4 gap-4 mb-6">
@@ -55,7 +54,7 @@ export default function Dashboard() {
       </div>
 
       {/* Bảng dữ liệu + Phân trang */}
-      <DataTable columns={columns} searchKey="name" data={paginatedUsers} isLoading={loading} />
+      <DataTable columns={columns({ fetchSubscriptions })} searchKey="name" data={paginatedUsers} isLoading={loading} />
       <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
 
 
