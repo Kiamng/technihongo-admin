@@ -10,6 +10,7 @@ export const CreateCourseSchema = z.object({
     z.instanceof(File, { message: "File is required" }), // Nếu là file tải lên
   ]),
   estimatedDuration: z.string().min(1, "Estimated duration is required"),
+  isPremium : z.boolean(),
 });
 
 export const updateCourseSchema = z.object({

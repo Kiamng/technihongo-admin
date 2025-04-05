@@ -26,6 +26,7 @@ import { createCourse } from '@/app/api/course/course.api';
 import { CirclePlus, LoaderCircle } from 'lucide-react';
 import { toast } from "sonner";
 import { DifficultyLevel } from '@/types/difficulty-level';
+import { Switch } from '@/components/ui/switch';
 
 interface CreateNewCourseFormProps {
     token: string | undefined;
@@ -50,7 +51,8 @@ const CreateNewCourseForm = ({ token, fetchCourses, domains, levels, loading }: 
             domainId: 0,
             difficultyLevelId: 0,
             estimatedDuration: '',
-            thumbnailUrl: ''
+            thumbnailUrl: '',
+            isPremium: false
         },
     });
 
@@ -79,24 +81,22 @@ const CreateNewCourseForm = ({ token, fetchCourses, domains, levels, loading }: 
 
 
     const onSubmit = async (values: z.infer<typeof CreateCourseSchema>) => {
+
         try {
             setIsPending(true);
 
             let imgUrl: string | undefined;
 
-            // Nếu thumbnailUrl đã có sẵn từ form (là string), thì giữ nguyên
             if (typeof values.thumbnailUrl === "string") {
                 imgUrl = values.thumbnailUrl;
             }
 
-            // Nếu có ảnh được chọn, upload lên cloud
             if (selectedFile instanceof File) {
                 const formData = new FormData();
                 formData.append('file', selectedFile);
                 imgUrl = await uploadImageCloud(formData);
             }
 
-            // Đảm bảo thumbnailUrl không phải undefined trước khi gọi API
             if (!imgUrl) {
                 alert("Thumbnail is required!");
                 setIsPending(false);
@@ -105,7 +105,7 @@ const CreateNewCourseForm = ({ token, fetchCourses, domains, levels, loading }: 
 
             const finalData = {
                 ...values,
-                thumbnailUrl: imgUrl, // Chắc chắn đây là string hợp lệ
+                thumbnailUrl: imgUrl,
             };
 
             const createRespond = await createCourse(finalData, token as string);
@@ -204,7 +204,7 @@ const CreateNewCourseForm = ({ token, fetchCourses, domains, levels, loading }: 
                             </div>
                             <div className='flex flex-col space-y-4'>
                                 <FormField control={form.control} name="difficultyLevelId" render={({ field }) => (
-                                    <FormItem>
+                                    <FormItem className='w-[300px]'>
                                         <Label>Level</Label>
                                         <Select
                                             disabled={isPending || loading}
@@ -227,6 +227,22 @@ const CreateNewCourseForm = ({ token, fetchCourses, domains, levels, loading }: 
                                         <FormMessage />
                                     </FormItem>
                                 )} />
+                                <FormField
+                                    control={form.control}
+                                    name="isPremium"
+                                    render={({ field }) => (
+                                        <FormItem className='flex flex-row space-x-4 items-center'>
+                                            <FormLabel>Premium</FormLabel>
+                                            <FormControl>
+                                                <Switch
+                                                    disabled={isPending}
+                                                    checked={field.value}
+                                                    onCheckedChange={field.onChange}
+                                                />
+                                            </FormControl>
+                                        </FormItem>
+                                    )}
+                                />
                                 <FormField control={form.control} name="thumbnailUrl" render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Thumbnail Image</FormLabel>
@@ -236,12 +252,12 @@ const CreateNewCourseForm = ({ token, fetchCourses, domains, levels, loading }: 
                                                 type="file"
                                                 id="imageImporter"
                                                 accept="image/*"
-                                                className=""
+                                                className="hidden"
                                                 ref={fileInputRef}
                                                 onChange={(event) => {
                                                     handleOnChangeImage(event);
                                                     if (event.target.files?.[0]) {
-                                                        field.onChange(event.target.files[0]); // Lưu file vào form
+                                                        field.onChange(event.target.files[0]);
                                                     }
                                                 }}
                                             />

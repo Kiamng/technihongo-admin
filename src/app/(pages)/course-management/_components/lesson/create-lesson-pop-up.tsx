@@ -47,10 +47,11 @@ const LessonPopupForm = ({ studyPlanId, fetchLessons, setIsDialogOpen, initialDa
                 let response;
                 let orderResponse;
                 if (initialData && data.title !== initialData) {
-                    // Nếu có initialData, gọi API update
+
                     response = await updateLesson(token, data.title, lessonId!);
+
                 } else if (!initialData) {
-                    // Nếu không có, gọi API create
+
                     response = await createLesson(token, data.title, studyPlanId!);
                 }
 

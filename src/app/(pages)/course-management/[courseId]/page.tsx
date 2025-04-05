@@ -99,25 +99,22 @@ export default function CourseDetailPage() {
         setIsPending(true);
         let imgUrl: string = "";
 
-        // Kiểm tra nếu thumbnailUrl là string (đã có sẵn)
         if (typeof values.thumbnailUrl === "string") {
             imgUrl = values.thumbnailUrl;
         }
 
-        // Kiểm tra nếu thumbnailUrl là File (có ảnh mới được chọn)
         if (selectedFile instanceof File) {
             const formData = new FormData();
             formData.append('file', selectedFile);
             const uploadedUrl = await uploadImageCloud(formData);
             if (uploadedUrl) {
-                imgUrl = uploadedUrl; // Cập nhật với ảnh mới
+                imgUrl = uploadedUrl;
             }
         }
 
-        // Gửi API patchCourse với dữ liệu đã xử lý
         const finalData = {
             ...values,
-            thumbnailUrl: imgUrl, // Chắc chắn là string
+            thumbnailUrl: imgUrl,
         };
 
         const patchResponse = await patchCourse(finalData, session?.user.token as string, numericCourseId as number);
@@ -146,7 +143,7 @@ export default function CourseDetailPage() {
 
             <CustomBreadCrumb data={breadcrumbData} />
             <div className="text-4xl font-bold flex items-center">{course?.title} <PenLine size={28} /></div>
-            <CourseUpdateForm course={course} onSubmit={handleSubmit} isPending={isPending} />
+            <CourseUpdateForm token={session?.user.token as string} course={course} onSubmit={handleSubmit} isPending={isPending} />
             <Separator />
             <div className="w-full flex justify-between">
                 <div className="text-4xl font-bold flex items-center">Study plans in course</div>

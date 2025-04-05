@@ -48,14 +48,10 @@ const LessonItem = ({
     const handleUpdateOrder = async (lessonId: number, newOrder: number[]) => {
         startTransition(async () => {
             try {
-                console.log(newOrder);
-
-                const response = await updateLessonResourceOrder(lessonId, newOrder);
-                console.log(response);
-
+                const response = await updateLessonResourceOrder(lessonId, newOrder, token);
                 if (response.success === true) {
                     toast.success("Updated order successfully");
-                    setIsOrderUpdated(false); // Reset the update state after successful update
+                    setIsOrderUpdated(false);
                 }
             } catch (error) {
                 console.error("Failed to update new order", error);
@@ -176,6 +172,7 @@ const LessonItem = ({
                                                                     studyPlanId={lesson.studyPlan.studyPlanId}
                                                                     key={resource.lessonResourceId}
                                                                     lessonResource={resource}
+                                                                    token={token}
                                                                 />
                                                             </div>
                                                         )}

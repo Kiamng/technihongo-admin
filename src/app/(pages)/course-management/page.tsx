@@ -88,7 +88,7 @@ export default function CourseManagementPage() {
 
     const fetchDomain = async () => {
         try {
-            const response = await getChildrenDomain({ pageNo: 0, pageSize: 20, sortBy: "createdAt", sortDir: "desc" });
+            const response = await getChildrenDomain({ token: session?.user.token as string, pageNo: 0, pageSize: 20, sortBy: "createdAt", sortDir: "desc" });
             setDomains(response);
         } catch (err) {
             console.error(err);
@@ -97,7 +97,7 @@ export default function CourseManagementPage() {
 
     const fetchDifficultyLevel = async () => {
         try {
-            const response = await getAllDifficultyLevel();
+            const response = await getAllDifficultyLevel(session?.user.token as string);
             setDifficultyLevels(response);
         } catch (error) {
             console.log(error);
@@ -218,19 +218,21 @@ export default function CourseManagementPage() {
                 </div>
             </div>
             <DataTable columns={columns} data={coursesList?.content || []} isLoading={isLoading} />
-            <Pagination className="space-x-6">
-                <PaginationContent>
-                    <PaginationItem >
-                        <Button disabled={currentPage === 0} onClick={handlePreviousPage} variant={"ghost"}><ChevronLeft /> Previous</Button>
-                    </PaginationItem>
-                    <PaginationItem>
-                        {currentPage + 1}/{coursesList?.totalPages}
-                    </PaginationItem>
-                    <PaginationItem onClick={handleNextPage}>
-                        <Button disabled={coursesList?.last === true} onClick={handleNextPage} variant={"ghost"}>Next <ChevronRight /></Button>
-                    </PaginationItem>
-                </PaginationContent>
-            </Pagination>
+            {coursesList?.content &&
+                <Pagination className="space-x-6">
+                    <PaginationContent>
+                        <PaginationItem >
+                            <Button disabled={currentPage === 0} onClick={handlePreviousPage} variant={"ghost"}><ChevronLeft /> Previous</Button>
+                        </PaginationItem>
+                        <PaginationItem>
+                            {currentPage + 1}/{coursesList?.totalPages}
+                        </PaginationItem>
+                        <PaginationItem onClick={handleNextPage}>
+                            <Button disabled={coursesList?.last === true} onClick={handleNextPage} variant={"ghost"}>Next <ChevronRight /></Button>
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
+            }
         </div>
     )
 }

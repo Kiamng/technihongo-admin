@@ -72,29 +72,26 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan }: LessonL
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchValue(event.target.value);
 
-        // Hủy bỏ timeout cũ (nếu có)
         if (timeoutId) {
             clearTimeout(timeoutId);
         }
 
-        // Thiết lập timeout mới
         const id = setTimeout(() => {
             setCurrentPage(0)
             setDebouncedSearchValue(event.target.value);
-        }, 500); // 500ms delay
+        }, 500);
 
-        setTimeoutId(id); // Lưu lại timeoutID để có thể hủy sau
+        setTimeoutId(id);
     };
 
     const toggleLessonResource = async (lessonId: number) => {
         if (expandedLessonId === lessonId) {
-            setExpandedLessonId(null); // Đóng danh sách nếu đang mở
+            setExpandedLessonId(null);
             return;
         }
 
         setExpandedLessonId(lessonId);
 
-        // Kiểm tra nếu đã có dữ liệu thì không gọi API nữa
         if (lessonResources[lessonId]) return;
 
         setIsLoadingLR(true);
@@ -103,7 +100,7 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan }: LessonL
             const resources = await getLessonResourceByLessonId(token, lessonId);
             setLessonResources(prev => ({
                 ...prev,
-                [lessonId]: Array.isArray(resources) ? resources : [] // Đảm bảo luôn là mảng
+                [lessonId]: Array.isArray(resources) ? resources : []
             }));
             if (resources === null) {
                 console.warn(`Lesson ${lessonId} has no resources.`);
@@ -113,7 +110,7 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan }: LessonL
             toast.error("Failed to load lesson resource.");
             setLessonResources(prev => ({
                 ...prev,
-                [lessonId]: [] // Tránh lỗi .map()
+                [lessonId]: []
             }));
         } finally {
             setIsLoadingLR(false);

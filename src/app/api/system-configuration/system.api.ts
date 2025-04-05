@@ -102,11 +102,13 @@ export const deleteDomain = async (token : string ,domainId: number) => {
 
 export const getChildrenDomain = async (
   {
+    token,
     pageNo,
     pageSize,
     sortBy,
     sortDir
   }: {
+    token : string
     pageNo? : number,
     pageSize? : number,
     sortBy? : string,
@@ -118,7 +120,13 @@ export const getChildrenDomain = async (
       if (pageSize) params.append("pageSize", pageSize.toString());
       if (sortBy) params.append("sortBy", sortBy);
       if (sortDir) params.append("sortDir", sortDir);
-  const response = await axiosClient.get(`${ENDPOINT.GET_CHILDREN_DOMAIN}?${params.toString()}`)
+  const response = await axiosClient.get(`${ENDPOINT.GET_CHILDREN_DOMAIN}?${params.toString()}`,
+    {
+              headers: {
+              Authorization: `Bearer ${token}`
+              }
+          }
+)
   return response.data.data
 }
 

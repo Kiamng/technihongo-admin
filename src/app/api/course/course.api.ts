@@ -68,7 +68,7 @@ export const createCourse = async (values:z.infer<typeof CreateCourseSchema>, to
     attachmentUrl : "",
     thumbnailUrl : values.thumbnailUrl,
     estimatedDuration : values.estimatedDuration,
-    isPremium : false
+    isPremium : values.isPremium
     },
     {
       headers: {

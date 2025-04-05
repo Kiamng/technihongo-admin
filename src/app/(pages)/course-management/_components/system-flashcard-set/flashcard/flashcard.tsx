@@ -50,8 +50,23 @@ const FlashcardCard: React.FC<FlashcardProps> = ({ flashcard }) => {
                 </div>
 
                 {/* Mặt sau của flashcard */}
-                <div className="back bg-white dark:bg-secondary absolute w-full h-full backface-hidden flex justify-center items-center  rounded-[20px] border-[4px] border-primary transform rotateY-[180deg] text-center">
-                    <div className="flashcard-content-font">{flashcard.vietEngTranslation}</div>
+                <div
+                    className={`back bg-white dark:bg-secondary absolute w-full h-full backface-hidden flex justify-center items-center rounded-[20px] border-[4px] border-primary transform rotateY-[180deg] text-center ${flashcard.imageUrl ? 'flex-row' : ''}`}
+                >
+                    {flashcard.imageUrl ? (
+                        <>
+                            <div className="flex-1 text-5xl font-bold">{flashcard.vietEngTranslation}</div>
+                            <div className="flex-1 flex justify-center items-center">
+                                <img
+                                    src={flashcard.imageUrl}
+                                    alt="flashcard-img"
+                                    className="max-w-[300px] max-h-[300px] object-cover"
+                                />
+                            </div>
+                        </>
+                    ) : (
+                        <div className="flashcard-content-font">{flashcard.vietEngTranslation}</div>
+                    )}
                 </div>
             </div>
         </div>

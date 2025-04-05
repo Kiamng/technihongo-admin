@@ -19,6 +19,7 @@ interface LessonResourceListProps {
     studyPlanId: number;
     updateLessonResources: (lessonId: number, resourceId: number) => void
     lessonId: number
+    token: string
 }
 
 // Mapping giữa type và thuộc tính tương ứng
@@ -41,7 +42,7 @@ const resourceTypeConfig = {
     }
 };
 
-const LessonResourceItem = ({ lessonResource, studyPlanId, updateLessonResources, lessonId }: LessonResourceListProps) => {
+const LessonResourceItem = ({ lessonResource, studyPlanId, updateLessonResources, lessonId, token }: LessonResourceListProps) => {
     const resource = resourceTypeConfig[lessonResource.type];
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [isPending, startTransition] = useTransition();
@@ -56,10 +57,8 @@ const LessonResourceItem = ({ lessonResource, studyPlanId, updateLessonResources
 
     const handleDeleteClick = () => {
         if (lessonResource.active) {
-            // Show toast notification if resource is active
             toast.error("You cannot delete an active lesson resource.");
         } else {
-            // Open confirmation dialog if resource is not active
             setConfirmOpen(true);
         }
     };
@@ -68,7 +67,7 @@ const LessonResourceItem = ({ lessonResource, studyPlanId, updateLessonResources
         if (lessonResource.lessonResourceId) {
             startTransition(async () => {
                 try {
-                    const response = await deleteLessonResourceById(lessonResource.lessonResourceId);
+                    const response = await deleteLessonResourceById(lessonResource.lessonResourceId, token);
                     if (response && response.success) {
                         toast.success("Lesson resource deleted successfully!");
                         updateLessonResources(lessonId, lessonResource.lessonResourceId);
@@ -79,7 +78,7 @@ const LessonResourceItem = ({ lessonResource, studyPlanId, updateLessonResources
                     toast.error("An error occurred while deleting the lesson resource.");
                     console.error("Failed to delete lesson resource", error);
                 } finally {
-                    setConfirmOpen(false); // Close the confirmation dialog after deletion attempt
+                    setConfirmOpen(false);
                 }
             });
         }

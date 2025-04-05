@@ -21,15 +21,17 @@ import { DomainList } from "@/types/domain";
 import { DifficultyLevel } from "@/types/difficulty-level";
 import { getAllDifficultyLevel } from "@/app/api/difficulty-level/difficulty-level.api";
 import { getChildrenDomain } from "@/app/api/system-configuration/system.api";
+import { Switch } from "@/components/ui/switch";
 
 
 interface CourseFormProps {
     course?: Course;
     onSubmit: (values: z.infer<typeof updateCourseSchema>, selectedFile: File | null) => void;
     isPending: boolean;
+    token: string
 }
 
-export default function CourseUpdateForm({ course, onSubmit, isPending }: CourseFormProps) {
+export default function CourseUpdateForm({ course, onSubmit, isPending, token }: CourseFormProps) {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [imageSrc, setImageSrc] = useState<string | null>(course?.thumbnailUrl || null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -76,9 +78,9 @@ export default function CourseUpdateForm({ course, onSubmit, isPending }: Course
         const fetchDomainAndLevel = async () => {
             try {
                 setIsLoading(true)
-                const levelResponse = await getAllDifficultyLevel();
+                const levelResponse = await getAllDifficultyLevel(token);
                 setLevels(levelResponse)
-                const domainResponse = await getChildrenDomain({ pageNo: 0, pageSize: 20, sortBy: "createdAt", sortDir: "desc" });
+                const domainResponse = await getChildrenDomain({ token: token, pageNo: 0, pageSize: 20, sortBy: "createdAt", sortDir: "desc" });
                 setDomains(domainResponse)
             }
             catch (error) {
@@ -143,24 +145,22 @@ export default function CourseUpdateForm({ course, onSubmit, isPending }: Course
                                     <FormMessage />
                                 </FormItem>
                             )} />
-                            <FormField control={form.control} name="isPremium" render={({ field }) => (
-                                <FormItem className="w-full">
-                                    <Label>Premium</Label>
-                                    <Select disabled={isPending} value={field.value?.toString()} onValueChange={(value) => field.onChange(value === "true")}>
+                            <FormField
+                                control={form.control}
+                                name="isPremium"
+                                render={({ field }) => (
+                                    <FormItem className='flex flex-row space-x-4 items-center'>
+                                        <FormLabel>Premium</FormLabel>
                                         <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Premium" />
-                                            </SelectTrigger>
+                                            <Switch
+                                                disabled={true}
+                                                checked={field.value}
+                                                onCheckedChange={field.onChange}
+                                            />
                                         </FormControl>
-                                        <SelectContent>
-                                            <SelectItem value="true">Premium</SelectItem>
-                                            <SelectItem value="false">Non-Premium</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-
-                                    <FormMessage />
-                                </FormItem>
-                            )} />
+                                    </FormItem>
+                                )}
+                            />
                         </div>
                         <FormField control={form.control} name="domainId" render={({ field }) => (
                             <FormItem>
