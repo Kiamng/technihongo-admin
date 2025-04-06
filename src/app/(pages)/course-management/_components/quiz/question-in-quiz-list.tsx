@@ -110,7 +110,7 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
     const handleCancelUpdateOrder = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
         setIsEditingOrder(false);
-        form.setValue("questions", newQuestionOrder);
+        form.setValue("questions", initialOrder);
     };
 
     const handleDragEnd = (result: DropResult) => {

@@ -11,7 +11,8 @@ const ENDPOINT = {
     UPDATE : '/system-flashcard-set/update',
     DELETE_FLASHCARD : '/flashcard/delete',
     CREATE_FLASHCARDS : '/flashcard',
-    UPDATE_FLASHCARD : '/flashcard'
+    UPDATE_FLASHCARD : '/flashcard',
+    UPDATE_FLASHCARD_ORDER :'/system-flashcard-set/updateOrder'
 }
 
 export const createSysFlashcardSet = async (token : string, values: z.infer<typeof SystemFlashcardSetSchema>) :Promise<CreateSystemFlashcardSetResponse> => {
@@ -108,6 +109,20 @@ export const updateFlashard = async (token : string,  flashcard : z.infer<typeof
         japaneseDefinition : flashcard.japaneseDefinition,
         vietEngTranslation : flashcard.vietEngTranslation,
         imageUrl : flashcard.imageUrl
+    },
+    {
+        headers: {
+            Authorization: `Bearer ${token}`
+            }
+    }
+    )
+    return reponse.data
+}
+
+export const updateFlashardOrder = async (token : string,  setId : number, newOrder : number[]) => {
+    const reponse = await axiosClient.patch(`${ENDPOINT.UPDATE_FLASHCARD_ORDER}/${setId}`,
+    {
+        newFlashcardOrder : newOrder
     },
     {
         headers: {

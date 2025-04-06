@@ -1,20 +1,20 @@
-import { createFlashcards, deleteFlashcard, updateFlashard } from "@/app/api/system-flashcard-set/system-flashcard-set.api";
+import { createFlashcards, deleteFlashcard, updateFlashard, updateFlashardOrder } from "@/app/api/system-flashcard-set/system-flashcard-set.api";
 import EmptyStateComponent from "@/components/empty-state";
-import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Separator } from "@/components/ui/separator";
-import { Textarea } from "@/components/ui/textarea";
+import { Form } from "@/components/ui/form";
 import { FlashcardSchema, FlashcardSetSchema } from "@/schema/flashcard";
 import { Flashcard } from "@/types/flashcard";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ImagePlus, LoaderCircle, Plus, Trash, Trash2 } from "lucide-react";
-import { CldUploadWidget } from "next-cloudinary";
+import { Plus } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import ImportCSVPopup from "../../spreadsheet-import/import-csv-popup";
 import { handleFlashcardFileUpload } from "../../spreadsheet-import/flashcard-import-action";
+import FlashcardInFormRender from "./flashcard-in-form";
+import UpdateFlashcardOrder from "./update-flashcard-order";
+import { DropResult } from "@hello-pangea/dnd";
+import FormAction from "../../quiz/QuizQuestion/actions/form-action";
 
 type FlashcardInForm = z.infer<typeof FlashcardSchema>;
 
@@ -25,10 +25,12 @@ interface FlashcardProps {
     fetchSet: () => Promise<void>
 }
 
-const FlashcardRender = ({ initialData, token, flashcardSetId, fetchSet }: FlashcardProps) => {
+const FlashcardsFormRender = ({ initialData, token, flashcardSetId, fetchSet }: FlashcardProps) => {
     const [isSaving, startTransition] = useTransition();
+    const [isSavingNewOrder, startSavingNewOrderTransition] = useTransition();
     const [initialOrder, setInitialOrder] = useState<FlashcardInForm[]>([]);
     const [newFlashcardOrder, setNewFlashcardOrder] = useState<FlashcardInForm[]>([]);
+    const [isEditingOrder, setIsEditingOrder] = useState<boolean>(false);
     const [changedFlashcards, setChangedFlashcards] = useState<FlashcardInForm[]>([]);
     const [imageUrls, setImageUrls] = useState<(string | null)[]>([]);
 
@@ -163,6 +165,64 @@ const FlashcardRender = ({ initialData, token, flashcardSetId, fetchSet }: Flash
             });
         e.target.value = '';
     };
+
+    // Update order hanlde
+    const handleUpdateOrderToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault()
+        const hasUnSavedFlashcards = form.getValues().flashcards.some((flashcard) => !flashcard.flashcardId) || changedFlashcards.length > 0;
+
+        if (hasUnSavedFlashcards) {
+            toast.error("You need to save all questions before updating order.");
+            return;
+        }
+
+        setIsEditingOrder(!isEditingOrder);
+        if (!isEditingOrder) {
+            setNewFlashcardOrder([...initialOrder]);
+        }
+    };
+
+    const handleDragEnd = (result: DropResult) => {
+        const { destination, source } = result;
+
+        if (!destination || destination.index === source.index) {
+            return;
+        }
+
+        const newFlashcards = Array.from(form.getValues().flashcards);
+        const [removed] = newFlashcards.splice(source.index, 1);
+        newFlashcards.splice(destination.index, 0, removed);
+
+        form.setValue("flashcards", newFlashcards);
+
+        setNewFlashcardOrder([...newFlashcards]);
+    };
+
+    const handleCancelUpdateOrder = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault()
+        setIsEditingOrder(false);
+        form.setValue("flashcards", initialOrder);
+    };
+
+    const handleSaveNewOrder = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault()
+        startSavingNewOrderTransition(async () => {
+            try {
+                const newOrder = newFlashcardOrder.map((flashcard) => flashcard.cardOrder);
+                console.log(newOrder);
+
+                await updateFlashardOrder(token, flashcardSetId, newOrder as number[]);
+
+                toast.success("Order saved successfully!");
+                setInitialOrder([...newFlashcardOrder]);
+                setIsEditingOrder(false);
+            } catch (error) {
+                console.error("Error while updating new order:", error);
+                toast.error("Failed to save new order");
+            }
+        });
+    };
+
     useEffect(() => {
         if (initialData && initialData.length > 0) {
             const flashcards = initialData.map((flashcard) => ({
@@ -232,11 +292,13 @@ const FlashcardRender = ({ initialData, token, flashcardSetId, fetchSet }: Flash
                             </span>
                             <ImportCSVPopup type="flashcard" />
                         </div>
-                        <Button disabled={isSaving} type="submit">
-                            {isSaving
-                                ? <><LoaderCircle className="animate-spin" /> Saving ...</>
-                                : "Save"}
-                        </Button>
+                        <FormAction
+                            isSaving={isSaving}
+                            isEditingOrder={isEditingOrder}
+                            handleUpdateOrderToggle={handleUpdateOrderToggle}
+                            handleCancelUpdateOrder={handleCancelUpdateOrder}
+                            handleSaveNewOrder={handleSaveNewOrder}
+                            isSavingNewOrder={isSavingNewOrder} />
                         <input
                             type="file"
                             accept=".csv"
@@ -245,96 +307,26 @@ const FlashcardRender = ({ initialData, token, flashcardSetId, fetchSet }: Flash
                         />
                     </div>
                     <div className="w-full space-y-8">
-                        {
-                            fields.map((field, index) => (
-                                <div key={field.id}
-                                    className={`flex flex-col space-y-5 p-5 rounded-lg border-[2px] shadow-md
-                                        ${getBorderClass(field)}`}
-                                >
-                                    <div className="flex justify-between">
-                                        <div className="text-lg font-semibold text-slate-500">{index + 1}</div>
-                                        <button disabled={isSaving} type="button" onClick={() => handleDelete(index)} className="text-red-400 hover:text-red-500 duration-100 hover:scale-125">
-                                            <Trash2 />
-                                        </button>
+                        {isEditingOrder
+                            ? (
+                                <UpdateFlashcardOrder fields={fields} handleDragEnd={handleDragEnd} />
+                            ) : (
+                                fields.map((field, index) => (
+                                    <div key={field.id}
+                                        className={`flex flex-col space-y-5 p-5 rounded-lg border-[2px] shadow-md
+                                                    ${getBorderClass(field)}`}
+                                    >
+                                        <FlashcardInFormRender
+                                            field={field}
+                                            index={index}
+                                            isSaving={isSaving}
+                                            addChangedFlashcard={addChangedFlashcard}
+                                            handleDelete={handleDelete}
+                                            handleDeleteImage={handleDeleteImage}
+                                            handleImageUpload={handleImageUpload} />
                                     </div>
-                                    <Separator />
-                                    <div className="w-full flex flex-row space-x-4">
-                                        <FormField control={form.control} name={`flashcards.${index}.japaneseDefinition`} render={({ field }) => (
-                                            <FormItem className="flex-1">
-                                                <FormLabel>Term</FormLabel>
-                                                <FormControl>
-                                                    <Textarea  {...field}
-                                                        disabled={isSaving}
-                                                        placeholder="Enter question text"
-                                                        className="resize-none w-full white-space: pre-line"
-                                                        onChange={(e) => {
-                                                            field.onChange(e);
-                                                            addChangedFlashcard(index);
-                                                        }}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )} />
-                                        <FormField control={form.control} name={`flashcards.${index}.vietEngTranslation`} render={({ field }) => (
-                                            <FormItem className="flex-1">
-                                                <FormLabel>Definition</FormLabel>
-                                                <FormControl>
-                                                    <Textarea  {...field}
-                                                        disabled={isSaving}
-                                                        placeholder="Enter explanation"
-                                                        className="resize-none w-full white-space: pre-line "
-                                                        onChange={(e) => {
-                                                            field.onChange(e);
-                                                            addChangedFlashcard(index);
-                                                        }} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )} />
-                                        {!field.imageUrl
-                                            ? (
-                                                <CldUploadWidget
-                                                    uploadPreset={process.env.NEXT_PUBLIC_CLOUD_IMAGE_UPLOAD_PRESET}
-                                                    options={{ sources: ["local", "camera", "url"], resourceType: "auto" }}
-                                                    onSuccess={(result) => {
-                                                        if (typeof result.info === "object" && result.info !== null) {
-                                                            const uploadInfo = result.info;
-                                                            const imageUrl = uploadInfo.secure_url;
-                                                            handleImageUpload(index, imageUrl);
-                                                        }
-                                                    }}
-                                                >
-                                                    {({ open }) => (
-                                                        <button
-                                                            disabled={isSaving}
-                                                            type='button'
-                                                            className="border-dashed border-[2px] rounded-lg h-[92px] w-32 flex items-center justify-center text-slate-500 hover:cursor-pointer hover:text-green-500 hover:scale-105 duration-100"
-                                                            onClick={() => open()}
-                                                        >
-                                                            <ImagePlus />
-                                                        </button>
-                                                    )}
-                                                </CldUploadWidget>
-                                            )
-                                            : (
-                                                <div
-                                                    className={`border-dashed border-[2px] rounded-lg h-[92px] w-32 flex justify-end text-slate-500  ${!isSaving ? "hover:cursor-not-allowed" : "hover:cursor-pointer hover:text-green-500 hover:scale-105 duration-100"}`}
-
-                                                    style={{
-                                                        backgroundImage: `url(${field.imageUrl})`,
-                                                        backgroundSize: "cover",
-                                                        backgroundPosition: "center"
-                                                    }}
-                                                >
-                                                    <button disabled={isSaving} type="button" onClick={() => handleDeleteImage(index)} className="bg-slate-700 text-white hover:bg-red-500 p-1 h-fit">
-                                                        <Trash size={16} />
-                                                    </button>
-                                                </div>
-                                            )}
-                                    </div>
-                                </div>
-                            ))
+                                ))
+                            )
                         }
                     </div>
                     {fields.length === 0 && <EmptyStateComponent imgageUrl="https://allpromoted.co.uk/image/no-data.svg" message="This set does not have any flashcard" size={400} />}
@@ -349,4 +341,4 @@ const FlashcardRender = ({ initialData, token, flashcardSetId, fetchSet }: Flash
     )
 }
 
-export default FlashcardRender
+export default FlashcardsFormRender

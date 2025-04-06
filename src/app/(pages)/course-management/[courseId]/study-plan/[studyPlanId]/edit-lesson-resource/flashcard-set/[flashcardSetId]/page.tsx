@@ -1,7 +1,7 @@
 'use client'
 
-import FlashcardRender from "@/app/(pages)/course-management/_components/system-flashcard-set/flashcard/flashcard-in-form-render";
 import FlashcardList from "@/app/(pages)/course-management/_components/system-flashcard-set/flashcard/flashcard-list-review";
+import FlashcardsFormRender from "@/app/(pages)/course-management/_components/system-flashcard-set/flashcard/flashcards-edit-form";
 import SetPublicStatusUpdate from "@/app/(pages)/course-management/_components/system-flashcard-set/set-public-status-update";
 import SetUpdateForm from "@/app/(pages)/course-management/_components/system-flashcard-set/set-update-form";
 import { getSysFlashcardSetById } from "@/app/api/system-flashcard-set/system-flashcard-set.api";
@@ -29,6 +29,8 @@ const EditFlashcardSetPage = () => {
         setIsLoading(true);
         try {
             const response = await getSysFlashcardSetById(session?.user.token as string, parseInt(flashcardSetId as string, 10));
+            console.log(response);
+
             setFlashcardSet(response);
         } catch (error) {
             console.error(error);
@@ -81,7 +83,7 @@ const EditFlashcardSetPage = () => {
                 <FlashcardList FlashcardList={flashcardSet.flashcards} />
             }
             {flashcardSet &&
-                <FlashcardRender fetchSet={fetchSet} initialData={flashcardSet?.flashcards} token={session?.user.token as string} flashcardSetId={parseInt(flashcardSetId as string, 10)} />
+                <FlashcardsFormRender fetchSet={fetchSet} initialData={flashcardSet?.flashcards} token={session?.user.token as string} flashcardSetId={parseInt(flashcardSetId as string, 10)} />
             }
         </div>
     )
