@@ -28,7 +28,7 @@ import LearningResourceUpdatePublicStatus from "@/app/(pages)/course-management/
 
 export default function EditLearningResourcePage() {
     const params = useParams(); // Lấy dữ liệu từ URL
-    const { courseId, studyPlanId, learningResourceId } = params;
+    const { courseId, defaultStudyPlanId, studyPlanId, learningResourceId } = params;
     const [learningResource, setLearningResource] = useState<LearningResource>();
     const { data: session } = useSession();
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -105,7 +105,7 @@ export default function EditLearningResourcePage() {
 
     return (
         <div className="w-full space-y-6">
-            <Link href={`/course-management/${courseId}/study-plan/${studyPlanId}`}>
+            <Link href={`/course-management/${courseId}/study-plan/${defaultStudyPlanId}/detail/${studyPlanId}`}>
                 <Button
                     variant="outline"
                 >
@@ -249,4 +249,3 @@ export default function EditLearningResourcePage() {
         </div>
     );
 };
-

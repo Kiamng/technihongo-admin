@@ -12,17 +12,19 @@ import { CornerDownLeft, PenLine } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import UpdateStudyPlanForm from "../../../_components/study-plan/update-study-plan-form";
 import CustomBreadCrumb from "@/components/bread-cumb";
-import LessonListComponent from "../../../_components/lesson/lesson-list";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import UpdateStudyPlanForm from "@/app/(pages)/course-management/_components/study-plan/update-study-plan-form";
+import LessonListComponent from "@/app/(pages)/course-management/_components/lesson/lesson-list";
 
 function StudPlanDetailPage() {
-    const { studyPlanId } = useParams();
+    const { defaultStudyPlanId, studyPlanId } = useParams();
     const numericStudyPlanId = studyPlanId ? parseInt(studyPlanId as string, 10) : null;
+    const numericDefaultStudyPlanId = defaultStudyPlanId ? parseInt(defaultStudyPlanId as string, 10) : null;
     const { data: session } = useSession();
 
+    console.log("default plan la:", numericDefaultStudyPlanId);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [studyPlan, setStudyPlan] = useState<StudyPlan>();
 
@@ -92,7 +94,7 @@ function StudPlanDetailPage() {
             <Separator />
 
             {session?.user?.token && numericStudyPlanId && (
-                <LessonListComponent studyPlanId={numericStudyPlanId} token={session.user.token} isDefaultStudyPlan={studyPlan?.default as boolean} />
+                <LessonListComponent defaultStudyPlanId={numericDefaultStudyPlanId as number} studyPlanId={numericStudyPlanId} token={session.user.token} isDefaultStudyPlan={studyPlan?.default as boolean} />
             )}
         </div>
     )

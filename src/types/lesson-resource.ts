@@ -13,3 +13,12 @@ export type LessonResource = {
     updatedAt: Date,
     active: boolean
 }
+
+export type LessonResourceList = {
+    content : LessonResource[],
+    pageNo : number,
+    pageSize : number,
+    totalElements : number,
+    totalPages : number,
+    last : boolean
+}

@@ -25,9 +25,10 @@ import { Button } from "@/components/ui/button";
 
 interface StudyPlanCardProps {
     plan: StudyPlan;
+    defaultStudyPlanId: number;
     fetchStudyPlan: () => Promise<void>;
 }
-const StudyPlanCard = ({ plan, fetchStudyPlan }: StudyPlanCardProps) => {
+const StudyPlanCard = ({ plan, defaultStudyPlanId, fetchStudyPlan }: StudyPlanCardProps) => {
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [isPending, startTransition] = useTransition();
 
@@ -73,7 +74,7 @@ const StudyPlanCard = ({ plan, fetchStudyPlan }: StudyPlanCardProps) => {
                     <EllipsisVertical />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                    <Link href={`/course-management/${plan.course.courseId}/study-plan/${plan.studyPlanId}`}>
+                    <Link href={`/course-management/${plan.course.courseId}/study-plan/${defaultStudyPlanId}/detail/${plan.studyPlanId}`}>
                         <DropdownMenuItem>
                             <Eye /> View more
                         </DropdownMenuItem>

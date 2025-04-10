@@ -20,10 +20,11 @@ import { Pagination, PaginationContent, PaginationItem } from "@/components/ui/p
 interface LessonListProps {
     studyPlanId: number;
     isDefaultStudyPlan: boolean;
+    defaultStudyPlanId: number;
     token: string;
 }
 
-const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan }: LessonListProps) => {
+const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan, defaultStudyPlanId }: LessonListProps) => {
     const [lessonList, setLessonList] = useState<LessonList>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isLoadingLR, setIsLoadingLR] = useState<boolean>(false);
@@ -220,6 +221,7 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan }: LessonL
                                     updateLessonResources={updateLessonResources}
                                     setLessonResources={setLessonResources}
                                     studyPlanId={studyPlanId}
+                                    defaultStudyPlanId={defaultStudyPlanId}
                                 />
                             ))
                         ) : (

@@ -19,7 +19,7 @@ import { toast } from "sonner";
 
 const EditFlashcardSetPage = () => {
     const params = useParams(); // Lấy dữ liệu từ URL
-    const { courseId, studyPlanId, flashcardSetId } = params;
+    const { courseId, defaultStudyPlanId, studyPlanId, flashcardSetId } = params;
     const { data: session } = useSession()
 
     const [flashcardSet, setFlashcardSet] = useState<SystemFlashcardSet>();
@@ -46,7 +46,7 @@ const EditFlashcardSetPage = () => {
     }, [flashcardSetId, session?.user.token])
     return (
         <div className="w-full flex flex-col space-y-6">
-            <Link href={`/course-management/${courseId}/study-plan/${studyPlanId}`}>
+            <Link href={`/course-management/${courseId}/study-plan/${defaultStudyPlanId}/detail/${studyPlanId}`}>
                 <Button variant="outline">
                     <CornerDownLeft className="w-4 h-4" />
                     <span>Back</span>

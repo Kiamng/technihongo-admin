@@ -12,6 +12,7 @@ import { Lesson } from "@/types/lesson";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { updateLessonResourceOrder } from "@/app/api/lesson-resource/lesson-resource.api";
 import { toast } from "sonner";
+import AddExistingLessonResourcePopup from "../lesson-resource/add-existing-lesson-resource-popup";
 
 interface LessonItemProps {
     lesson: Lesson;
@@ -25,6 +26,7 @@ interface LessonItemProps {
     updateLessonResources: (lessonId: number, resourceId: number) => void;
     setLessonResources: Dispatch<SetStateAction<Record<number, LessonResource[]>>>;
     studyPlanId: number
+    defaultStudyPlanId: number
 }
 
 const LessonItem = ({
@@ -38,7 +40,8 @@ const LessonItem = ({
     token,
     updateLessonResources,
     setLessonResources,
-    studyPlanId
+    studyPlanId,
+    defaultStudyPlanId
 }: LessonItemProps) => {
     const [selectedLesson, setSelectedLesson] = useState<{ lessonId: number; title: string } | null>(null);
     const [openCreateResourceForm, setOpenCreateResourceForm] = useState(false);
@@ -209,11 +212,13 @@ const LessonItem = ({
                                 Add existing lesson resource
                             </DialogTrigger>
                             <DialogContent width='500px'>
-                                {/* <AddExistingLessonResourcePopup
+                                <AddExistingLessonResourcePopup
+                                    defaultStudyPlanId={defaultStudyPlanId}
                                     lessonId={lesson.lessonId}
-                                    closeForm={() => setOpenAddResourceForm(false)}
-                                    fetchLessons={fetchLessons}
-                                /> */}
+                                    closeForm={setOpenAddResourceForm}
+                                    setLessonResources={setLessonResources}
+                                    token={token}
+                                />
                             </DialogContent>
                         </Dialog>
                     }

@@ -139,9 +139,9 @@ const LessonResourceItem = ({ lessonResource, studyPlanId, updateLessonResources
                 <div className="flex space-x-2">
                     <Link href={editLink(lessonResource, studyPlanId)}>
                         <Button size="icon" variant="ghost"><SquarePen /></Button>
-                    </Link>
+                    </Link >
                     <Button onClick={handleDeleteClick} size="icon" variant="ghost"><Trash2 /></Button>
-                </div>
+                </div >
             </div>
 
             {/* Confirmation dialog */}

@@ -24,7 +24,7 @@ import QuestionInQuizList from "@/app/(pages)/course-management/_components/quiz
 export default function EditQuizPage() {
     const params = useParams();
     const { data: session } = useSession()
-    const { courseId, studyPlanId, quizId } = params;
+    const { courseId, defaultStudyPlanId, studyPlanId, quizId } = params;
 
     const [quiz, setQuiz] = useState<Quiz>();
     const [difficultyLevels, setDifficultyLevels] = useState<DifficultyLevel[]>([])
@@ -90,7 +90,7 @@ export default function EditQuizPage() {
 
     const fetchDifficultyLevel = async () => {
         try {
-            const response = await getAllDifficultyLevel();
+            const response = await getAllDifficultyLevel(session?.user.token as string);
             setDifficultyLevels(response);
         } catch (error) {
             console.log(error);
@@ -130,7 +130,7 @@ export default function EditQuizPage() {
 
     return (
         <div className="w-full flex flex-col space-y-6">
-            <Link href={`/course-management/${courseId}/study-plan/${studyPlanId}`}>
+            <Link href={`/course-management/${courseId}/study-plan/${defaultStudyPlanId}/detail/${studyPlanId}`}>
                 <Button variant="outline">
                     <CornerDownLeft className="w-4 h-4" />
                     <span>Back</span>
