@@ -15,6 +15,7 @@ import FlashcardInFormRender from "./flashcard-in-form";
 import UpdateFlashcardOrder from "./update-flashcard-order";
 import { DropResult } from "@hello-pangea/dnd";
 import FormAction from "../../quiz/QuizQuestion/actions/form-action";
+import { uploadImageCloud } from "@/app/api/image/image.api";
 
 type FlashcardInForm = z.infer<typeof FlashcardSchema>;
 
@@ -33,6 +34,8 @@ const FlashcardsFormRender = ({ initialData, token, flashcardSetId, fetchSet }: 
     const [isEditingOrder, setIsEditingOrder] = useState<boolean>(false);
     const [changedFlashcards, setChangedFlashcards] = useState<FlashcardInForm[]>([]);
     const [imageUrls, setImageUrls] = useState<(string | null)[]>([]);
+
+    const [imageFiles, setImageFiles] = useState<(File | null)[]>([]);
 
 
     const form = useForm<z.infer<typeof FlashcardSetSchema>>({
@@ -56,6 +59,15 @@ const FlashcardsFormRender = ({ initialData, token, flashcardSetId, fetchSet }: 
         return changedFlashcards.some(q => q.flashcardId === field.flashcardId)
             ? "border-yellow-500"
             : "";
+    };
+
+    const handleImageSelect = (index: number, file: File) => {
+        const newImageFiles = [...imageFiles];
+        newImageFiles[index] = file;
+        setImageFiles(newImageFiles);
+
+        const previewUrl = URL.createObjectURL(file);
+        handleImageUpload(index, previewUrl);
     };
 
     const handleImageUpload = (index: number, imageUrl: string) => {
@@ -240,44 +252,77 @@ const FlashcardsFormRender = ({ initialData, token, flashcardSetId, fetchSet }: 
         }
     }, [initialData, form]);
 
-    const onSubmit = (values: z.infer<typeof FlashcardSetSchema>) => {
-        const updatedFlashcards = values.flashcards;
-        const oldFlashcard = updatedFlashcards.filter((flashcard) => flashcard.flashcardId);
-        console.log("Old flashcard:", oldFlashcard);
-        console.log("Changed flashcard:", changedFlashcards);
-        const newFlashcards = updatedFlashcards.filter((flashcard) => !flashcard.flashcardId);
-        const formattedNewFlashcards = newFlashcards.map(flashcard => ({
-            japaneseDefinition: flashcard.japaneseDefinition,
-            vietEngTranslation: flashcard.vietEngTranslation,
-            imageUrl: flashcard.imageUrl
-        }));
-        console.log("New flashcard:", formattedNewFlashcards);
-        startTransition(async () => {
-            if (newFlashcards.length > 0) {
-                try {
-                    const repsonse = await createFlashcards(token, flashcardSetId, formattedNewFlashcards)
-                    console.log(repsonse);
-                } catch (error) {
-                    console.error("Error while creating new flashcards: ", error);
+    const uploadImagesIfNeeded = async (
+        flashcards: FlashcardInForm[],
+        imageFiles: (File | null)[]
+    ): Promise<FlashcardInForm[]> => {
+        const updatedFlashcards = [...flashcards];
+
+        for (let i = 0; i < flashcards.length; i++) {
+            const file = imageFiles[i];
+            const isTempPreview = flashcards[i].imageUrl && !flashcards[i].imageUrl?.startsWith("http");
+
+            if (file && file instanceof File && isTempPreview) {
+                const formData = new FormData();
+                formData.append("file", file);
+                const uploadedUrl = await uploadImageCloud(formData);
+
+                if (uploadedUrl) {
+                    updatedFlashcards[i].imageUrl = uploadedUrl;
+
+                    const currentFormValue = [...form.getValues().flashcards];
+                    currentFormValue[i].imageUrl = uploadedUrl;
+                    form.setValue("flashcards", currentFormValue);
                 }
             }
+        }
 
-            if (changedFlashcards.length > 0) {
-                try {
-                    for (const flashcard of changedFlashcards) {
-                        if (flashcard?.flashcardId) {
-                            const updateResponse = await updateFlashard(token, flashcard);
-                            if (updateResponse.success === false) {
-                                toast.error(`Failed to update question: "${flashcard?.japaneseDefinition}"`);
+        return updatedFlashcards;
+    };
+
+
+    const onSubmit = (values: z.infer<typeof FlashcardSetSchema>) => {
+        const updatedFlashcards = values.flashcards;
+        // console.log("Old flashcard:", oldFlashcard);
+        // console.log("Changed flashcard:", changedFlashcards);
+        const newFlashcards = updatedFlashcards.filter((flashcard) => !flashcard.flashcardId);
+        // const formattedNewFlashcards = newFlashcards.map(flashcard => ({
+        //     japaneseDefinition: flashcard.japaneseDefinition,
+        //     vietEngTranslation: flashcard.vietEngTranslation,
+        //     imageUrl: flashcard.imageUrl
+        // }));
+        // console.log("New flashcard:", formattedNewFlashcards);
+        startTransition(async () => {
+            try {
+                const updatedNewFlashcards = await uploadImagesIfNeeded(newFlashcards, imageFiles);
+                const updatedChangedFlashcards = await uploadImagesIfNeeded(changedFlashcards, imageFiles);
+
+                if (updatedNewFlashcards.length > 0) {
+                    const formattedNew = updatedNewFlashcards.map(f => ({
+                        japaneseDefinition: f.japaneseDefinition,
+                        vietEngTranslation: f.vietEngTranslation,
+                        imageUrl: f.imageUrl
+                    }));
+                    await createFlashcards(token, flashcardSetId, formattedNew);
+                }
+
+                if (updatedChangedFlashcards.length > 0) {
+                    for (const flashcard of updatedChangedFlashcards) {
+                        console.log("➡️ Updating flashcard:", flashcard);
+                        if (flashcard.flashcardId) {
+                            const res = await updateFlashard(token, flashcard);
+                            if (res.success === false) {
+                                toast.error(`Failed to update: "${flashcard.japaneseDefinition}"`);
                             }
                         }
                     }
-                } catch (error) {
-                    console.error("Error while updating questions: ", error);
                 }
+                setChangedFlashcards([])
+                await fetchSet()
+            } catch (error) {
+                console.error("Error while updating flashcards: ", error);
+                toast.error("Failed to update flashcards");
             }
-            setChangedFlashcards([])
-            await fetchSet()
         })
     }
 
@@ -323,7 +368,7 @@ const FlashcardsFormRender = ({ initialData, token, flashcardSetId, fetchSet }: 
                                             addChangedFlashcard={addChangedFlashcard}
                                             handleDelete={handleDelete}
                                             handleDeleteImage={handleDeleteImage}
-                                            handleImageUpload={handleImageUpload} />
+                                            handleImageSelect={handleImageSelect} />
                                     </div>
                                 ))
                             )

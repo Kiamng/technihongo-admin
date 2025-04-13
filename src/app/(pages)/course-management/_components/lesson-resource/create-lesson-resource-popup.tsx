@@ -16,9 +16,10 @@ interface CreateLessonResourcePopupProps {
     lesson: Lesson;
     closeForm: (open: boolean) => void;
     token: string
+    defaultStudyPlanId: number
 }
 
-const CreateLessonResourcePopup = ({ lesson, closeForm, token }: CreateLessonResourcePopupProps) => {
+const CreateLessonResourcePopup = ({ lesson, closeForm, token, defaultStudyPlanId }: CreateLessonResourcePopupProps) => {
     const [selectedType, setSelectedType] = useState<string>("LearningResource");
     const [isPending, startTransition] = useTransition()
     const router = useRouter();
@@ -42,7 +43,7 @@ const CreateLessonResourcePopup = ({ lesson, closeForm, token }: CreateLessonRes
                         const lessonResourceResponse = await createLessonResource({ token: token, lessonId: lesson.lessonId, resourceId: response.data.resourceId })
                         if (lessonResourceResponse.success) {
                             // If linking resource with lesson was successful, redirect to the edit page
-                            router.push(`/course-management/${lesson.studyPlan.course.courseId}/study-plan/${lesson.studyPlan.studyPlanId}/edit-lesson-resource/learning-resource/${response.data.resourceId}`);
+                            router.push(`/course-management/${lesson.studyPlan.course.courseId}/study-plan/${defaultStudyPlanId}/detail/${lesson.studyPlan.studyPlanId}/edit-lesson-resource/learning-resource/${response.data.resourceId}`);
                         } else {
                             // Show an error if creating lesson resource fails
                             toast.error(`Failed to associate resource with lesson: ${lessonResourceResponse.message}`);
@@ -65,7 +66,7 @@ const CreateLessonResourcePopup = ({ lesson, closeForm, token }: CreateLessonRes
                     if (response.success) {
                         const lessonResourceResponse = await createLessonResource({ token: token, lessonId: lesson.lessonId, systemSetId: response.data.systemSetId })
                         if (lessonResourceResponse.success) {
-                            router.push(`/course-management/${lesson.studyPlan.course.courseId}/study-plan/${lesson.studyPlan.studyPlanId}/edit-lesson-resource/flashcard-set/${response.data.systemSetId}`);
+                            router.push(`/course-management/${lesson.studyPlan.course.courseId}/study-plan/${defaultStudyPlanId}/detail/${lesson.studyPlan.studyPlanId}/edit-lesson-resource/flashcard-set/${response.data.systemSetId}`);
                         } else {
                             toast.error(`Failed to associate flashcard set with lesson: ${lessonResourceResponse.message}`);
                         }
@@ -81,13 +82,14 @@ const CreateLessonResourcePopup = ({ lesson, closeForm, token }: CreateLessonRes
                         description: "This is a draft quiz",
                         difficultyLevelId: 1,
                         passingScore: 0.5,
+                        timeLimit: 10,
                         isPremium: lesson.studyPlan.course.premium
                     };
                     response = await createQuiz(token, draftData);
                     if (response.success) {
                         const lessonResourceResponse = await createLessonResource({ token: token, lessonId: lesson.lessonId, quizId: response.data.quizId })
                         if (lessonResourceResponse.success) {
-                            router.push(`/course-management/${lesson.studyPlan.course.courseId}/study-plan/${lesson.studyPlan.studyPlanId}/edit-lesson-resource/quiz/${response.data.quizId}`);
+                            router.push(`/course-management/${lesson.studyPlan.course.courseId}/study-plan/${defaultStudyPlanId}/detail/${lesson.studyPlan.studyPlanId}/edit-lesson-resource/quiz/${response.data.quizId}`);
                         } else {
                             toast.error(`Failed to associate quiz with lesson: ${lessonResourceResponse.message}`);
                         }

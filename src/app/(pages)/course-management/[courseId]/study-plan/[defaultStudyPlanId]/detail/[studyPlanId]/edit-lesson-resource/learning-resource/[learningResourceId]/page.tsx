@@ -13,7 +13,6 @@ import { toast } from "sonner";
 
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import { CldUploadWidget } from "next-cloudinary";
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -24,10 +23,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import { getLearningResourceById, updateLearningResource } from "@/app/api/learning-resource/learning-resource.api";
 import LearningResourceUpdatePublicStatus from "@/app/(pages)/course-management/_components/learning-resource/update-public-status";
+import UploadWithPreview from "@/app/(pages)/course-management/_components/upload/update-with-review";
+import { uploadVideoPdfCloudinary } from "@/app/api/image/video-pdf.api";
 
 
 export default function EditLearningResourcePage() {
-    const params = useParams(); // Lấy dữ liệu từ URL
+    const params = useParams();
     const { courseId, defaultStudyPlanId, studyPlanId, learningResourceId } = params;
     const [learningResource, setLearningResource] = useState<LearningResource>();
     const { data: session } = useSession();
@@ -36,6 +37,10 @@ export default function EditLearningResourcePage() {
 
     const [videoSrc, setVideoSrc] = useState<string | null>(null);
     const [pdfSrc, setPdfSrc] = useState<string | null>(null);
+
+    const [videoFile, setVideoFile] = useState<File | null>(null);
+    const [pdfFile, setPdfFile] = useState<File | null>(null);
+
 
     const form = useForm({
         resolver: zodResolver(LearningResourceSchema),
@@ -78,14 +83,53 @@ export default function EditLearningResourcePage() {
         }
         fetchLearningResource()
     }, [learningResourceId])
-
+    console.log("Form errors:", form.formState.errors);
     const onSubmit = async (values: z.infer<typeof LearningResourceSchema>) => {
         if (learningResource?.public === true) {
             toast.error("You can not update a public learning resource!");
             return
         }
+
+        console.log("Form values:", values);
+
         startTransition(async () => {
             try {
+                const prepareFormDataForUpload = (
+                    file: File,
+                    preset: string,
+                    type: "video" | "raw" | "image"
+                ): FormData => {
+                    const formData = new FormData();
+                    formData.append("file", file);
+                    formData.append("upload_preset", preset);
+                    formData.append("resource_type", type);
+                    return formData;
+                };
+
+                if (videoFile) {
+                    const formData = prepareFormDataForUpload(
+                        videoFile,
+                        process.env.NEXT_PUBLIC_CLOUD_VIDEO_UPLOAD_PRESET!,
+                        "video"
+                    );
+                    const videoUrl = await uploadVideoPdfCloudinary(formData);
+                    if (!videoUrl) throw new Error("Video upload failed");
+                    values.videoUrl = videoUrl;
+                    values.videoFilename = videoFile.name;
+                }
+
+                if (pdfFile) {
+                    const formData = prepareFormDataForUpload(
+                        pdfFile,
+                        process.env.NEXT_PUBLIC_CLOUD_PDF_UPLOAD_PRESET!,
+                        "raw"
+                    );
+                    const pdfUrl = await uploadVideoPdfCloudinary(formData);
+                    if (!pdfUrl) throw new Error("PDF upload failed");
+                    values.pdfUrl = pdfUrl;
+                    values.pdfFilename = pdfFile.name;
+                }
+
                 const response = await updateLearningResource(session?.user.token as string, parseInt(learningResourceId as string, 10), values)
                 console.log(response);
                 if (response.success === true) {
@@ -162,45 +206,29 @@ export default function EditLearningResourcePage() {
                                         <FormControl>
                                             <Input disabled={isPending} placeholder="Choose a video" {...field} readOnly />
                                         </FormControl>
-                                        <CldUploadWidget
-                                            uploadPreset={process.env.NEXT_PUBLIC_CLOUD_VIDEO_UPLOAD_PRESET}
-                                            options={{ sources: ["local", "camera", "url"], resourceType: "video" }}
-                                            onSuccess={(result) => {
-                                                if (typeof result.info === "object" && result.info !== null) {
-                                                    const uploadInfo = result.info; // Ép kiểu
-                                                    setVideoSrc(uploadInfo.secure_url);
-                                                    form.setValue("videoUrl", uploadInfo.secure_url);
-                                                    form.setValue("videoFilename", uploadInfo.original_filename);
-                                                }
-                                            }}
-                                        >
-                                            {({ open }) => (
-                                                <Button disabled={isPending} type="button" size="sm" onClick={() => open()}>
-                                                    Upload Video
-                                                </Button>
-                                            )}
-                                        </CldUploadWidget>
                                     </div>
                                     <FormMessage />
                                 </FormItem>
                             )} />
-                            {videoSrc ? (
-                                <div className="relative w-full h-0 pb-[56.25%] bg-black"> {/* Container với tỷ lệ khung hình 16:9 */}
-                                    <video controls className="absolute top-0 left-0 w-full h-full object-contain">
-                                        {/* Cung cấp video MP4 đầu tiên */}
-                                        <source src={videoSrc} type="video/mp4" />
-                                        {/* Nếu video không phải MP4, thử WebM */}
-                                        <source src={videoSrc.replace(".mp4", ".webm")} type="video/webm" />
-                                        {/* Nếu video không phải MP4/WebM, thử OGG */}
-                                        <source src={videoSrc.replace(".mp4", ".ogv")} type="video/ogg" />
+                            <UploadWithPreview
+                                disabled={isPending}
+                                label="Video"
+                                accept="video/*"
+                                previewUrl={videoSrc}
+                                setPreviewUrl={setVideoSrc}
+                                onFileSelected={(file) => {
+                                    setVideoFile(file);
+                                    setVideoSrc(URL.createObjectURL(file));
+                                    form.setValue("videoUrl", file);
+                                    form.setValue("videoFilename", file.name);
+                                }}
+                                onClear={() => {
+                                    setVideoFile(null);
+                                    form.setValue("videoUrl", "");
+                                    form.setValue("videoFilename", "");
+                                }}
+                            />
 
-                                        {/* Thông báo lỗi nếu trình duyệt không hỗ trợ video */}
-                                        Your browser does not support the video tag.
-                                    </video>
-                                </div>
-                            ) : (
-                                <p className="text-slate-400">No video selected</p>
-                            )}
                         </div>
                         <div className="w-1/2 flex flex-col space-y-6">
                             <FormField control={form.control} name="pdfFilename" render={({ field }) => (
@@ -210,37 +238,23 @@ export default function EditLearningResourcePage() {
                                         <FormControl>
                                             <Input disabled={isPending} placeholder="Choose pdf file" {...field} readOnly />
                                         </FormControl>
-                                        <CldUploadWidget
-                                            uploadPreset={process.env.NEXT_PUBLIC_CLOUD_PDF_UPLOAD_PRESET}
-                                            options={{ sources: ["local", "camera", "url"], resourceType: "raw" }}
-                                            onSuccess={(result) => {
-                                                if (typeof result.info === "object" && result.info !== null) {
-                                                    const uploadInfo = result.info;
-                                                    setPdfSrc(uploadInfo.secure_url);
-                                                    form.setValue("pdfUrl", uploadInfo.secure_url);
-                                                    form.setValue("pdfFilename", uploadInfo.original_filename);
-                                                }
-                                            }}
-                                        >
-                                            {({ open }) => (
-                                                <Button disabled={isPending} type="button" size="sm" onClick={() => open()}>
-                                                    Upload PDF
-                                                </Button>
-                                            )}
-                                        </CldUploadWidget>
                                     </div>
                                     <FormMessage />
                                 </FormItem>
                             )} />
-                            {pdfSrc ? (
-                                <iframe
-                                    title="pdf review"
-                                    src={pdfSrc}  // sử dụng pdfSrc đã được cấp quyền công khai
-                                    className="w-full h-screen border"
-                                />
-                            ) : (
-                                <p className="text-slate-400">No PDF selected</p>
-                            )}
+                            <UploadWithPreview
+                                disabled={isPending}
+                                label="PDF"
+                                accept="application/pdf"
+                                previewUrl={pdfSrc}
+                                setPreviewUrl={setPdfSrc}
+                                onFileSelected={(file) => { setPdfFile(file); form.setValue("pdfFilename", file.name) }}
+                                onClear={() => {
+                                    setPdfFile(null);
+                                    form.setValue("pdfUrl", "");
+                                    form.setValue("pdfFilename", "");
+                                }}
+                            />
 
                         </div>
                     </div>

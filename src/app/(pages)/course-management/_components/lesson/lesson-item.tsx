@@ -200,6 +200,7 @@ const LessonItem = ({
                             </DialogTrigger>
                             <DialogContent width='500px'>
                                 <CreateLessonResourcePopup
+                                    defaultStudyPlanId={defaultStudyPlanId}
                                     lesson={lesson}
                                     closeForm={setOpenCreateResourceForm}
                                     token={token}

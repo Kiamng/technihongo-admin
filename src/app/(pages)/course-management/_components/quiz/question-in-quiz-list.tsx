@@ -26,6 +26,7 @@ import { updateQuestionWithOptions } from "@/app/api/question/question.api";
 
 import { handleFileUpload } from "../spreadsheet-import/quiz-import-csv-action";
 import ImportCSVPopup from "../spreadsheet-import/import-csv-popup";
+import { uploadImageCloud } from "@/app/api/image/image.api";
 
 
 interface QuestionInQuizListProps {
@@ -52,7 +53,10 @@ type QuestionInForm = z.infer<typeof QuestionSchema>;
 const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQuizQuestion, token }: QuestionInQuizListProps) => {
 
     const [isSaving, startTransition] = useTransition();
+
     const [imageUrls, setImageUrls] = useState<(string | null)[]>([]);
+    const [imageFiles, setImageFiles] = useState<(File | null)[]>([]);
+
     const [changedQuestions, setChangedQuestions] = useState<QuestionInForm[]>([]);
     const [isEditingOrder, setIsEditingOrder] = useState<boolean>(false);
     const [initialOrder, setInitialOrder] = useState<QuestionInForm[]>([]);
@@ -271,12 +275,25 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
         // const newQuestions = updatedQuestions.filter((question) => !question.quizQuestionId);
         // console.log("New question:", newQuestions);
 
+        if (values.questions.length === 0 || values.questions.length < 5) {
+            toast.error("You need to add at least 5 questions");
+            return;
+        }
+
+        if (quiz.hasAttempt) {
+            toast.error("You cannot update questions once taken by a student");
+            return;
+        }
+
         startTransition(async () => {
             const newQuestions = values.questions.filter((question) => !question.quizQuestionId);
 
-            if (changedQuestions.length > 0) {
+            const updatedNew = await uploadQuestionImagesIfNeeded(newQuestions, imageFiles);
+            const updatedChanged = await uploadQuestionImagesIfNeeded(changedQuestions, imageFiles);
+
+            if (updatedChanged.length > 0) {
                 try {
-                    for (const question of changedQuestions) {
+                    for (const question of updatedChanged) {
                         if (question?.questionId) {
                             const updateResponse = await updateQuestionWithOptions(token, question.questionId, question);
                             if (updateResponse.success === false) {
@@ -289,9 +306,9 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
                 }
             }
 
-            if (newQuestions.length > 0) {
+            if (updatedNew.length > 0) {
                 try {
-                    for (const question of newQuestions) {
+                    for (const question of updatedNew) {
                         const createQuestionResponse = await createQuizQuestionWithQuestion(quiz.quizId, question);
                         if (createQuestionResponse.success === false) {
                             toast.error(`Failed to create question: "${question.questionText}"`);
@@ -330,6 +347,16 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
         }
     }, [initialData, form]);
 
+    const handleImageSelect = (index: number, file: File) => {
+        const previewUrl = URL.createObjectURL(file);
+
+        const newImageFiles = [...imageFiles];
+        newImageFiles[index] = file;
+        setImageFiles(newImageFiles);
+
+        handleImageUpload(index, previewUrl);
+    };
+
     const handleImageUpload = (index: number, imageUrl: string) => {
         const updatedImageUrls = [...imageUrls];
         updatedImageUrls[index] = imageUrl;
@@ -366,6 +393,33 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
         setChangedQuestions(updatedChangedQuestions);
     };
 
+    const uploadQuestionImagesIfNeeded = async (
+        questions: QuestionInForm[],
+        imageFiles: (File | null)[]
+    ): Promise<QuestionInForm[]> => {
+        const updatedQuestions = [...questions];
+
+        for (let i = 0; i < questions.length; i++) {
+            const file = imageFiles[i];
+            const isTempPreview = questions[i].url?.startsWith("http") === false;
+
+            if (file && file instanceof File && isTempPreview) {
+                const formData = new FormData();
+                formData.append("file", file);
+                const uploadedUrl = await uploadImageCloud(formData);
+                if (uploadedUrl) {
+                    updatedQuestions[i].url = uploadedUrl;
+
+                    const currentForm = [...form.getValues().questions];
+                    currentForm[i].url = uploadedUrl;
+                    form.setValue("questions", currentForm);
+                }
+            }
+        }
+
+        return updatedQuestions;
+    };
+
     if (isQuizQuestionsLoading) {
         return (
             <>
@@ -385,15 +439,15 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
                             <span className="text-lg font-bold ">
                                 Questions In Quiz ({isQuizQuestionsLoading ? "..." : newQuestionOrder.length})
                             </span>
-                            <ImportCSVPopup type="quiz" />
-
+                            {!quiz.hasAttempt && <ImportCSVPopup type="quiz" />}
                         </div>
                         {quiz.hasAttempt
                             ? (<div className="px-3 py-2 bg-orange-400 text-white font-medium text-base rounded-lg">
-                                Cannot update a quiz once taken by a student
+                                Cannot update questions once taken by a student
                             </div>
                             )
                             : (
+                                form.getValues().questions.length > 0 &&
                                 <FormAction
                                     isEditingOrder={isEditingOrder}
                                     handleCancelUpdateOrder={handleCancelUpdateOrder}
@@ -436,7 +490,7 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
                                             field={field}
                                             index={index}
                                             addChangedQuestion={addChangedQuestion}
-                                            handleImageUpload={handleImageUpload}
+                                            handleImageSelect={handleImageSelect}
                                             handleDeleteImage={handleDeleteImage} />
                                         <Separator />
                                         <OptionRender

@@ -1,35 +1,32 @@
-import { ImagePlus } from 'lucide-react';
-import { CldUploadWidget } from 'next-cloudinary';
 interface QuestionImageUploadProps {
-    handleImageUpload: (index: number, imageUrl: string) => void,
-    index: number,
-    isSaving: boolean
-}
-const QuestionImageUpload = ({ handleImageUpload, index, isSaving }: QuestionImageUploadProps) => {
-    return (
-        <CldUploadWidget
-            uploadPreset={process.env.NEXT_PUBLIC_CLOUD_IMAGE_UPLOAD_PRESET}
-            options={{ sources: ["local", "camera", "url"], resourceType: "auto" }}
-            onSuccess={(result) => {
-                if (typeof result.info === "object" && result.info !== null) {
-                    const uploadInfo = result.info;
-                    const imageUrl = uploadInfo.secure_url;
-                    handleImageUpload(index, imageUrl);
-                }
-            }}
-        >
-            {({ open }) => (
-                <button
-                    disabled={isSaving}
-                    type='button'
-                    className="border-dashed border-[2px] rounded-lg h-[92px] w-32 flex items-center justify-center text-slate-500 hover:cursor-pointer hover:text-green-500 hover:scale-105 duration-100"
-                    onClick={() => open()}
-                >
-                    <ImagePlus />
-                </button>
-            )}
-        </CldUploadWidget>
-    )
+    index: number;
+    isSaving: boolean;
+    handleImageSelect: (index: number, file: File) => void;
 }
 
-export default QuestionImageUpload
+const QuestionImageUpload = ({ index, isSaving, handleImageSelect }: QuestionImageUploadProps) => {
+    return (
+        <>
+            <input
+                type="file"
+                accept="image/*"
+                id={`quiz-image-upload-${index}`}
+                className="hidden"
+                disabled={isSaving}
+                onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                        handleImageSelect(index, file);
+                    }
+                }}
+            />
+            <label htmlFor={`quiz-image-upload-${index}`}>
+                <div className="border-dashed border-[2px] rounded-lg h-[92px] w-32 flex items-center justify-center text-slate-500 hover:text-green-500 hover:scale-105 duration-100 cursor-pointer">
+                    Upload
+                </div>
+            </label>
+        </>
+    );
+};
+
+export default QuestionImageUpload;

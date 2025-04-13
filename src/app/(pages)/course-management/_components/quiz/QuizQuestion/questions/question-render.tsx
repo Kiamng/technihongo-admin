@@ -8,13 +8,13 @@ interface QuestionRender {
     field: FieldValues,
     index: number,
     addChangedQuestion: (index: number) => void,
-    handleImageUpload: (index: number, imageUrl: string) => void,
+    handleImageSelect: (index: number, file: File) => void,
     handleDeleteImage: (index: number) => void,
     isSaving: boolean,
     hasAttempt: boolean
 }
 
-const QuestionRender = ({ field, index, addChangedQuestion, handleImageUpload, handleDeleteImage, isSaving, hasAttempt }: QuestionRender) => {
+const QuestionRender = ({ field, index, addChangedQuestion, handleDeleteImage, isSaving, hasAttempt, handleImageSelect }: QuestionRender) => {
     return (
         <div className="w-full flex flex-row space-x-4">
             <FormField control={field.control} name={`questions.${index}.questionText`} render={({ field }) => (
@@ -53,11 +53,11 @@ const QuestionRender = ({ field, index, addChangedQuestion, handleImageUpload, h
             )} />
             {!field.url ?
                 (!hasAttempt &&
-                    <QuestionImageUpload isSaving={isSaving} handleImageUpload={handleImageUpload} index={index} />
+                    <QuestionImageUpload isSaving={isSaving} handleImageSelect={handleImageSelect} index={index} />
                 )
                 :
                 <div
-                    className={`border-dashed border-[2px] rounded-lg h-[92px] w-32 flex justify-end text-slate-500  ${!isSaving ? "hover:cursor-not-allowed" : "hover:cursor-pointer hover:text-green-500 hover:scale-105 duration-100"}`}
+                    className={`border-dashed border-[2px] rounded-lg h-[92px] w-32 flex justify-end text-slate-500  ${isSaving ? "hover:cursor-not-allowed" : "hover:cursor-pointer hover:text-green-500 hover:scale-105 duration-100"}`}
 
                     style={{
                         backgroundImage: `url(${field.url})`,
@@ -66,7 +66,7 @@ const QuestionRender = ({ field, index, addChangedQuestion, handleImageUpload, h
                     }}
                 >
                     {!hasAttempt &&
-                        <button disabled={isSaving} type="button" onClick={() => handleDeleteImage(index)} className="bg-slate-700 text-white hover:bg-red-500 p-1 h-fit">
+                        <button disabled={isSaving} type="button" onClick={() => handleDeleteImage(index)} className={`bg-slate-700 text-white hover:bg-red-500 p-1 h-fit ${isSaving ? "hover:cursor-not-allowed" : "hover:cursor-pointer hover:scale-105 duration-100"}`}>
                             <Trash size={16} />
                         </button>
                     }

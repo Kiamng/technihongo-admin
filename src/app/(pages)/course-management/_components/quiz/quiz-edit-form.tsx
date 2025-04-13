@@ -33,10 +33,10 @@ const QuizEditForm = ({ quiz, token, difficultyLevels, loading }: QuizEditFormPr
             title: quiz.title ?? "",
             description: quiz.description ?? "",
             difficultyLevelId: quiz.difficultyLevel.levelId ?? 0,
-            passingScore: quiz.passingScore * 100,
+            passingScore: quiz.passingScore * 10,
+            timeLimit: quiz.timeLimit ?? 0
         },
     });
-
 
     const onSubmit = async (values: z.infer<typeof QuizSchema>) => {
         if (quiz.public === true) {
@@ -81,10 +81,35 @@ const QuizEditForm = ({ quiz, token, difficultyLevels, loading }: QuizEditFormPr
                             <FormMessage />
                         </FormItem>
                     )} />
+                    <FormField control={form.control} name="difficultyLevelId" render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>Level:</FormLabel>
+                            <Select
+                                disabled={isPending || loading}
+                                value={field.value?.toString()}
+                                onValueChange={(value) => field.onChange(Number(value))}>
+                                <FormControl>
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder={loading ? "loading ..." : "Select a level"} />
+                                    </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                    {
+                                        difficultyLevels?.map((level) => (
+                                            <SelectItem key={level.levelId} value={level.levelId.toString()}>
+                                                {level.tag} : {level.name}
+                                            </SelectItem>
+                                        ))}
+                                </SelectContent>
+                            </Select>
+
+                            <FormMessage />
+                        </FormItem>
+                    )} />
                     <div className="w-full grid grid-cols-2 gap-4">
                         <FormField control={form.control} name="passingScore" render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Passing percent(%):</FormLabel>
+                                <FormLabel>Passing score:</FormLabel>
                                 <FormControl>
                                     <Input
                                         className="w-full"
@@ -94,28 +119,15 @@ const QuizEditForm = ({ quiz, token, difficultyLevels, loading }: QuizEditFormPr
                                 <FormMessage />
                             </FormItem>
                         )} />
-                        <FormField control={form.control} name="difficultyLevelId" render={({ field }) => (
+                        <FormField control={form.control} name="timeLimit" render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Level:</FormLabel>
-                                <Select
-                                    disabled={isPending || loading}
-                                    value={field.value?.toString()}
-                                    onValueChange={(value) => field.onChange(Number(value))}>
-                                    <FormControl>
-                                        <SelectTrigger className="w-full">
-                                            <SelectValue placeholder={loading ? "loading ..." : "Select a level"} />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {
-                                            difficultyLevels?.map((level) => (
-                                                <SelectItem key={level.levelId} value={level.levelId.toString()}>
-                                                    {level.tag} : {level.name}
-                                                </SelectItem>
-                                            ))}
-                                    </SelectContent>
-                                </Select>
-
+                                <FormLabel>Time limit(minutes):</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        className="w-full"
+                                        disabled={isPending}
+                                        placeholder="Enter time limit" {...field} />
+                                </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )} />

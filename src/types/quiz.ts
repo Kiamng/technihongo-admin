@@ -7,10 +7,12 @@ export type Quiz = {
                 difficultyLevel : DifficultyLevel
                 totalQuestions: number,
                 passingScore: number,
+                timeLimit: number,
                 createdAt: Date,
                 updatedAt: Date,
                 hasAttempt : boolean,
                 public: boolean,
+                premium : boolean,
                 deleted: boolean
             }
 

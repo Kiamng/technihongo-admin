@@ -17,6 +17,7 @@ export const createQuiz = async (token : string, values:z.infer<typeof QuizSchem
             description : values.description,
             difficultyLevelId : values.difficultyLevelId,
             passingScore : values.passingScore,
+            timeLimit : values.timeLimit,
             isPremium : values.isPremium
         },
         {
