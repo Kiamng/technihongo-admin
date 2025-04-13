@@ -1,5 +1,5 @@
 export const isMostlyJapanese = (text: string, threshold: number = 0.8): boolean => {
-  const japaneseCharRegex = /[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]/gu;
+  const japaneseCharRegex = /[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}ー]/gu;
   const emojiOrSymbolRegex = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
 
   const japaneseChars = text.match(japaneseCharRegex) || [];
