@@ -30,6 +30,7 @@ import CreateStudyPlanPopUp from "../_components/study-plan/create-study-plan-po
 import EmptyStateComponent from "@/components/empty-state";
 import CustomBreadCrumb from "@/components/bread-cumb";
 import Link from "next/link";
+import axios from "axios";
 
 export default function CourseDetailPage() {
     const { courseId } = useParams();
@@ -99,34 +100,42 @@ export default function CourseDetailPage() {
         setIsPending(true);
         let imgUrl: string = "";
 
-        if (typeof values.thumbnailUrl === "string") {
-            imgUrl = values.thumbnailUrl;
-        }
-
-        if (selectedFile instanceof File) {
-            const formData = new FormData();
-            formData.append('file', selectedFile);
-            const uploadedUrl = await uploadImageCloud(formData);
-            if (uploadedUrl) {
-                imgUrl = uploadedUrl;
+        try {
+            if (typeof values.thumbnailUrl === "string") {
+                imgUrl = values.thumbnailUrl;
             }
-        }
 
-        const finalData = {
-            ...values,
-            thumbnailUrl: imgUrl,
-        };
+            if (selectedFile instanceof File) {
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                const uploadedUrl = await uploadImageCloud(formData);
+                if (uploadedUrl) {
+                    imgUrl = uploadedUrl;
+                }
+            }
 
-        const patchResponse = await patchCourse(finalData, session?.user.token as string, numericCourseId as number);
-        if (patchResponse.success === true) {
-            toast.success(patchResponse.message);
-        } else {
-            toast.error(patchResponse.message);
+            const finalData = {
+                ...values,
+                thumbnailUrl: imgUrl,
+            };
+
+            const patchResponse = await patchCourse(finalData, session?.user.token as string, numericCourseId as number);
+
+            if (patchResponse.success === true) {
+                toast.success(patchResponse.message);
+            }
+        } catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response) {
+                toast.error(error?.response.data.message);
+            } else {
+                toast.error('An error occurred. Please try again later.');
+            }
+        } finally {
+            setIsPending(false);
         }
-        setIsPending(false);
         console.log(values);
-
     };
+
 
     if (isLoading) return <Skeleton className="w-full h-screen" />;
 
@@ -152,7 +161,11 @@ export default function CourseDetailPage() {
                         Create new study plan
                     </DialogTrigger>
                     <DialogContent width='400px'>
-                        <CreateStudyPlanPopUp fetchStudyPlan={fetchStudyPlan} setIsDialogOpen={setIsDialogOpen} courseId={numericCourseId as number} />
+                        <CreateStudyPlanPopUp
+                            fetchStudyPlan={fetchStudyPlan}
+                            setIsDialogOpen={setIsDialogOpen}
+                            courseId={numericCourseId as number}
+                            token={session?.user.token as string} />
                     </DialogContent>
                 </Dialog>
             </div>

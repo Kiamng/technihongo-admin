@@ -83,15 +83,11 @@ export default function EditLearningResourcePage() {
         }
         fetchLearningResource()
     }, [learningResourceId])
-    console.log("Form errors:", form.formState.errors);
     const onSubmit = async (values: z.infer<typeof LearningResourceSchema>) => {
         if (learningResource?.public === true) {
             toast.error("You can not update a public learning resource!");
             return
         }
-
-        console.log("Form values:", values);
-
         startTransition(async () => {
             try {
                 const prepareFormDataForUpload = (
@@ -138,7 +134,7 @@ export default function EditLearningResourcePage() {
                     toast.error("Failed to save learning resource");
                 }
             } catch (error) {
-                console.error("Error creating course:", error);
+                console.error("Error saving learning resource:", error);
             }
         })
     }
@@ -201,7 +197,7 @@ export default function EditLearningResourcePage() {
                             )} />
                             <FormField control={form.control} name="videoFilename" render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Video name (mp4, webm, ogv):</FormLabel>
+                                    <FormLabel>Video name (mp4):</FormLabel>
                                     <div className="flex items-center space-x-2">
                                         <FormControl>
                                             <Input disabled={isPending} placeholder="Choose a video" {...field} readOnly />
@@ -224,6 +220,7 @@ export default function EditLearningResourcePage() {
                                 }}
                                 onClear={() => {
                                     setVideoFile(null);
+                                    setVideoSrc(null)
                                     form.setValue("videoUrl", "");
                                     form.setValue("videoFilename", "");
                                 }}
@@ -248,9 +245,16 @@ export default function EditLearningResourcePage() {
                                 accept="application/pdf"
                                 previewUrl={pdfSrc}
                                 setPreviewUrl={setPdfSrc}
-                                onFileSelected={(file) => { setPdfFile(file); form.setValue("pdfFilename", file.name) }}
+                                onFileSelected={
+                                    (file) => {
+                                        setPdfFile(file);
+                                        setPdfSrc(URL.createObjectURL(file));
+                                        form.setValue("pdfUrl", file);
+                                        form.setValue("pdfFilename", file.name)
+                                    }}
                                 onClear={() => {
                                     setPdfFile(null);
+                                    setPdfSrc(null)
                                     form.setValue("pdfUrl", "");
                                     form.setValue("pdfFilename", "");
                                 }}
