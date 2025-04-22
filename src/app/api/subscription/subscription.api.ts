@@ -9,8 +9,20 @@ const ENDPOINT = {
     ADDSUBSCRIPTIONPLAN: "subscription/create",
     UPDATESUBSCRIPTIONPLAN: "subscription/update/{subPlanId}",
     DELETESUBSCRIPTIONPLAN: "subscription/delete/{subPlanId}",
+    GET_ADMIN_OVERVIEW: "dashboard/admin/overview",
 };
 
+
+export interface AdminOverview {
+  totalStudents: number;
+  totalActiveCourses: number;
+  totalSubscriptionsSold: number;
+  yearlyRevenue: YearlyRevenue[];
+}
+export interface YearlyRevenue {
+  month: string;
+  revenue: number;
+}
 
 
 export const getAllSubscription = async (token : string): Promise<SubscriptionPlan[]> => {
@@ -92,5 +104,18 @@ export const deleteSubscriptionPlan = async (token : string, subPlanId: number) 
   } catch (error) {
     console.error("Error deleting subscription plan:", error);
     throw new Error("An error occurred while deleting the subscription plan.");
+  }
+};
+export const getAdminOverview = async (token: string): Promise<AdminOverview> => {
+  try {
+    const response = await axiosClient.get(ENDPOINT.GET_ADMIN_OVERVIEW, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data.data as AdminOverview;
+  } catch (error) {
+    console.error("Error fetching admin overview:", error);
+    throw new Error("Failed to fetch admin overview data.");
   }
 };
