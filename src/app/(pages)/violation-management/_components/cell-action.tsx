@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { StudentViolation } from "@/types/violation";
+import { StudentViolation } from "@/types/student-violation";
 
 interface CellActionProps {
   data: StudentViolation;
@@ -10,16 +10,16 @@ interface CellActionProps {
 export function CellAction({ data, tab }: CellActionProps) {
   const handleView = () => {
     if (tab === "flashcardSet") {
-      console.log("Viewing flashcard set:", data.student_set_id);
+      console.log("Viewing flashcard set:", data.studentFlashcardSet?.studentSetId);
       // Xử lý điều hướng hoặc hiển thị modal
     } else {
-      console.log("Viewing rating:", data.rating_id);
+      console.log("Viewing rating:", data.studentCourseRating?.ratingId);
       // Xử lý điều hướng hoặc hiển thị modal
     }
   };
 
   return (
-    <Button className="bg-black text-white" variant="outline" onClick={handleView}>
+    <Button variant="outline" onClick={handleView}>
       View
     </Button>
   );

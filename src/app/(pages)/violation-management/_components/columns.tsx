@@ -1,114 +1,179 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// "use client";
-// import { ColumnDef } from "@tanstack/react-table";
-// import { Checkbox } from "@/components/ui/checkbox";
-// import { CellAction } from "./cell-action";
-// import { StudentViolation } from "@/types/violation";
-
-// export const getColumns = (tab: "flashcardSet" | "rating"): ColumnDef<StudentViolation>[] => {
-//   const commonColumns: ColumnDef<StudentViolation>[] = [
-//     {
-//       id: "select",
-//       header: ({ table }) => (
-//         <Checkbox
-//           checked={table.getIsAllPageRowsSelected()}
-//           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-//           aria-label="Select all"
-//         />
-//       ),
-//       cell: ({ row }) => (
-//         <Checkbox
-//           checked={row.getIsSelected()}
-//           onCheckedChange={(value) => row.toggleSelected(!!value)}
-//           aria-label="Select row"
-//         />
-//       ),
-//       enableSorting: false,
-//       enableHiding: false,
-//     },
-//     {
-//       accessorKey: "action_taken",
-//       header: "Action",
-//     },
-//     {
-//       accessorKey: "handled_by",
-//       header: "Handled by",
-//     },
-//     {
-//       accessorKey: "status",
-//       header: "Status",
-//     },
-//     {
-//       accessorKey: "resolved_at",
-//       header: "Handled date",
-//     },
-//     {
-//       id: "actions",
-//       cell: ({ row }) => <CellAction data={row.original} tab={tab} />, // Truyền tab để xử lý đúng dữ liệu
-//     },
-//   ];
-
-//   if (tab === "flashcardSet") {
-//     return [{ accessorKey: "student_set_id", header: "ID Flashcard" }, ...commonColumns];
-//   } else {
-//     return [{ accessorKey: "rating_id", header: "ID Rating" }, ...commonColumns];
-//   }
-// };
-
 
 import { StudentViolation } from "@/types/student-violation";
 import { ColumnDef } from "@tanstack/react-table";
+import { format } from "date-fns";
+import { CellAction } from "./cell-action";
 
+interface ColumnProps {
+  tab: "flashcardSet" | "rating"
+  status: "PENDING" | "RESOLVED" | "DISMISSED"
+}
 
-export const getColumns = (tab: "flashcardSet" | "rating"): ColumnDef<StudentViolation>[] => {
-  if (tab === "flashcardSet") {
-    return [
-      {
-        id: "violationId",
-        accessorKey: "violationId",
-        header: "ID",
-      },
-      {
-        id: "studentFlashcardSetTitle",
-        accessorFn: (row) => row.studentFlashcardSet?.title ?? "",
-        header: "Flashcard Set",
-      },
-      {
-        id: "description",
-        accessorKey: "description",
-        header: "Description",
-      },
-      {
-        id: "status",
-        accessorKey: "status",
-        header: "Status",
-      },
-    ];
-  }
+export const getColumns = ({ tab, status }: ColumnProps): ColumnDef<StudentViolation>[] => {
 
-  return [
-    {
-      id: "violationId",
-      accessorKey: "violationId",
-      header: "ID",
-    },
-    {
-      id: "studentCourseRating",
-      accessorFn: (row) =>
-        row.studentCourseRating
-          ? `${row.studentCourseRating.rating}/5 - ${row.studentCourseRating.course.title}`
-          : "",
-      header: "Rating",
-    },
+  const baseColumns: ColumnDef<StudentViolation>[] = [
     {
       id: "description",
       accessorKey: "description",
       header: "Description",
     },
-    {
-      id: "status",
-      accessorKey: "status",
-      header: "Status",
-    },
+  ];
+
+  // Define tab-specific columns
+  const tabSpecificColumns: ColumnDef<StudentViolation>[] = tab === "flashcardSet"
+    ? [
+      {
+        id: "studentFlashcardSet",
+        accessorKey: "studentFlashcardSet",
+        accessorFn: (row) => row.studentFlashcardSet?.title ?? "",
+        header: "Flashcard Set",
+      },
+    ]
+    : [
+      {
+        id: "studentCourseRating",
+        cell: ({ row }) => {
+          if (row.original.studentCourseRating) {
+            const rating = row.original.studentCourseRating.rating; // Rating từ 1 đến 5
+            const stars = [];
+            for (let i = 0; i < 5; i++) {
+              if (i < rating) {
+                stars.push(<span key={i} className="text-orange-500 text-xl">★</span>); // Ngôi sao vàng
+              } else {
+                stars.push(<span key={i} className="text-gray-400 text-xl">★</span>); // Ngôi sao xám
+              }
+            }
+
+            return (
+              <div className="flex flex-row space-x-2 items-center">
+                <div>
+                  {stars}
+                </div>
+                <span>
+                  {row.original.studentCourseRating.review}
+                </span>
+              </div>
+            );
+          } else {
+            return "No rating";
+          }
+        },
+        header: "Rating",
+      }
+    ];
+
+  const statusSpecificColumns: { [key in "PENDING" | "RESOLVED" | "DISMISSED"]: ColumnDef<StudentViolation>[] } = {
+
+    PENDING: [
+      {
+        header: "REPORT By",
+        cell: ({ row }) => {
+          return (
+            <span>{row.original.reportedBy.userName}</span>
+          )
+        },
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }) => {
+          return (
+            <div className="px-4 py-2 bg-[#FFB600] w-fit text-[#FFB600] rounded-xl bg-opacity-10">{row.original.status}</div>
+          )
+        },
+      },
+      {
+        accessorKey: "createdAt",
+        header: "Report Date",
+        cell: ({ row }) => {
+          return (
+            <span>
+              {format(new Date(row.original.createdAt), "HH:mm, dd/MM/yyyy")}
+            </span>
+          );
+        },
+      },
+      {
+        id: "actions",
+        cell: ({ row }) => {
+          return <CellAction data={row.original} tab={tab} />
+        },
+      },
+    ],
+    RESOLVED: [
+      {
+        accessorKey: "actionTaken",
+        header: "Action taken",
+      },
+      {
+        header: "Handle By",
+        cell: ({ row }) => {
+          return (
+            <span>{row.original.handledBy?.userName}</span>
+          )
+        },
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }) => {
+          return (
+            <div className="px-4 py-2 bg-[#959595] w-fit text-[#959595] rounded-xl bg-opacity-10">{row.original.status}</div>
+          )
+        },
+      },
+      {
+        accessorKey: "resolvedAt",
+        header: "Handle Date",
+        cell: ({ row }) => {
+          return (
+            <span>
+              {format(new Date(row.original.createdAt), "HH:mm, dd/MM/yyyy")}
+            </span>
+          );
+        },
+      },
+    ],
+    DISMISSED: [
+      {
+        id: "description",
+        accessorKey: "description",
+        header: "Report Description",
+      },
+      {
+        header: "Handle By",
+        cell: ({ row }) => {
+          return (
+            <span>{row.original.handledBy?.userName}</span>
+          )
+        },
+      },
+      {
+        accessorKey: "status",
+        header: "Status",
+        cell: ({ row }) => {
+          return (
+            <div className="px-4 py-2 bg-[#FD5673] w-fit text-[#FD5673] rounded-xl bg-opacity-10">{row.original.status}</div>
+          )
+        },
+      },
+      {
+        accessorKey: "resolvedAt",
+        header: "Handle Date",
+        cell: ({ row }) => {
+          return (
+            <span>
+              {format(new Date(row.original.createdAt), "HH:mm, dd/MM/yyyy")}
+            </span>
+          );
+        },
+      },
+    ],
+  };
+
+  return [
+    ...tabSpecificColumns,
+    ...baseColumns,
+    ...statusSpecificColumns[status],
   ];
 };
