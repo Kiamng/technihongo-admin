@@ -18,7 +18,7 @@ interface UploadWithPreviewProps {
 export default function UploadWithPreview({
     label,
     accept,
-    disabled = false,
+    disabled,
     onFileSelected,
     previewUrl,
     setPreviewUrl,
@@ -55,10 +55,10 @@ export default function UploadWithPreview({
         }
 
         if (isVideo) {
-            const validExts = [".mp4", ".webm", ".ogv"];
+            const validExts = [".mp4"];
             const isValidExt = validExts.some(ext => file.name.toLowerCase().endsWith(ext));
             if (!isValidExt) {
-                toast.error("The video must be in mp4, webm or ogv format.");
+                toast.error("The video must be in mp4 format.");
                 return;
             }
             if (file.size > MAX_VIDEO_SIZE) {
@@ -76,6 +76,10 @@ export default function UploadWithPreview({
         setFileName("");
         setPreviewUrl(null);
         onClear();
+
+        if (inputRef.current) {
+            inputRef.current.value = "";
+        }
     };
 
     return (
@@ -94,7 +98,7 @@ export default function UploadWithPreview({
                     Upload {label}
                 </Button>
                 {previewUrl && (
-                    <Button type="button" variant="destructive" size="sm" onClick={handleClear}>
+                    <Button disabled={disabled} type="button" variant="destructive" size="sm" onClick={handleClear}>
                         Clear {label}
                     </Button>
                 )}

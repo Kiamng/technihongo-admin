@@ -33,13 +33,18 @@ export const getStudyPlanById = async (token : string, studyplanId : number) => 
     return response.data.data
 }
 
-export const createStudyPlan = async (values : z.infer<typeof StudyPlanSchema>, courseId : number) => {
+export const createStudyPlan = async (values : z.infer<typeof StudyPlanSchema>, courseId : number, token : string) => {
     const response = await axiosClient.post(ENDPOINT.CREATE_STUDYPLAN, {
             courseId : courseId,
             title : values.title,
             description : values.description,
             hoursPerDay : values.hoursPerDay
-        }   
+        },
+        {
+            headers: {
+            Authorization: `Bearer ${token}`
+            }
+        }
     )
     return response.data
 }

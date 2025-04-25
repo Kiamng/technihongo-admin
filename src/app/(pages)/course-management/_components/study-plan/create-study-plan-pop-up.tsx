@@ -12,14 +12,16 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import axios from "axios";
 
 interface CreateStudyPlanPopUpProps {
+    token: string
     courseId: number,
     setIsDialogOpen: Dispatch<SetStateAction<boolean>>,
     fetchStudyPlan: () => Promise<void>
 }
 
-const CreateStudyPlanPopUp = ({ courseId, setIsDialogOpen, fetchStudyPlan }: CreateStudyPlanPopUpProps) => {
+const CreateStudyPlanPopUp = ({ courseId, setIsDialogOpen, fetchStudyPlan, token }: CreateStudyPlanPopUpProps) => {
     const [isPending, setIsPending] = useState<boolean>(false)
     const form = useForm({
         resolver: zodResolver(StudyPlanSchema),
@@ -33,19 +35,23 @@ const CreateStudyPlanPopUp = ({ courseId, setIsDialogOpen, fetchStudyPlan }: Cre
     const onSubmit = async (values: z.infer<typeof StudyPlanSchema>) => {
         try {
             setIsPending(true);
-            const response = await createStudyPlan(values, courseId)
+            const response = await createStudyPlan(values, courseId, token)
             if (response.success === false) {
-                toast.error("Failed to create new course!!");
+                toast.error("Failed to create new study plan!!");
             } else {
-                toast.success("Create new course successfully!!");
+                toast.success("Create new study plan successfully!!");
                 setIsDialogOpen(false);
                 fetchStudyPlan();
                 form.reset();
             }
             console.log(response);
         }
-        catch (error) {
-            console.log(error);
+        catch (error: unknown) {
+            if (axios.isAxiosError(error) && error.response) {
+                toast.error(error?.response.data.message);
+            } else {
+                toast.error('An error occurred. Please try again later.');
+            }
         } finally {
             setIsPending(false);
         }

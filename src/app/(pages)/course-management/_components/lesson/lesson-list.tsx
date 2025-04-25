@@ -234,25 +234,27 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan, defaultSt
                         )}
                     </div>
                 }
-                <Pagination className="space-x-6">
-                    <PaginationContent>
-                        <PaginationItem >
-                            <Button disabled={currentPage === 0} onClick={handleFirstPage} variant={"ghost"}><ChevronsLeft /></Button>
-                        </PaginationItem>
-                        <PaginationItem >
-                            <Button disabled={currentPage === 0} onClick={handlePreviousPage} variant={"ghost"}><ChevronLeft /></Button>
-                        </PaginationItem>
-                        <PaginationItem>
-                            {currentPage + 1}/{lessonList?.totalPages}
-                        </PaginationItem>
-                        <PaginationItem onClick={handleNextPage}>
-                            <Button disabled={lessonList?.last === true} onClick={handleNextPage} variant={"ghost"}><ChevronRight /></Button>
-                        </PaginationItem>
-                        <PaginationItem >
-                            <Button disabled={lessonList?.last === true} onClick={handleLastPage} variant={"ghost"}><ChevronsRight /></Button>
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
+                {lessonList && lessonList?.content.length > 0 && (
+                    <Pagination className="space-x-6">
+                        <PaginationContent>
+                            <PaginationItem >
+                                <Button disabled={currentPage === 0} onClick={handleFirstPage} variant={"ghost"}><ChevronsLeft /></Button>
+                            </PaginationItem>
+                            <PaginationItem >
+                                <Button disabled={currentPage === 0} onClick={handlePreviousPage} variant={"ghost"}><ChevronLeft /></Button>
+                            </PaginationItem>
+                            <PaginationItem>
+                                {currentPage + 1}/{lessonList?.totalPages}
+                            </PaginationItem>
+                            <PaginationItem onClick={handleNextPage}>
+                                <Button disabled={lessonList?.last === true} onClick={handleNextPage} variant={"ghost"}><ChevronRight /></Button>
+                            </PaginationItem>
+                            <PaginationItem >
+                                <Button disabled={lessonList?.last === true} onClick={handleLastPage} variant={"ghost"}><ChevronsRight /></Button>
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                )}
             </div>
         </>
     );

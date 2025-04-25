@@ -1,190 +1,80 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// "use client";
 
-// import { useState, useMemo } from "react";
-// import { DataTable } from "@/components/data-table";
-// import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-// import { Pagination } from "./_components/Pagination";
-// import { getColumns } from "./_components/columns"; // Cột thay đổi theo tab
-// import studentViolations from "@/types/violation";
-// import { Input } from "@/components/ui/input";
-// import { Button } from "@/components/ui/button";
-// import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-
-// export default function ViolationManagementPage() {
-//   const [currentTab, setCurrentTab] = useState<"flashcardSet" | "rating">("flashcardSet");
-//   const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "resolved" | "dismissed">("all");
-//   const [currentPage, setCurrentPage] = useState(1);
-//   const itemsPerPage = 5;
-
-//   // Lọc dữ liệu theo tab và status
-//   const filteredData = useMemo(() => {
-//     return studentViolations.filter((violation) => {
-//       if (statusFilter !== "all" && violation.status !== statusFilter) return false;
-//       return currentTab === "flashcardSet" ? violation.student_set_id !== null : violation.rating_id !== null;
-//     });
-//   }, [statusFilter, currentTab]);
-
-//   // Phân trang
-//   const paginatedData = useMemo(() => {
-//     return filteredData.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-//   }, [filteredData, currentPage]);
-
-//   // Cột bảng dữ liệu thay đổi theo tab
-//   const columns = useMemo(() => getColumns(currentTab), [currentTab]);
-
-//   return (
-//     <div className="w-full">
-//       <div className="flex justify-between items-center mb-6">
-//         <h1 className="text-4xl font-bold">Violation Report Management</h1>
-//       </div>
-
-//       {/* Tabs */}
-//       <Tabs defaultValue="flashcardSet" onValueChange={(value) => setCurrentTab(value as "flashcardSet" | "rating")} className="w-full">
-//         <TabsList className="flex gap-4 mb-6">
-//           <TabsTrigger value="flashcardSet">Flashcard Set</TabsTrigger>
-//           <TabsTrigger value="rating">Rating</TabsTrigger>
-//         </TabsList>
-
-//         {/* Thanh tìm kiếm + Dropdown lọc */}
-//         <div className="flex justify-between items-center mb-4">
-//           <div className="flex items-center space-x-2">
-//             <Input type="text" placeholder="Search name" />
-            
-//           </div>
-
-//           {/* Dropdown menu filter status */}
-//           <DropdownMenu>
-//             <DropdownMenuTrigger asChild>
-//               <Button variant="outline">{statusFilter === "all" ? " Status" : statusFilter}</Button>
-//             </DropdownMenuTrigger>
-//             <DropdownMenuContent align="end">
-//               <DropdownMenuItem onClick={() => setStatusFilter("all")}>All</DropdownMenuItem>
-//               <DropdownMenuItem onClick={() => setStatusFilter("pending")}>Pending</DropdownMenuItem>
-//               <DropdownMenuItem onClick={() => setStatusFilter("resolved")}>Resolved</DropdownMenuItem>
-//               <DropdownMenuItem onClick={() => setStatusFilter("dismissed")}>Dismissed</DropdownMenuItem>
-//             </DropdownMenuContent>
-//           </DropdownMenu>
-//         </div>
-
-//         {/* Bảng dữ liệu */}
-//         <TabsContent value="flashcardSet">
-//           <DataTable columns={columns} searchKey="student_set_id" data={paginatedData} isLoading={false} />
-//         </TabsContent>
-//         <TabsContent value="rating">
-//           <DataTable columns={columns} searchKey="rating_id" data={paginatedData} isLoading={false} />
-//         </TabsContent>
-//       </Tabs>
-
-//       {/* Phân trang */}
-//       <Pagination currentPage={currentPage} totalPages={Math.ceil(filteredData.length / itemsPerPage)} onPageChange={setCurrentPage} />
-//     </div>
-//   );
-// }
 
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
-import { DataTable } from "@/components/data-table";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Pagination } from "./_components/Pagination";
-import { getColumns } from "./_components/columns";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 import { useSession } from "next-auth/react";
 import { getAllViolations } from "@/app/api/student-violation/student-violation.api";
-import { StudentViolation, ViolationList } from "@/types/student-violation";
+import { ViolationList } from "@/types/student-violation";
+import { DataTable } from "@/components/data-table";
+import { getColumns } from "./_components/columns";
+import { ChevronDown } from "lucide-react";
+import EmptyStateComponent from "@/components/empty-state";
 
 export default function ViolationManagementPage() {
   const { data: session } = useSession();
   const [currentTab, setCurrentTab] = useState<"flashcardSet" | "rating">("flashcardSet");
-  const [statusFilter, setStatusFilter] = useState<"all" | "PENDING" | "RESOLVED" | "DISMISSED">("all");
-  const [searchKeyword, setSearchKeyword] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"PENDING" | "RESOLVED" | "DISMISSED">("PENDING");
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize] = useState(5);
-  const [totalPages, setTotalPages] = useState(1);
-  const [violations, setViolations] = useState<StudentViolation[]>([]);
+  const [pageSize] = useState(10);
+  const [violations, setViolations] = useState<ViolationList>();
 
   useEffect(() => {
     const fetchViolations = async () => {
       if (!session?.user?.token) {
         setIsLoading(false);
-        setViolations([]);
         return;
       }
 
       setIsLoading(true);
       try {
         const classifyBy = currentTab === "flashcardSet" ? "FlashcardSet" : "Rating";
-        const apiStatus = statusFilter === "all" ? "" : statusFilter;
+        const apiStatus = statusFilter === "PENDING" ? "PENDING" : statusFilter;
 
         const result: ViolationList = await getAllViolations({
           token: session.user.token,
           pageNo: currentPage,
-          pageSize,
+          pageSize: pageSize,
           sortBy: "createdAt",
           sortDir: "DESC",
-          classifyBy,
+          classifyBy: classifyBy,
           status: apiStatus,
         });
 
-        setViolations(result.content);
-        setTotalPages(result.totalPages);
+        setViolations(result);
       } catch (error) {
         console.error("Failed to fetch violations:", error);
-        setViolations([]);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchViolations();
-  }, [session, currentPage, pageSize, currentTab, statusFilter]);
-
-  const filteredViolations = useMemo(() => {
-    if (!searchKeyword) return violations;
-    return violations.filter((violation) => {
-      const searchLower = searchKeyword.toLowerCase();
-      if (currentTab === "flashcardSet") {
-        return (
-          (violation.studentFlashcardSet?.title?.toLowerCase().includes(searchLower) || false) ||
-          violation.description.toLowerCase().includes(searchLower)
-        );
-      }
-      if (currentTab === "rating") {
-        return (
-          (violation.studentCourseRating?.course.title.toLowerCase().includes(searchLower) || false) ||
-          (violation.studentCourseRating?.review.toLowerCase().includes(searchLower) || false) ||
-          violation.description.toLowerCase().includes(searchLower)
-        );
-      }
-      return false;
-    });
-  }, [violations, searchKeyword, currentTab]);
-
-  const columns = useMemo(() => getColumns(currentTab), [currentTab]);
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchKeyword(e.target.value);
-    setCurrentPage(0);
-  };
+  }, [session?.user.token, currentPage, pageSize, currentTab, statusFilter]);
 
   const handleTabChange = (value: string) => {
     setCurrentTab(value as "flashcardSet" | "rating");
     setCurrentPage(0);
   };
 
-  const handleStatusChange = (status: "all" | "PENDING" | "RESOLVED" | "DISMISSED") => {
+  const handleStatusChange = (status: "PENDING" | "RESOLVED" | "DISMISSED") => {
     setStatusFilter(status);
     setCurrentPage(0);
   };
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page - 1);
-  };
+  const statusColor = (status: string) => {
+    if (status === "PENDING") {
+      return "bg-[#FFB600] text-[#FFB600]"
+    } else if (status === "RESOLVED") {
+      return "bg-[#959595] text-[#959595]"
+    } else {
+      return "bg-[#FD5673] text-[#FD5673]"
+    }
+  }
 
   return (
     <div className="w-full">
@@ -193,57 +83,37 @@ export default function ViolationManagementPage() {
       </div>
 
       <Tabs defaultValue="flashcardSet" onValueChange={handleTabChange} className="w-full">
-        <TabsList className="flex gap-4 mb-6">
-          <TabsTrigger value="flashcardSet">Flashcard Set</TabsTrigger>
-          <TabsTrigger value="rating">Rating</TabsTrigger>
-        </TabsList>
+
 
         <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center space-x-2">
-            <Input
-              type="text"
-              placeholder="Search name"
-              value={searchKeyword}
-              onChange={handleSearchChange}
-            />
-          </div>
-
+          <TabsList className="flex gap-4 mb-6">
+            <TabsTrigger value="flashcardSet">Flashcard Set</TabsTrigger>
+            <TabsTrigger value="rating">Rating</TabsTrigger>
+          </TabsList>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline">{statusFilter === "all" ? "Status" : statusFilter}</Button>
+              <div className="flex flex-row space-x-2 items-center">
+                <div className={`px-4 py-2 w-fit rounded-xl bg-opacity-10 ${statusColor(statusFilter)}`}>{statusFilter}</div>
+                <ChevronDown />
+              </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => handleStatusChange("all")}>All</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleStatusChange("PENDING")}>Pending</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleStatusChange("RESOLVED")}>Resolved</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleStatusChange("DISMISSED")}>Dismissed</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleStatusChange("PENDING")}><div className={`px-4 py-2 w-fit rounded-xl bg-opacity-10 ${statusColor("PENDING")}`}>PENDING</div></DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleStatusChange("RESOLVED")}><div className={`px-4 py-2 w-fit rounded-xl bg-opacity-10 ${statusColor("RESOLVED")}`}>RESOLVED</div></DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleStatusChange("DISMISSED")}><div className={`px-4 py-2 w-fit rounded-xl bg-opacity-10 ${statusColor("DISMISSED")}`}>DISMISSED</div></DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-
-        <TabsContent value="flashcardSet">
-          <DataTable
-            columns={columns}
-            searchKey="studentFlashcardSetTitle"
-            data={filteredViolations}
-            isLoading={isLoading}
-          />
-        </TabsContent>
-        <TabsContent value="rating">
-          <DataTable
-            columns={columns}
-            searchKey="studentCourseRating"
-            data={filteredViolations}
-            isLoading={isLoading}
-          />
-        </TabsContent>
       </Tabs>
-
-      <Pagination
-        currentPage={currentPage + 1}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-      />
+      {violations ? (
+        <DataTable isLoading={isLoading} data={violations?.content} columns={getColumns({ tab: currentTab, status: statusFilter })} />
+      ) :
+        (
+          <EmptyStateComponent
+            message={`There is no ${statusFilter} report`}
+            size={400}
+            imgageUrl="https://cdni.iconscout.com/illustration/premium/thumb/no-information-found-illustration-download-in-svg-png-gif-file-formats--zoom-logo-document-user-interface-result-pack-illustrations-8944779.png?f=webp" />
+        )}
     </div>
   );
 }
