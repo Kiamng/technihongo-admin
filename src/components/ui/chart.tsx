@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 
 import * as React from "react"
@@ -296,7 +297,7 @@ const ChartLegendContent = React.forwardRef<
                 "flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground"
               )}
             >
-              {itemConfig?.icon && !hideIcon ? (
+              {/* {itemConfig?.icon && !hideIcon ? (
                 <itemConfig.icon />
               ) : (
                 <div
@@ -305,7 +306,7 @@ const ChartLegendContent = React.forwardRef<
                     backgroundColor: item.color,
                   }}
                 />
-              )}
+              )} */}
               {itemConfig?.label}
             </div>
           )

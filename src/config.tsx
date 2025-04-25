@@ -1,4 +1,5 @@
 import {
+  CreditCardIcon,
   GraduationCap,
   LayoutDashboard,
   LucideAlbum,
@@ -72,6 +73,14 @@ export const NavItems = () => {
         active: isNavItemActive(pathname, "/difficultylevel-management"),
         position: "top",
       },
+      {
+        name: "Supscription Management",
+        href: "/supscription-management",
+        icon: <CreditCardIcon size={size} />,
+        active: isNavItemActive(pathname, "/supscription-management"),
+        position: "top",
+      },
+
 
     ];
   }
