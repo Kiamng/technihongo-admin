@@ -6,7 +6,7 @@ interface ColumnProps {
   fetchSubscriptions: () => void;
 }
 
-export const columns = ({ fetchSubscriptions }: ColumnProps): ColumnDef<SubscriptionPlan>[] => [
+export const SubscriptionPlanColumns = ({ fetchSubscriptions }: ColumnProps): ColumnDef<SubscriptionPlan>[] => [
   {
     accessorKey: "name",
     header: "Name",

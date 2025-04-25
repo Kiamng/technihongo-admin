@@ -10,6 +10,9 @@ const ENDPOINT = {
     UPDATESUBSCRIPTIONPLAN: "subscription/update/{subPlanId}",
     DELETESUBSCRIPTIONPLAN: "subscription/delete/{subPlanId}",
     GET_ADMIN_OVERVIEW: "dashboard/admin/overview",
+    GET_REVENUE_BY_PLAN: "/v1/subscription/revenue-by-plan",
+    GET_REVENUE_BY_PERIOD: "/v1/subscription/revenue-by-period",
+    GET_MOST_POPULAR_PLAN: "/v1/subscription/most-popular-plan",
 };
 
 
@@ -23,7 +26,21 @@ export interface YearlyRevenue {
   month: string;
   revenue: number;
 }
-
+export interface RevenueByPlan {
+  planName: string;
+  purchaseCount: number;
+  totalRevenue: number;
+}
+export interface RevenueByPeriod {
+  period: string;
+  totalRevenue: number;
+}
+export interface MostPopularPlan {
+  subPlanId: number;
+  planName: string;
+  purchaseCount: number;
+  totalRevenue: number;
+}
 
 export const getAllSubscription = async (token : string): Promise<SubscriptionPlan[]> => {
   try {
@@ -117,5 +134,47 @@ export const getAdminOverview = async (token: string): Promise<AdminOverview> =>
   } catch (error) {
     console.error("Error fetching admin overview:", error);
     throw new Error("Failed to fetch admin overview data.");
+  }
+};
+export const getRevenueByPlan = async (token: string): Promise<RevenueByPlan[]> => {
+  try {
+    const response = await axiosClient.get(ENDPOINT.GET_REVENUE_BY_PLAN, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data.data as RevenueByPlan[];
+  } catch (error) {
+    console.error("Error fetching revenue by plan:", error);
+    throw new Error("Failed to fetch revenue by plan data.");
+  }
+};
+
+export const getRevenueByPeriod = async (token: string, periodType: string): Promise<RevenueByPeriod[]> => {
+  try {
+    // Sửa từ ?period=${periodType} thành ?periodType=${periodType}
+    const response = await axiosClient.get(`${ENDPOINT.GET_REVENUE_BY_PERIOD}?periodType=${periodType}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data.data as RevenueByPeriod[];
+  } catch (error) {
+    console.error("Error fetching revenue by period:", error);
+    throw new Error("Failed to fetch revenue by period data.");
+  }
+};
+
+export const getMostPopularPlan = async (token: string): Promise<MostPopularPlan> => {
+  try {
+    const response = await axiosClient.get(ENDPOINT.GET_MOST_POPULAR_PLAN, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data.data as MostPopularPlan;
+  } catch (error) {
+    console.error("Error fetching most popular plan:", error);
+    throw new Error("Failed to fetch most popular plan data.");
   }
 };
