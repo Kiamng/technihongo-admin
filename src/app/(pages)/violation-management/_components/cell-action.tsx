@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { StudentViolation } from "@/types/student-violation";
+import Link from "next/link";
 
 interface CellActionProps {
   data: StudentViolation;
@@ -8,19 +9,14 @@ interface CellActionProps {
 }
 
 export function CellAction({ data, tab }: CellActionProps) {
-  const handleView = () => {
-    if (tab === "flashcardSet") {
-      console.log("Viewing flashcard set:", data.studentFlashcardSet?.studentSetId);
-      // Xử lý điều hướng hoặc hiển thị modal
-    } else {
-      console.log("Viewing rating:", data.studentCourseRating?.ratingId);
-      // Xử lý điều hướng hoặc hiển thị modal
-    }
-  };
 
   return (
-    <Button variant="outline" onClick={handleView}>
-      View
-    </Button>
+    <Link href={tab === "flashcardSet"
+      ? `/violation-management/flashcard-set/${data.studentFlashcardSet?.studentSetId}`
+      : `/violation-management/rating/${data.studentCourseRating?.ratingId}?courseId=${data.studentCourseRating?.course.courseId}`}>
+      <Button variant="outline">
+        Xem chi tiết
+      </Button>
+    </Link>
   );
 }

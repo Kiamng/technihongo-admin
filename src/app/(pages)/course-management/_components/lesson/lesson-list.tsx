@@ -246,7 +246,7 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan, defaultSt
                             <PaginationItem>
                                 {currentPage + 1}/{lessonList?.totalPages}
                             </PaginationItem>
-                            <PaginationItem onClick={handleNextPage}>
+                            <PaginationItem>
                                 <Button disabled={lessonList?.last === true} onClick={handleNextPage} variant={"ghost"}><ChevronRight /></Button>
                             </PaginationItem>
                             <PaginationItem >

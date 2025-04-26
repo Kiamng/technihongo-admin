@@ -11,11 +11,19 @@ interface ColumnProps {
 
 export const getColumns = ({ tab, status }: ColumnProps): ColumnDef<StudentViolation>[] => {
 
-  const baseColumns: ColumnDef<StudentViolation>[] = [
+  const idColumn: ColumnDef<StudentViolation>[] = [
+    {
+      id: "violationId",
+      accessorKey: "violationId",
+      header: "ID",
+    },
+  ];
+
+  const descriptionColumn: ColumnDef<StudentViolation>[] = [
     {
       id: "description",
       accessorKey: "description",
-      header: "Description",
+      header: "Nội dung báo cáo",
     },
   ];
 
@@ -26,7 +34,7 @@ export const getColumns = ({ tab, status }: ColumnProps): ColumnDef<StudentViola
         id: "studentFlashcardSet",
         accessorKey: "studentFlashcardSet",
         accessorFn: (row) => row.studentFlashcardSet?.title ?? "",
-        header: "Flashcard Set",
+        header: "Flashcard",
       },
     ]
     : [
@@ -66,7 +74,7 @@ export const getColumns = ({ tab, status }: ColumnProps): ColumnDef<StudentViola
 
     PENDING: [
       {
-        header: "REPORT By",
+        header: "Người report",
         cell: ({ row }) => {
           return (
             <span>{row.original.reportedBy.userName}</span>
@@ -75,16 +83,16 @@ export const getColumns = ({ tab, status }: ColumnProps): ColumnDef<StudentViola
       },
       {
         accessorKey: "status",
-        header: "Status",
-        cell: ({ row }) => {
+        header: "Trạng thái",
+        cell: () => {
           return (
-            <div className="px-4 py-2 bg-[#FFB600] w-fit text-[#FFB600] rounded-xl bg-opacity-10">{row.original.status}</div>
+            <div className="px-4 py-2 bg-[#FFB600] w-fit text-[#FFB600] rounded-xl bg-opacity-10">Đang chờ</div>
           )
         },
       },
       {
         accessorKey: "createdAt",
-        header: "Report Date",
+        header: "Ngày báo cáo",
         cell: ({ row }) => {
           return (
             <span>
@@ -103,28 +111,20 @@ export const getColumns = ({ tab, status }: ColumnProps): ColumnDef<StudentViola
     RESOLVED: [
       {
         accessorKey: "actionTaken",
-        header: "Action taken",
-      },
-      {
-        header: "Handle By",
-        cell: ({ row }) => {
-          return (
-            <span>{row.original.handledBy?.userName}</span>
-          )
-        },
+        header: "Chú thích",
       },
       {
         accessorKey: "status",
-        header: "Status",
-        cell: ({ row }) => {
+        header: "Trạng thái",
+        cell: () => {
           return (
-            <div className="px-4 py-2 bg-[#959595] w-fit text-[#959595] rounded-xl bg-opacity-10">{row.original.status}</div>
+            <div className="px-4 py-2 bg-[#959595] w-fit text-[#959595] rounded-xl bg-opacity-10">Đã xử lí</div>
           )
         },
       },
       {
         accessorKey: "resolvedAt",
-        header: "Handle Date",
+        header: "Ngày xử lí",
         cell: ({ row }) => {
           return (
             <span>
@@ -136,34 +136,21 @@ export const getColumns = ({ tab, status }: ColumnProps): ColumnDef<StudentViola
     ],
     DISMISSED: [
       {
-        id: "description",
-        accessorKey: "description",
-        header: "Report Description",
-      },
-      {
-        header: "Handle By",
-        cell: ({ row }) => {
-          return (
-            <span>{row.original.handledBy?.userName}</span>
-          )
-        },
-      },
-      {
         accessorKey: "status",
-        header: "Status",
-        cell: ({ row }) => {
+        header: "Trạng thái",
+        cell: () => {
           return (
-            <div className="px-4 py-2 bg-[#FD5673] w-fit text-[#FD5673] rounded-xl bg-opacity-10">{row.original.status}</div>
+            <div className="px-4 py-2 bg-[#FD5673] w-fit text-[#FD5673] rounded-xl bg-opacity-10">Bỏ qua</div>
           )
         },
       },
       {
         accessorKey: "resolvedAt",
-        header: "Handle Date",
+        header: "Ngày xử lí",
         cell: ({ row }) => {
           return (
             <span>
-              {format(new Date(row.original.createdAt), "HH:mm, dd/MM/yyyy")}
+              {format(new Date(row.original.resolvedAt), "HH:mm, dd/MM/yyyy")}
             </span>
           );
         },
@@ -172,8 +159,9 @@ export const getColumns = ({ tab, status }: ColumnProps): ColumnDef<StudentViola
   };
 
   return [
+    ...idColumn,
     ...tabSpecificColumns,
-    ...baseColumns,
+    ...descriptionColumn,
     ...statusSpecificColumns[status],
   ];
 };

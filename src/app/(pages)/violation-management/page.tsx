@@ -11,7 +11,7 @@ import { getAllViolations } from "@/app/api/student-violation/student-violation.
 import { ViolationList } from "@/types/student-violation";
 import { DataTable } from "@/components/data-table";
 import { getColumns } from "./_components/columns";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, MessageSquareWarning } from "lucide-react";
 import EmptyStateComponent from "@/components/empty-state";
 
 export default function ViolationManagementPage() {
@@ -77,30 +77,31 @@ export default function ViolationManagementPage() {
   }
 
   return (
-    <div className="w-full">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-4xl font-bold">Violation Report Management</h1>
+    <div className="w-full flex flex-col space-y-6">
+      <div className="flex space-x-2 items-center">
+        <h1 className="text-4xl font-bold">Báo cáo từ người dùng</h1>
+        < MessageSquareWarning size={30} />
       </div>
 
       <Tabs defaultValue="flashcardSet" onValueChange={handleTabChange} className="w-full">
 
 
-        <div className="flex justify-between items-center mb-4">
-          <TabsList className="flex gap-4 mb-6">
-            <TabsTrigger value="flashcardSet">Flashcard Set</TabsTrigger>
-            <TabsTrigger value="rating">Rating</TabsTrigger>
+        <div className="flex justify-between items-center">
+          <TabsList className="flex gap-4">
+            <TabsTrigger value="flashcardSet">Flashcard</TabsTrigger>
+            <TabsTrigger value="rating">Đánh giá</TabsTrigger>
           </TabsList>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <div className="flex flex-row space-x-2 items-center">
-                <div className={`px-4 py-2 w-fit rounded-xl bg-opacity-10 ${statusColor(statusFilter)}`}>{statusFilter}</div>
+                <div className={`px-4 py-2 w-fit rounded-xl bg-opacity-10 ${statusColor(statusFilter)}`}>{statusFilter === "PENDING" ? "Đang chờ" : statusFilter === "RESOLVED" ? "Đã xử lí" : "Bỏ qua"}</div>
                 <ChevronDown />
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => handleStatusChange("PENDING")}><div className={`px-4 py-2 w-fit rounded-xl bg-opacity-10 ${statusColor("PENDING")}`}>PENDING</div></DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleStatusChange("RESOLVED")}><div className={`px-4 py-2 w-fit rounded-xl bg-opacity-10 ${statusColor("RESOLVED")}`}>RESOLVED</div></DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleStatusChange("DISMISSED")}><div className={`px-4 py-2 w-fit rounded-xl bg-opacity-10 ${statusColor("DISMISSED")}`}>DISMISSED</div></DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleStatusChange("PENDING")}><div className={`px-4 py-2 w-fit rounded-xl bg-opacity-10 ${statusColor("PENDING")}`}>Đang chờ</div></DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleStatusChange("RESOLVED")}><div className={`px-4 py-2 w-fit rounded-xl bg-opacity-10 ${statusColor("RESOLVED")}`}>Đã xử lí</div></DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleStatusChange("DISMISSED")}><div className={`px-4 py-2 w-fit rounded-xl bg-opacity-10 ${statusColor("DISMISSED")}`}>Bỏ qua</div></DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -110,7 +111,7 @@ export default function ViolationManagementPage() {
       ) :
         (
           <EmptyStateComponent
-            message={`There is no ${statusFilter} report`}
+            message={`không có báo cáo nào với trạng thái này`}
             size={400}
             imgageUrl="https://cdni.iconscout.com/illustration/premium/thumb/no-information-found-illustration-download-in-svg-png-gif-file-formats--zoom-logo-document-user-interface-result-pack-illustrations-8944779.png?f=webp" />
         )}

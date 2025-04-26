@@ -96,7 +96,7 @@ export interface StudentViolation {
   handledBy: User | null;
   status: "PENDING" | "RESOLVED" | "DISMISSED";
   createdAt: string;
-  resolvedAt: string | null;
+  resolvedAt: string;
 }
 
 export interface ViolationList {
@@ -111,3 +111,22 @@ export interface ViolationList {
 const studentViolations: StudentViolation[] = [];
 
 export default studentViolations;
+
+export type ViolationSummary = {
+  studentSetId : number,
+  ratingId : number,
+  totalViolations : number,
+  descriptions : {
+    content: {
+      violationId: number,
+      description : string,
+      status: "PENDING" | "RESOLVED" | "DISMISSED";
+      createdAt: Date
+    }[],
+    pageNo: number,
+    pageSize: number,
+    totalElements : number,
+    totalPages : number,
+    last : boolean
+  }
+}
