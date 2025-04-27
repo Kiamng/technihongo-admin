@@ -75,7 +75,7 @@ export const NavItems = () => {
         position: "top",
       },
       {
-        name: "Lộ trình học tậptập",
+        name: "Lộ trình học tập",
         href: "/learning-path",
         icon: <LandPlot size={size} />,
         active: isNavItemActive(pathname, "/learning-path"),

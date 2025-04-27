@@ -59,7 +59,7 @@ export function PathCoursesTable({
       }
     } catch (error) {
       console.error("Error fetching path courses:", error);
-      toast.error("Failed to load courses");
+      toast.error("Không tìm thấy khóa học nào");
       setPathCourses([]);
     } finally {
       setInternalIsLoading(false);
@@ -79,7 +79,7 @@ export function PathCoursesTable({
     if (!initialCourses.length) {
       fetchPathCourses();
     }
-  }, [pathId, session]);
+  }, [pathId, session?.user.token]);
 
   const handleDragEnd = (result: DropResult) => {
     const { source, destination } = result;

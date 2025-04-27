@@ -93,7 +93,7 @@ const AddPathCoursePopup = ({
       return existingIds;
     } catch (error) {
       console.error("Error fetching existing courses:", error);
-      toast.error("Failed to load existing courses");
+      toast.error("Không tìm thấy khóa học nào");
       return [];
     }
   }, [pathId, session]);
@@ -131,10 +131,10 @@ const AddPathCoursePopup = ({
     } catch (error) {
       console.error("Error fetching courses by parent domain:", error);
       setError("Failed to load courses. Please try again.");
-      toast.error("Failed to load courses");
+      toast.error("Không tìm thấy khóa học nào");
       setCourses([]);
     }
-  }, [session, learningPath.domain]);
+  }, [session?.user.token, learningPath.domain]);
 
   useEffect(() => {
     let isMounted = true;
@@ -162,7 +162,7 @@ const AddPathCoursePopup = ({
     loadData();
 
     return () => { isMounted = false; };
-  }, [isDialogOpen, session, fetchExistingCourses, fetchCoursesByParentDomain, isInitialLoadDone]);
+  }, [isDialogOpen, session?.user.token, fetchExistingCourses, fetchCoursesByParentDomain, isInitialLoadDone]);
 
   useEffect(() => {
     if (!isDialogOpen) {
