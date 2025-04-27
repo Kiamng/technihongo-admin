@@ -55,7 +55,7 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan, defaultSt
             setLessonList(lessonsData);
         } catch (error) {
             console.error(error);
-            toast.error("Failed to load lessons.");
+            toast.error("Tải bài học thất bại");
         } finally {
             setIsLoading(false);
         }
@@ -108,7 +108,7 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan, defaultSt
             }
         } catch (error) {
             console.error(error);
-            toast.error("Failed to load lesson resource.");
+            toast.error("Tải tài nguyên thất bại");
             setLessonResources(prev => ({
                 ...prev,
                 [lessonId]: []
@@ -167,11 +167,11 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan, defaultSt
         <>
             <div className="w-full flex justify-between">
                 <div className="text-4xl font-bold flex items-center">
-                    Lessons in study plan ({isLoading ? <LoaderCircle className="animate-spin" /> : lessonList?.totalElements})
+                    Số bài học ({isLoading ? <LoaderCircle className="animate-spin" /> : lessonList?.totalElements})
                 </div>
                 <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
                     <DialogTrigger className="flex items-center gap-2 py-2 px-4 bg-primary rounded-xl hover:bg-primary/90 text-white">
-                        <CirclePlus />Create new lesson
+                        <CirclePlus />Thêm mới bài học
                     </DialogTrigger>
                     <DialogContent width='400px'>
                         <LessonPopupForm
@@ -191,12 +191,12 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan, defaultSt
                 <div className="flex flex-row space-x-10 items-center">
                     <Input
                         className="w-[300px]"
-                        placeholder="Search name"
+                        placeholder="Tìm bài học"
                         value={searchValue}
                         onChange={handleSearchChange}
                     />
                     <div className="space-x-2 flex flex-row items-center">
-                        <span className="font-semibold">Lesson order:</span>
+                        <span className="font-semibold">Thứ tự:</span>
                         <Button size={"icon"} variant={"outline"} onClick={handleSortChange}>
                             {sortDir === "asc" ? <ArrowDown01 /> : <ArrowUp01 />}
                         </Button>
@@ -227,8 +227,8 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan, defaultSt
                         ) : (
                             <EmptyStateComponent
                                 message={searchValue
-                                    ? "No results found"
-                                    : "This study plan does not have any lessons"}
+                                    ? "Không tìm thấy"
+                                    : "Kế hoạch học tập này chưa có bài học nào"}
                                 size={400}
                                 imgageUrl="https://cdni.iconscout.com/illustration/premium/thumb/no-information-found-illustration-download-in-svg-png-gif-file-formats--zoom-logo-document-user-interface-result-pack-illustrations-8944779.png?f=webp" />
                         )}

@@ -29,15 +29,15 @@ const SetPublicStatusUpdate = ({ flashcardSetId, flashcardSet, token, setFlashca
                 );
 
                 if (response.success) {
-                    toast.success("Flashcard set public status updated successfully!");
+                    toast.success("Cập nhật trạng thái thành công");
 
                     setFlashcardSet((prevSet) => prevSet ? { ...prevSet, isPublic: publicStatus === 'true' } : prevSet);
                 } else {
-                    toast.error(response.message || "Failed to update flashcard set public status.");
+                    toast.error(response.message || "Cập nhật trạng thái thất bại!");
                 }
             } catch (error) {
                 console.error("Error updating flashcard set public status:", error);
-                toast.error("An error occurred while updating flashcard set public status.");
+                toast.error("Cập nhật trạng thái thất bại");
             }
         })
     };
@@ -56,8 +56,8 @@ const SetPublicStatusUpdate = ({ flashcardSetId, flashcardSet, token, setFlashca
                         placeholder="Public" />
                 </SelectTrigger>
                 <SelectContent >
-                    <SelectItem className="bg-[#56D071] text-[#56D071] bg-opacity-10" value="true">PUBLIC</SelectItem>
-                    <SelectItem className="bg-[#FD5673] text-[#FD5673] bg-opacity-10" value="false">PRIVATE</SelectItem>
+                    <SelectItem className="bg-[#56D071] text-[#56D071] bg-opacity-10" value="true">Đang hoạt động</SelectItem>
+                    <SelectItem className="bg-[#FD5673] text-[#FD5673] bg-opacity-10" value="false">Không hoạt động</SelectItem>
                 </SelectContent>
             </Select>
         </div>

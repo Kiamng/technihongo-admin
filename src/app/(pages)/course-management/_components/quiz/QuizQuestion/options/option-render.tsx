@@ -42,7 +42,7 @@ const OptionRender = ({ field, index, handleOptionClick, addChangedQuestion, isS
     return (
         <>
             <div className="text-sm font-medium">
-                Options :
+                Đáp án :
             </div>
             <div className="w-full grid grid-cols-2 gap-4">
                 {options.map((option: { optionText: string; isCorrect: boolean }, optionIndex: number) => (
@@ -57,7 +57,7 @@ const OptionRender = ({ field, index, handleOptionClick, addChangedQuestion, isS
                                             disabled={isSaving || hasAttempt}
                                             {...field}
                                             className="resize-none w-full white-space: pre-line"
-                                            placeholder="Enter answer option"
+                                            placeholder="Nhập nội dung đáp án"
                                             onChange={(e) => {
                                                 field.onChange(e);
                                                 addChangedQuestion(index);

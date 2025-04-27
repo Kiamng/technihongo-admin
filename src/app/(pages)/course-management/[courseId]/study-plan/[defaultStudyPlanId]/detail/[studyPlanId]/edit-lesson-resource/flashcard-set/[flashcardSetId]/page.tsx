@@ -34,7 +34,7 @@ const EditFlashcardSetPage = () => {
             setFlashcardSet(response);
         } catch (error) {
             console.error(error);
-            toast.error("Failed to load flashcard set.");
+            toast.error("Tải flashcard thất bại.");
         } finally {
             setIsLoading(false);
         }
@@ -49,7 +49,7 @@ const EditFlashcardSetPage = () => {
             <Link href={`/course-management/${courseId}/study-plan/${defaultStudyPlanId}/detail/${studyPlanId}`}>
                 <Button variant="outline">
                     <CornerDownLeft className="w-4 h-4" />
-                    <span>Back</span>
+                    <span>Quay lại</span>
                 </Button>
             </Link>
             <div className=" flex flex-row space-x-6 items-center">
@@ -57,7 +57,7 @@ const EditFlashcardSetPage = () => {
                     <div className="rounded-full p-2 bg-[#3AC6C6] bg-opacity-10">
                         <Copy className="text-[#3AC6C6]" size={28} />
                     </div>
-                    <span className="text-4xl font-bold ">Edit Flashcard Set Information</span>
+                    <span className="text-4xl font-bold ">Cập nhật thông tin flashcard</span>
                 </div>
                 {flashcardSet ?
                     <SetPublicStatusUpdate

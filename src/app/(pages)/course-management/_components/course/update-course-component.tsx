@@ -99,7 +99,7 @@ export default function CourseUpdateForm({ course, onSubmit, isPending, token }:
                     <div className='grid grid-cols-1 gap-4'>
                         <FormField control={form.control} name="title" render={({ field }) => (
                             <FormItem>
-                                <Label>Title</Label>
+                                <Label>Tên khóa học</Label>
                                 <FormControl>
                                     <Input disabled={isPending} placeholder="Enter Title" {...field} />
                                 </FormControl>
@@ -109,7 +109,7 @@ export default function CourseUpdateForm({ course, onSubmit, isPending, token }:
 
                         <FormField control={form.control} name="description" render={({ field }) => (
                             <FormItem>
-                                <Label>Description</Label>
+                                <Label>Mô tả</Label>
                                 <FormControl>
                                     <Textarea disabled={isPending} className='min-h-[100px]' placeholder="Enter description" {...field} />
                                 </FormControl>
@@ -119,7 +119,7 @@ export default function CourseUpdateForm({ course, onSubmit, isPending, token }:
 
                         <FormField control={form.control} name="estimatedDuration" render={({ field }) => (
                             <FormItem>
-                                <Label>Estimated Duration</Label>
+                                <Label>Thời gian ước tính</Label>
                                 <FormControl>
                                     <Input disabled={isPending} placeholder="Enter estimated duration" {...field} />
                                 </FormControl>
@@ -129,7 +129,7 @@ export default function CourseUpdateForm({ course, onSubmit, isPending, token }:
                         <div className="w-full space-x-4 flex flex-row">
                             <FormField control={form.control} name="isPublic" render={({ field }) => (
                                 <FormItem className="w-full">
-                                    <Label>Public status</Label>
+                                    <Label>Trạng thái</Label>
                                     <Select disabled={isPending} value={field.value?.toString()} onValueChange={(value) => field.onChange(value === "true")}>
                                         <FormControl>
                                             <SelectTrigger>
@@ -137,8 +137,8 @@ export default function CourseUpdateForm({ course, onSubmit, isPending, token }:
                                             </SelectTrigger>
                                         </FormControl>
                                         <SelectContent >
-                                            <SelectItem value="true"><div className="px-4 py-2 bg-[#56D071] w-fit text-[#56D071] rounded-xl bg-opacity-10">ACTIVE</div></SelectItem>
-                                            <SelectItem value="false"><div className="px-4 py-2 bg-[#FD5673] w-fit text-[#FD5673] rounded-xl bg-opacity-10">INACTIVE</div></SelectItem>
+                                            <SelectItem value="true"><div className="px-4 py-2 bg-[#56D071] w-fit text-[#56D071] rounded-xl bg-opacity-10">Đang hoạt động</div></SelectItem>
+                                            <SelectItem value="false"><div className="px-4 py-2 bg-[#FD5673] w-fit text-[#FD5673] rounded-xl bg-opacity-10">Không hoạt động</div></SelectItem>
                                         </SelectContent>
                                     </Select>
 
@@ -164,7 +164,7 @@ export default function CourseUpdateForm({ course, onSubmit, isPending, token }:
                         </div>
                         <FormField control={form.control} name="domainId" render={({ field }) => (
                             <FormItem>
-                                <Label>Domain</Label>
+                                <Label>Lĩnh vực</Label>
                                 <Select disabled={isPending} value={field.value?.toString()} onValueChange={(value) => field.onChange(Number(value))}>
                                     <FormControl>
                                         <SelectTrigger>
@@ -189,7 +189,7 @@ export default function CourseUpdateForm({ course, onSubmit, isPending, token }:
                     <div className="flex flex-col space-y-4">
                         <FormField control={form.control} name="difficultyLevelId" render={({ field }) => (
                             <FormItem>
-                                <Label>Level</Label>
+                                <Label>Độ khó</Label>
                                 <Select disabled={isPending} value={field.value?.toString()} onValueChange={(value) => field.onChange(Number(value))}>
                                     <FormControl>
                                         <SelectTrigger>
@@ -214,23 +214,23 @@ export default function CourseUpdateForm({ course, onSubmit, isPending, token }:
                         <FormField control={form.control} name="thumbnailUrl" render={() => (
                             <FormItem>
                                 <FormLabel className="flex flex-row items-center justify-between">
-                                    <div>Thumbnail Image </div>
+                                    <div>Ảnh </div> <Button
+                                        disabled={isPending} type="button" size="sm" onClick={() => fileInputRef.current?.click()}>
+                                        Chọn
+                                    </Button>
                                 </FormLabel>
                                 <FormControl>
                                     <Input
                                         disabled={isPending}
                                         type="file"
                                         accept="image/*"
-                                        className="w-[510px]"
+                                        className="flex-1"
                                         ref={fileInputRef}
                                         onChange={handleOnChangeImage}
                                     />
                                 </FormControl>
                                 {imageSrc && <img src={imageSrc} alt="Preview" className="max-w-xs mt-2" />}
-                                <Button
-                                    disabled={isPending} type="button" size="sm" onClick={() => fileInputRef.current?.click()}>
-                                    Choose
-                                </Button>
+
                                 <FormMessage />
                             </FormItem>
                         )} />
@@ -238,7 +238,7 @@ export default function CourseUpdateForm({ course, onSubmit, isPending, token }:
                 </div>
 
                 <Button disabled={isPending} type="submit">
-                    {isPending ? <><LoaderCircle className="animate-spin" /> Saving...</> : "Save"}
+                    {isPending ? <><LoaderCircle className="animate-spin" /> Đang lưu...</> : "Lưu"}
                 </Button>
             </form>
         </Form>

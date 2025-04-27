@@ -13,17 +13,20 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { 
-  LoaderCircle, 
-  BookPlus, 
-  Search, 
+import {
+  LoaderCircle,
+  BookPlus,
+  Search,
   Globe,
   Clock,
   Calendar,
   BookOpen,
   Award,
   User,
-  Info
+  Info,
+  Check,
+  X,
+  Loader2
 } from "lucide-react";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
@@ -85,7 +88,7 @@ const AddPathCoursePopup = ({
         }
         return null;
       }).filter(id => id !== null) as number[];
-      
+
       setExistingCourseIds(existingIds);
       return existingIds;
     } catch (error) {
@@ -100,7 +103,7 @@ const AddPathCoursePopup = ({
       setError("Authentication token is missing");
       return;
     }
-    
+
     if (!learningPath.domain?.domainId) {
       setError("Learning path does not have a domain ID");
       return;
@@ -113,13 +116,13 @@ const AddPathCoursePopup = ({
         parentDomainId,
         token: session.user.token,
       });
-      
+
       if (!availableCourses || !Array.isArray(availableCourses)) {
         console.warn("Available courses response is not an array:", availableCourses);
         setCourses([]);
         return;
       }
-      
+
       const filteredCourses = availableCourses.filter(
         (course) => !existingIds.includes(course.courseId)
       );
@@ -135,10 +138,10 @@ const AddPathCoursePopup = ({
 
   useEffect(() => {
     let isMounted = true;
-    
+
     const loadData = async () => {
       if (!isDialogOpen || !session?.user?.token || isInitialLoadDone) return;
-      
+
       setIsLoading(true);
       try {
         const existingIds = await fetchExistingCourses();
@@ -155,9 +158,9 @@ const AddPathCoursePopup = ({
         if (isMounted) setIsLoading(false);
       }
     };
-    
+
     loadData();
-    
+
     return () => { isMounted = false; };
   }, [isDialogOpen, session, fetchExistingCourses, fetchCoursesByParentDomain, isInitialLoadDone]);
 
@@ -167,7 +170,7 @@ const AddPathCoursePopup = ({
     }
   }, [isDialogOpen]);
 
-  const filteredCourses = useMemo(() => 
+  const filteredCourses = useMemo(() =>
     courses.filter(
       (course) =>
         searchTerm === "" ||
@@ -238,14 +241,14 @@ const AddPathCoursePopup = ({
       <DialogTrigger asChild>
         <Button className="flex items-center gap-2 bg-primary hover:bg-primary/90">
           <BookPlus className="w-5 h-5" />
-          Add Course to Path
+          Thêm khóa học
         </Button>
       </DialogTrigger>
 
       <DialogContent className="max-w-[800px] h-[600px] max-h-[90vh] flex flex-col">
         <DialogHeader className="pb-4">
           <DialogTitle className="text-center">
-            Add Course to Learning Path: {learningPath.title}
+            Thêm khóa học vào: {learningPath.title}
           </DialogTitle>
         </DialogHeader>
 
@@ -253,7 +256,7 @@ const AddPathCoursePopup = ({
           <div className="relative flex-grow">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Search courses by title or description..."
+              placeholder="Tìm kiếm khóa học"
               className="pl-10"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -264,12 +267,12 @@ const AddPathCoursePopup = ({
         <div className="flex-1 flex gap-4 overflow-hidden">
           <div className="w-[55%] overflow-hidden flex flex-col">
             <h3 className="text-lg font-semibold mb-2">
-              Available Courses
+              Danh sách khóa học
               <span className="text-sm text-muted-foreground ml-2">
-                ({filteredCourses.length} of {courses.length})
+                ({filteredCourses.length}/{courses.length})
               </span>
             </h3>
-            
+
             <div className="border rounded-md p-2 flex-1 overflow-y-auto">
               {isLoading ? (
                 <div className="flex justify-center items-center h-[200px]">
@@ -278,14 +281,14 @@ const AddPathCoursePopup = ({
               ) : error ? (
                 <div className="flex flex-col items-center justify-center h-full text-center text-destructive">
                   <p>{error}</p>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     className="mt-4"
                     onClick={() => {
                       setIsInitialLoadDone(false);
                       setError(null);
-                      fetchExistingCourses().then(existingIds => 
+                      fetchExistingCourses().then(existingIds =>
                         fetchCoursesByParentDomain(existingIds)
                       );
                     }}
@@ -295,10 +298,10 @@ const AddPathCoursePopup = ({
                 </div>
               ) : filteredCourses.length === 0 ? (
                 <p className="text-center text-muted-foreground py-8">
-                  No courses available for this learning path
+                  Không tìm thấy khóa học phù hợp nào
                 </p>
               ) : (
-                <RadioGroup 
+                <RadioGroup
                   value={selectedCourseId?.toString() || ""}
                   onValueChange={(value) => setSelectedCourseId(Number(value))}
                   className="space-y-2"
@@ -306,38 +309,37 @@ const AddPathCoursePopup = ({
                   {filteredCourses.map((course) => (
                     <div
                       key={course.courseId}
-                      className={`p-3 border rounded-lg transition-colors ${
-                        selectedCourseId === course.courseId 
-                          ? "border-primary bg-primary/5" 
-                          : "hover:bg-muted/50"
-                      }`}
+                      className={`p-3 border rounded-lg transition-colors ${selectedCourseId === course.courseId
+                        ? "border-primary bg-primary/5"
+                        : "hover:bg-muted/50"
+                        }`}
                     >
                       <div className="flex items-start space-x-3">
-                        <RadioGroupItem 
+                        <RadioGroupItem
                           id={`course-${course.courseId}`}
-                          value={course.courseId.toString()} 
+                          value={course.courseId.toString()}
                           className="mt-1"
                         />
-                        
+
                         <div className="flex-grow">
                           <div className="flex justify-between items-start flex-wrap">
-                            <label 
+                            <label
                               htmlFor={`course-${course.courseId}`}
                               className="font-medium cursor-pointer mr-2"
                             >
                               {course.title || "Untitled Course"}
                             </label>
-                            
+
                             <div className="flex items-center gap-1 flex-wrap mt-1">
                               <Badge variant="outline">{course.domain?.name || "No Domain"}</Badge>
                               <Badge variant="secondary">{course.difficultyLevel?.name || "No Level"}</Badge>
                             </div>
                           </div>
-                          
+
                           <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                             {course.description || "No description available"}
                           </p>
-                          
+
                           <div className="flex items-center text-xs text-muted-foreground mt-2">
                             <Clock className="w-3 h-3 mr-1" /> {course.estimatedDuration || "N/A"}
                             <span className="ml-3">ID: {course.courseId}</span>
@@ -352,21 +354,21 @@ const AddPathCoursePopup = ({
           </div>
 
           <div className="w-[45%] overflow-hidden flex flex-col">
-            <h3 className="text-lg font-semibold mb-2">Course Details</h3>
-            
+            <h3 className="text-lg font-semibold mb-2">Thông tin khóa học</h3>
+
             <div className="border rounded-md p-4 flex-1 overflow-y-auto bg-muted/10">
               {!selectedCourse ? (
                 <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
                   <Info className="w-12 h-12 mb-2 opacity-30" />
-                  <p>Select a course to view details</p>
+                  <p>Chọn 1 khóa học để xem chi tiết</p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {selectedCourse.thumbnailUrl && selectedCourse.thumbnailUrl !== "https://" && (
                     <div className="rounded-md overflow-hidden border">
-                      <img 
-                        src={selectedCourse.thumbnailUrl} 
-                        alt={selectedCourse.title || "Course thumbnail"} 
+                      <img
+                        src={selectedCourse.thumbnailUrl}
+                        alt={selectedCourse.title || "Course thumbnail"}
                         className="w-full h-[120px] object-cover"
                         onError={(e) => {
                           e.currentTarget.style.display = 'none';
@@ -374,32 +376,32 @@ const AddPathCoursePopup = ({
                       />
                     </div>
                   )}
-                  
+
                   <div>
                     <h4 className="text-xl font-bold">{selectedCourse.title || "Untitled Course"}</h4>
                     <p className="text-sm text-muted-foreground mt-1">
-                      {selectedCourse.description || "No description available"}
+                      {selectedCourse.description || ""}
                     </p>
                   </div>
-                  
+
                   <div className="grid grid-cols-2 gap-2">
                     <div className="border rounded-md p-2">
                       <div className="flex items-center text-sm font-medium mb-1">
-                        <Globe className="w-4 h-4 mr-1" /> Domain
+                        <Globe className="w-4 h-4 mr-1" /> Lĩnh vực
                       </div>
                       <div className="text-sm">
                         <Badge variant="outline" className="mt-1">
-                          {selectedCourse.domain?.name || "N/A"}
+                          {selectedCourse.domain?.name || ""}
                         </Badge>
                         <div className="text-xs text-muted-foreground mt-1">
-                          Tag: {selectedCourse.domain?.tag || "N/A"}
+                          Tag: {selectedCourse.domain?.tag || ""}
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="border rounded-md p-2">
                       <div className="flex items-center text-sm font-medium mb-1">
-                        <Award className="w-4 h-4 mr-1" /> Difficulty
+                        <Award className="w-4 h-4 mr-1" /> Độ khó
                       </div>
                       <div className="text-sm">
                         <Badge variant="secondary" className="mt-1">
@@ -411,30 +413,30 @@ const AddPathCoursePopup = ({
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <div className="flex items-center text-sm">
                       <User className="w-4 h-4 mr-2" />
-                      <span className="font-medium">Creator:</span>
+                      <span className="font-medium">Người tạo:</span>
                       <span className="ml-2">{selectedCourse.creator?.userName || "N/A"}</span>
                     </div>
-                    
+
                     <div className="flex items-center text-sm">
                       <Clock className="w-4 h-4 mr-2" />
-                      <span className="font-medium">Duration:</span>
+                      <span className="font-medium">Thời gian ước tính:</span>
                       <span className="ml-2">{selectedCourse.estimatedDuration || "N/A"}</span>
                     </div>
-                    
+
                     <div className="flex items-center text-sm">
                       <Calendar className="w-4 h-4 mr-2" />
-                      <span className="font-medium">Created:</span>
+                      <span className="font-medium">Ngày tạo:</span>
                       <span className="ml-2">{formatDate(selectedCourse.createdAt)}</span>
                     </div>
-                    
+
                     <div className="flex items-center text-sm">
                       <BookOpen className="w-4 h-4 mr-2" />
-                      <span className="font-medium">Premium:</span>
-                      <span className="ml-2">{selectedCourse.premium ? "Yes" : "No"}</span>
+                      <span className="font-medium">Cần gói:</span>
+                      <span className="ml-2">{selectedCourse.premium ? <Check /> : <X />}</span>
                     </div>
                   </div>
                 </div>
@@ -444,14 +446,11 @@ const AddPathCoursePopup = ({
         </div>
 
         <div className="mt-3 pt-2 border-t">
-          <div className="flex items-center justify-between">
-            <div className="text-sm">
-              {selectedCourseId ? "1 course selected" : "No course selected"}
-            </div>
-            
+          <div className="flex items-center justify-end">
+
             <div className="flex space-x-2">
               <Button variant="outline" onClick={() => setSelectedCourseId(null)} disabled={isLoading || !selectedCourseId}>
-                Clear Selection
+                Xóa lựa chọn
               </Button>
               <Button
                 onClick={handleAddCourse}
@@ -460,10 +459,10 @@ const AddPathCoursePopup = ({
               >
                 {isLoading ? (
                   <>
-                    <LoaderCircle className="mr-2 animate-spin" /> Adding...
+                    <Loader2 className="mr-2 animate-spin" /> Đang thêm ...
                   </>
                 ) : (
-                  "Add Selected Course"
+                  "Thêm khóa học"
                 )}
               </Button>
             </div>

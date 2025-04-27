@@ -1,14 +1,14 @@
 import { z } from "zod";
 
 export const OptionSchema = z.object({
-  optionText: z.string().min(1, "Answer can not be empty"), 
+  optionText: z.string().min(1, "Đáp án không được để trống"), 
   isCorrect: z.boolean(),     
 });
 
 export const QuestionSchema = z.object({
   quizQuestionId: z.number().nullable(),
   questionId: z.number().nullable(),
-  questionText: z.string().min(1, "Question is required"),
+  questionText: z.string().min(1, "Hãy nhập câu hỏi"),
   explanation: z.string(),
   url: z.string().nullable(),
   initialIndex: z.number().nullable(),

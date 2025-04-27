@@ -85,7 +85,7 @@ export default function EditLearningResourcePage() {
     }, [learningResourceId])
     const onSubmit = async (values: z.infer<typeof LearningResourceSchema>) => {
         if (learningResource?.public === true) {
-            toast.error("You can not update a public learning resource!");
+            toast.error("Bạn không thể cập nhật một bài giảng đang hoạt động!");
             return
         }
         startTransition(async () => {
@@ -129,9 +129,9 @@ export default function EditLearningResourcePage() {
                 const response = await updateLearningResource(session?.user.token as string, parseInt(learningResourceId as string, 10), values)
                 console.log(response);
                 if (response.success === true) {
-                    toast.success("Saved learning resource successfully!!");
+                    toast.success("Lưu thay đổi thành công");
                 } else {
-                    toast.error("Failed to save learning resource");
+                    toast.error("Lưu thay đổi thất bại");
                 }
             } catch (error) {
                 console.error("Error saving learning resource:", error);
@@ -161,7 +161,7 @@ export default function EditLearningResourcePage() {
                             <div className="rounded-full p-2 bg-[#FD5673] bg-opacity-10">
                                 <Youtube className="text-[#FD5673]" size={28} />
                             </div>
-                            <span className="text-4xl font-bold ">Edit Learning Resource Details</span>
+                            <span className="text-4xl font-bold ">Cập nhật thông tin bài giảng</span>
                             {learningResource
                                 ? <LearningResourceUpdatePublicStatus
                                     learningResource={learningResource}
@@ -172,35 +172,35 @@ export default function EditLearningResourcePage() {
                         </div>
 
                         <Button disabled={isPending} type="submit">
-                            {isPending ? <><LoaderCircle className="animate-spin" /> Saving ...</> : "Save changes"}
+                            {isPending ? <><LoaderCircle className="animate-spin" /> Đang lưu ...</> : "Lưu thay đổi"}
                         </Button>
                     </div>
                     <div className="w-full flex flex-row space-x-8">
                         <div className="w-1/2 flex flex-col space-y-6">
                             <FormField control={form.control} name="title" render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Title:</FormLabel>
+                                    <FormLabel>Tên bài giảng:</FormLabel>
                                     <FormControl>
-                                        <Input disabled={isPending} placeholder="Enter Title" {...field} />
+                                        <Input disabled={isPending} placeholder="Nhập tên bài giảng" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )} />
                             <FormField control={form.control} name="description" render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Description:</FormLabel>
+                                    <FormLabel>Mô tả:</FormLabel>
                                     <FormControl>
-                                        <Textarea disabled={isPending} placeholder="Enter description" {...field} rows={3} />
+                                        <Textarea disabled={isPending} placeholder="Thêm một mô tả" {...field} rows={3} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )} />
                             <FormField control={form.control} name="videoFilename" render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Video name (mp4):</FormLabel>
+                                    <FormLabel>Video (mp4):</FormLabel>
                                     <div className="flex items-center space-x-2">
                                         <FormControl>
-                                            <Input disabled={isPending} placeholder="Choose a video" {...field} readOnly />
+                                            <Input disabled={isPending} placeholder="Chọn một video" {...field} readOnly />
                                         </FormControl>
                                     </div>
                                     <FormMessage />
@@ -216,7 +216,7 @@ export default function EditLearningResourcePage() {
                                     setVideoFile(file);
                                     setVideoSrc(URL.createObjectURL(file));
                                     form.setValue("videoUrl", file);
-                                    form.setValue("videoFilename", file.name);
+                                    form.setValue("videoFilename", form.getValues('title'));
                                 }}
                                 onClear={() => {
                                     setVideoFile(null);
@@ -230,10 +230,10 @@ export default function EditLearningResourcePage() {
                         <div className="w-1/2 flex flex-col space-y-6">
                             <FormField control={form.control} name="pdfFilename" render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>PDF name:</FormLabel>
+                                    <FormLabel>PDF:</FormLabel>
                                     <div className="flex items-center space-x-2">
                                         <FormControl>
-                                            <Input disabled={isPending} placeholder="Choose pdf file" {...field} readOnly />
+                                            <Input disabled={isPending} placeholder="Chọn pdf" {...field} readOnly />
                                         </FormControl>
                                     </div>
                                     <FormMessage />
@@ -250,7 +250,7 @@ export default function EditLearningResourcePage() {
                                         setPdfFile(file);
                                         setPdfSrc(URL.createObjectURL(file));
                                         form.setValue("pdfUrl", file);
-                                        form.setValue("pdfFilename", file.name)
+                                        form.setValue("pdfFilename", form.getValues('title'))
                                     }}
                                 onClear={() => {
                                     setPdfFile(null);

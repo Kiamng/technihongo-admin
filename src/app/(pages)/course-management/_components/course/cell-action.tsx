@@ -14,7 +14,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
 
     return (
         <Link href={`/course-management/${data.courseId}`} >
-            <Button><Eye />View more</Button>
+            <Button><Eye />Xem chi tiết</Button>
         </Link>
     );
 };

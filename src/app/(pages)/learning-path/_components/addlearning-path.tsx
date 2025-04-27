@@ -56,7 +56,7 @@ const AddLearningPathPopup: React.FC<AddLearningPathPopupProps> = ({ onUpdate })
     };
 
     fetchDomains();
-  }, [isOpen, session]);
+  }, [isOpen, session?.user.token]);
 
   const onSubmitForm = async (values: z.infer<typeof CreateLearningPathSchema>) => {
     if (!session?.user?.token) {
@@ -88,12 +88,12 @@ const AddLearningPathPopup: React.FC<AddLearningPathPopupProps> = ({ onUpdate })
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button className="flex gap-1">
-          <Plus className="h-4 w-4" /> New Learning Path
+          <Plus className="h-4 w-4" /> Thêm mới
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-[600px]">
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-center">Create New Learning Path</DialogTitle>
+          <DialogTitle className="text-center">Thêm mới một lộ trình học tập</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -103,9 +103,9 @@ const AddLearningPathPopup: React.FC<AddLearningPathPopupProps> = ({ onUpdate })
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Learning Path Title</FormLabel>
+                  <FormLabel>Tên</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Enter learning path title" {...field} />
+                    <Textarea placeholder="Nhập tên của lộ trình học tập" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -117,10 +117,10 @@ const AddLearningPathPopup: React.FC<AddLearningPathPopupProps> = ({ onUpdate })
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>Mô tả</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Enter learning path description"
+                      placeholder="Thêm một mô tả"
                       {...field}
                       rows={3}
                     />
@@ -135,7 +135,7 @@ const AddLearningPathPopup: React.FC<AddLearningPathPopupProps> = ({ onUpdate })
               name="domainId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Select Parent Domain</FormLabel>
+                  <FormLabel>Chọn lĩnh vực</FormLabel>
                   <FormControl>
                     <div className="max-h-[200px] overflow-y-auto border rounded-md p-2">
                       {isFetchingDomains ? (
@@ -177,7 +177,7 @@ const AddLearningPathPopup: React.FC<AddLearningPathPopupProps> = ({ onUpdate })
               name="isPublic"
               render={({ field }) => (
                 <FormItem className="flex items-center gap-2">
-                  <FormLabel>Public</FormLabel>
+                  <FormLabel>Trạng thái</FormLabel>
                   <FormControl>
                     <Switch
                       checked={field.value}

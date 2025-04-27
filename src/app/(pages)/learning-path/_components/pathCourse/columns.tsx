@@ -171,36 +171,33 @@ export function PathCoursesTable({
   const pathCourseColumns: ColumnDef<any>[] = [
     {
       accessorKey: "courseOrder",
-      header: "Order",
+      header: "Thứ tự",
       cell: ({ row }) => row.original.courseOrder,
     },
     {
       accessorFn: (row) => row.course?.title,
       id: "courseTitle",
-      header: "Course Name",
-      cell: ({ row }) => row.original.course?.title || "Unnamed Course",
+      header: "Tên khóa học",
+      cell: ({ row }) => row.original.course?.title || "Trống",
     },
     {
       accessorFn: (row) => row.course?.description,
       id: "courseDescription",
-      header: "Description",
-      cell: ({ row }) => row.original.course?.description || "No description",
+      header: "Mô tả",
+      cell: ({ row }) => row.original.course?.description || "Trống",
     },
     {
       id: "actions",
-      header: "Actions",
+      header: "",
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <Link href={`/courses/${row.original.course?.courseId}`}>
-            <Button variant="outline" size="sm">View</Button>
-          </Link>
           <Button
             variant="destructive"
             size="sm"
             onClick={() => handleRemoveCourse(row.original.pathCourseId)}
             disabled={isUpdating}
           >
-            Remove
+            Xóa
           </Button>
         </div>
       ),
@@ -210,7 +207,7 @@ export function PathCoursesTable({
   const renderRegularTable = () => (
     <>
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold">Courses in this Learning Path ({pathCourses.length})</h3>
+        <h3 className="text-lg font-semibold">Các khóa học trong lộ trình học tập ({pathCourses.length})</h3>
         <div className="flex items-center gap-2">
           <Button
             onClick={handleRefresh}
@@ -219,7 +216,7 @@ export function PathCoursesTable({
             disabled={isRefreshing}
           >
             <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
-            Refresh
+            Tải lại
           </Button>
           <Button
             onClick={() => setIsReorderMode(true)}
@@ -228,7 +225,7 @@ export function PathCoursesTable({
             disabled={pathCourses.length < 2}
           >
             <ArrowDownUp className="h-4 w-4" />
-            Reorder Courses
+            Sắp xếp thứ tự
           </Button>
         </div>
       </div>
@@ -244,7 +241,7 @@ export function PathCoursesTable({
   const renderDraggableTable = () => (
     <div className="relative">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold">Reorder Courses</h3>
+        <h3 className="text-lg font-semibold">Sắp xếp thứ tự</h3>
         <div className="flex gap-2">
           <Button
             onClick={handleRefresh}
@@ -266,10 +263,10 @@ export function PathCoursesTable({
             {isUpdating ? (
               <>
                 <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
+                Đang lưu...
               </>
             ) : (
-              "Save Order"
+              "Lưu thứ tự"
             )}
           </Button>
         </div>
@@ -279,13 +276,13 @@ export function PathCoursesTable({
         <div className="absolute inset-0 bg-white/50 flex items-center justify-center z-10 rounded-md">
           <div className="text-center">
             <LoaderCircle className="animate-spin h-8 w-8 mx-auto mb-2" />
-            <p>Updating course order...</p>
+            <p>Đang cập nhật thứ tự...</p>
           </div>
         </div>
       )}
 
       <p className="text-sm text-muted-foreground mb-4">
-        Drag and drop courses to change their order. Click Save Order when finished.
+        Kéo thả để thay đổi thứ tự. Bấm lưu để lưu thay đổi
       </p>
 
       <DragDropContext onDragEnd={handleDragEnd}>
@@ -296,11 +293,11 @@ export function PathCoursesTable({
                 <thead>
                   <tr className="bg-muted/50">
                     <th className="w-10 p-3 text-left"></th>
-                    <th className="w-24 p-3 text-left font-medium">Order</th>
+                    <th className="w-24 p-3 text-left font-medium">Thứ tự</th>
                     {/* <th className="w-24 p-3 text-left font-medium">Course ID</th> */}
-                    <th className="p-3 text-left font-medium">Course Name</th>
-                    <th className="p-3 text-left font-medium">Description</th>
-                    <th className="w-32 p-3 text-left font-medium">Actions</th>
+                    <th className="p-3 text-left font-medium">Tên khóa học</th>
+                    <th className="p-3 text-left font-medium">Mô tả</th>
+                    <th className="w-32 p-3 text-left font-medium"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -326,8 +323,8 @@ export function PathCoursesTable({
                           </td>
                           <td className="p-3">{course.courseOrder}</td>
                           {/* <td className="p-3">{course.course?.courseId}</td> */}
-                          <td className="p-3">{course.course?.title || "Unnamed Course"}</td>
-                          <td className="p-3">{course.course?.description || "No description"}</td>
+                          <td className="p-3">{course.course?.title || "Trống"}</td>
+                          <td className="p-3">{course.course?.description || "Trống"}</td>
                           <td className="p-3">
                             <div className="flex items-center gap-2">
                               <Link href={`/courses/${course.course?.courseId}`}>
@@ -339,7 +336,7 @@ export function PathCoursesTable({
                                 onClick={() => handleRemoveCourse(course.pathCourseId)}
                                 disabled={isUpdating}
                               >
-                                Remove
+                                Xóa
                               </Button>
                             </div>
                           </td>
@@ -351,7 +348,7 @@ export function PathCoursesTable({
                   {pathCourses.length === 0 && (
                     <tr>
                       <td colSpan={6} className="text-center py-6 text-muted-foreground">
-                        No courses found in this learning path
+                        Không tìm thấy khóa học nào trong lộ trình học tập này
                       </td>
                     </tr>
                   )}

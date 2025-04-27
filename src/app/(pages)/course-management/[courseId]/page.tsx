@@ -44,7 +44,7 @@ export default function CourseDetailPage() {
 
     const breadcrumbData = useMemo(() => [
         {
-            name: 'Course management',
+            name: 'Khóa học',
             link: `course-management`,
             isPage: false
         },
@@ -62,7 +62,7 @@ export default function CourseDetailPage() {
             setStudyPlans(studyPlansData);
         } catch (error) {
             console.error(error);
-            toast.error("Failed to load study plans.");
+            toast.error("Tải kế hoạch học tập thất bại");
         }
     };
 
@@ -73,7 +73,7 @@ export default function CourseDetailPage() {
             setCourse(courseResponse);
         } catch (error) {
             console.error(error);
-            toast.error("Failed to load course details.");
+            toast.error("Tải thông tin khóa học thất bại");
         }
     };
 
@@ -87,7 +87,6 @@ export default function CourseDetailPage() {
                 await Promise.all([fetchCourse(), fetchStudyPlan()]);
             } catch (error) {
                 console.error(error);
-                toast.error("Failed to load course or study plans.");
             } finally {
                 setIsLoading(false);
             }
@@ -128,7 +127,7 @@ export default function CourseDetailPage() {
             if (axios.isAxiosError(error) && error.response) {
                 toast.error(error?.response.data.message);
             } else {
-                toast.error('An error occurred. Please try again later.');
+                toast.error('Đã có lỗi xảy ra, vui lòng thử lại sau');
             }
         } finally {
             setIsPending(false);
@@ -155,10 +154,10 @@ export default function CourseDetailPage() {
             <CourseUpdateForm token={session?.user.token as string} course={course} onSubmit={handleSubmit} isPending={isPending} />
             <Separator />
             <div className="w-full flex justify-between">
-                <div className="text-4xl font-bold flex items-center">Study plans in course</div>
+                <div className="text-4xl font-bold flex items-center">Kế hoạch học tập:</div>
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger className="flex items-center gap-2 py-2 px-4 bg-primary rounded-xl hover:bg-primary/90 text-white">
-                        Create new study plan
+                        Thêm mới kế hoạch
                     </DialogTrigger>
                     <DialogContent width='400px'>
                         <CreateStudyPlanPopUp
@@ -169,7 +168,7 @@ export default function CourseDetailPage() {
                     </DialogContent>
                 </Dialog>
             </div>
-            {studyPlans ? <StudyPlanList fetchStudyPlan={fetchStudyPlan} StudyPlanList={studyPlans} /> : <EmptyStateComponent imgageUrl="https://allpromoted.co.uk/image/no-data.svg" message="This Course does not have any study plans" size={400} />}
+            {studyPlans ? <StudyPlanList fetchStudyPlan={fetchStudyPlan} StudyPlanList={studyPlans} /> : <EmptyStateComponent imgageUrl="https://allpromoted.co.uk/image/no-data.svg" message="Không tìm thấy kế hoạch học tập nào" size={400} />}
 
         </div>
     )

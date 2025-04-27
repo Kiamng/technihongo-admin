@@ -45,12 +45,12 @@ export default function DomainManagement() {
   return (
     <div className="w-full space-y-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-4xl font-bold">Domain</h1>
+        <h1 className="text-4xl font-bold">Các lĩnh vực công nghệ thông tin</h1>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger
             className="flex items-center gap-2 py-2 px-2 bg-primary rounded-lg hover:bg-primary/90 text-white"
           >
-            <CirclePlus />Create new domain
+            <CirclePlus />Thêm mới
           </DialogTrigger>
           <DialogContent width='400px'>
             <DomainFormPopup

@@ -101,7 +101,7 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
         const hasUnSavedQuestions = form.getValues().questions.some((question) => !question.quizQuestionId) || changedQuestions.length > 0;
 
         if (hasUnSavedQuestions) {
-            toast.error("You need to save all questions before updating order.");
+            toast.error("Bạn phải lưu những thay đổi trước khi cập nhật thứ tự");
             return;
         }
 
@@ -140,14 +140,14 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
                 const newOrder = newQuestionOrder.map((question) => question.initialIndex);
                 console.log(newOrder);
 
-                await updateQuizQuestionOrder(quiz.quizId, newOrder as number[]);
+                await updateQuizQuestionOrder(token, quiz.quizId, newOrder as number[]);
 
-                toast.success("Order saved successfully!");
+                toast.success("Cập nhật thứ tự thành công!");
                 setInitialOrder([...newQuestionOrder]);
                 setIsEditingOrder(false);
             } catch (error) {
                 console.error("Error while updating new order:", error);
-                toast.error("Failed to save new order");
+                toast.error("Cập nhật thứ tự thất bại");
             }
         });
     };
@@ -158,16 +158,16 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
         remove(index);
 
         if (selectedQuestion.quizQuestionId) {
-            deleteQuizQestion(selectedQuestion.quizQuestionId)
+            deleteQuizQestion(token, selectedQuestion.quizQuestionId)
                 .then(() => {
-                    toast.success('Question deleted successfully!');
+                    toast.success('Xóa câu hỏi thành công!');
                 })
                 .catch((error) => {
                     console.error("Error deleting question: ", error);
-                    toast.error('Failed to delete question');
+                    toast.error('Xóa câu hỏi thất bại!');
                 });
         } else {
-            toast.success('Question deleted successfully!');
+            toast.success('Xóa câu hỏi thành công!');
         }
     };
 
@@ -203,7 +203,7 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
         const correctOptionsCount = options.filter(option => option.isCorrect).length;
 
         if (correctOptionsCount === 1 && options[optionIndex].isCorrect) {
-            toast.error("A question must have at least one correct answer!");
+            toast.error("Phải có ít nhất 1 đáp án đúng");
             return;
         }
 
@@ -276,12 +276,12 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
         // console.log("New question:", newQuestions);
 
         if (values.questions.length === 0 || values.questions.length < 5) {
-            toast.error("You need to add at least 5 questions");
+            toast.error("Bài kiểm tra phải có ít nhất 5 câu hỏi");
             return;
         }
 
         if (quiz.hasAttempt) {
-            toast.error("You cannot update questions once taken by a student");
+            toast.error("Bạn không thể cập nhật bài kiểm tra một khi đã được làm bởi học sinh");
             return;
         }
 
@@ -309,7 +309,7 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
             if (updatedNew.length > 0) {
                 try {
                     for (const question of updatedNew) {
-                        const createQuestionResponse = await createQuizQuestionWithQuestion(quiz.quizId, question);
+                        const createQuestionResponse = await createQuizQuestionWithQuestion(token, quiz.quizId, question);
                         if (createQuestionResponse.success === false) {
                             toast.error(`Failed to create question: "${question.questionText}"`);
                         }
@@ -437,13 +437,13 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
                     <div className="w-full flex justify-between">
                         <div className="flex space-x-4 items-center">
                             <span className="text-lg font-bold ">
-                                Questions In Quiz ({isQuizQuestionsLoading ? "..." : newQuestionOrder.length})
+                                Số câu hỏi ({isQuizQuestionsLoading ? "..." : newQuestionOrder.length})
                             </span>
                             {!quiz.hasAttempt && <ImportCSVPopup type="quiz" />}
                         </div>
                         {quiz.hasAttempt
                             ? (<div className="px-3 py-2 bg-orange-400 text-white font-medium text-base rounded-lg">
-                                Cannot update questions once taken by a student
+                                Không thể cập nhật một bài kiểm tra đã được làm bởi học sinh
                             </div>
                             )
                             : (
@@ -504,11 +504,11 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
                                 ))
                             )}
                     </div>
-                    {fields.length === 0 && <EmptyStateComponent imgageUrl="https://allpromoted.co.uk/image/no-data.svg" message="This quiz does not have any questions" size={400} />}
+                    {fields.length === 0 && <EmptyStateComponent imgageUrl="https://allpromoted.co.uk/image/no-data.svg" message="Bài kiểm tra này chưa có câu hỏi nào" size={400} />}
                     {!quiz.hasAttempt &&
                         <button type="button" onClick={handleInsertNew} className="w-full flex h-[70px] justify-center items-center rounded-lg shadow-md border-[1px] hover:scale-95 duration-100 transition-all ease-in-out">
                             <div className="flex space-x-4">
-                                <Plus /> <span className="font-medium">Add question</span>
+                                <Plus /> <span className="font-medium">Thêm mới</span>
                             </div>
                         </button>
                     }

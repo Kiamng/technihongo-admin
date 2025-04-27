@@ -6,10 +6,10 @@ import { getToken } from "next-auth/jwt";
 const publicRoutes = ["/"];
 
 // Các trang dành cho Admin
-const authRoutes = ["/dashboard", "/system-configuration", "/user-management", "/violation-management", "/learning-path", "/difficultylevel-management", "/achievement-management","/supscription-management"];
+const authRoutes = ["/dashboard", "/user-management", "/violation-management", "/achievement-management","/supscription-management"];
 
 // Các trang dành cho Content Manager
-const CMRoutes = ["/course-management"];
+const CMRoutes = ["/course-management", "/system-configuration" , "/meeting-management", "/learning-path" , "/difficultylevel-management"];
 
 export default async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });

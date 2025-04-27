@@ -9,12 +9,13 @@ import {
 import { FileSpreadsheet } from "lucide-react";
 
 interface ImportType {
-    type: "quiz" | "flashcard"
+    type: "quiz" | "flashcard" | "script"
 }
 const ImportCSVPopup = ({ type }: ImportType) => {
 
-    const quizCSVLink = "https://docs.google.com/spreadsheets/d/19T8CRZZ3AdcpxgZDUE3TosFsFiCGV82T8JcZ5StlhCc"
-    const flashcardCSVLink = "https://docs.google.com/spreadsheets/d/1QZZcp9f4Gnqp1ZKLhEW60IJ53NKSAZgcvQJadsMLDNA"
+    const quizCSVLink = process.env.NEXT_PUBLIC_QUIZ_CSV_LINK
+    const flashcardCSVLink = process.env.NEXT_PUBLIC_FLASHCARD_CSV_LINK
+    const scriptCSVLink = process.env.NEXT_PUBLIC_SCRIPT_CSV_LINK
 
     return (
         <Dialog>
@@ -26,7 +27,18 @@ const ImportCSVPopup = ({ type }: ImportType) => {
                     <DialogTitle className="text-3xl font-bold text-center">Import From Spreadsheet</DialogTitle>
                 </DialogHeader>
                 <div className="flex flex-col space-y-4 text-xl text-center p-4">
-                    <div>1. <a target="_blank" rel="noopener noreferrer" className="text-blue-600 underline" href={`${type === 'flashcard' ? flashcardCSVLink : quizCSVLink}/edit?usp=sharing/copy`}>Copy</a> or <a target="_blank" rel="noopener noreferrer" className="text-blue-600 underline" href={`${type === 'flashcard' ? flashcardCSVLink : quizCSVLink}/export?format=xlsx`}>Download</a> our template.</div>
+                    <div>1. <a
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 underline"
+                        href={`${type === 'flashcard' ? flashcardCSVLink : type === 'quiz' ? quizCSVLink : scriptCSVLink}/edit?usp=sharing/copy`}>Copy</a>
+                        or
+                        <a
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 underline"
+                            href={`${type === 'flashcard' ? flashcardCSVLink : type === 'quiz' ? quizCSVLink : scriptCSVLink}/export?format=xlsx`}>Download</a>
+                        our template.</div>
                     <div>2. Fill it out and export as CSV UTF-8</div>
                     <div>3. Upload Below</div>
                     <Button

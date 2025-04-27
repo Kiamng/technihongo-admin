@@ -63,34 +63,34 @@ const QuizEditForm = ({ quiz, token, difficultyLevels, loading }: QuizEditFormPr
                 <div className="w-1/2 flex flex-col space-y-6">
                     <FormField control={form.control} name="title" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Title:</FormLabel>
+                            <FormLabel>Tên bài kiểm tra:</FormLabel>
                             <FormControl>
-                                <Input disabled={isPending} placeholder="Enter Title" {...field} />
+                                <Input disabled={isPending} placeholder="Tên bài kiểm tra" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="description" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Description :</FormLabel>
+                            <FormLabel>Mô tả:</FormLabel>
                             <FormControl>
                                 <Textarea
                                     disabled={isPending}
-                                    placeholder="Enter description" {...field} />
+                                    placeholder="Mô tả" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="difficultyLevelId" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Level:</FormLabel>
+                            <FormLabel>Độ khó:</FormLabel>
                             <Select
                                 disabled={isPending || loading}
                                 value={field.value?.toString()}
                                 onValueChange={(value) => field.onChange(Number(value))}>
                                 <FormControl>
                                     <SelectTrigger className="w-full">
-                                        <SelectValue placeholder={loading ? "loading ..." : "Select a level"} />
+                                        <SelectValue placeholder={loading ? "loading ..." : "Chọn độ khó"} />
                                     </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
@@ -109,24 +109,24 @@ const QuizEditForm = ({ quiz, token, difficultyLevels, loading }: QuizEditFormPr
                     <div className="w-full grid grid-cols-2 gap-4">
                         <FormField control={form.control} name="passingScore" render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Passing score:</FormLabel>
+                                <FormLabel>Điểm đạt:</FormLabel>
                                 <FormControl>
                                     <Input
                                         className="w-full"
                                         disabled={isPending}
-                                        placeholder="Enter passing percent" {...field} />
+                                        placeholder="Nhập điểm" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )} />
                         <FormField control={form.control} name="timeLimit" render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Time limit(minutes):</FormLabel>
+                                <FormLabel>Giới hạn(phút):</FormLabel>
                                 <FormControl>
                                     <Input
                                         className="w-full"
                                         disabled={isPending}
-                                        placeholder="Enter time limit" {...field} />
+                                        placeholder="Giới hạn" {...field} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -135,8 +135,8 @@ const QuizEditForm = ({ quiz, token, difficultyLevels, loading }: QuizEditFormPr
                     <div className="w-full flex justify-end">
                         <Button disabled={isPending} type="submit">
                             {isPending
-                                ? <><LoaderCircle className="animate-spin" /> Saving ...</>
-                                : "Save changes"}
+                                ? <><LoaderCircle className="animate-spin" /> Đang lưu ...</>
+                                : "Lưu thay đổi"}
                         </Button>
                     </div>
                 </div>

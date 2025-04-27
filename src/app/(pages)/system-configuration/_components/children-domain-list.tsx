@@ -34,7 +34,7 @@ const ChildrenDomainList = ({ list, parentId, parentDomains, fetchChildrenDomain
             <div className="flex items-center justify-center space-x-2">
                 <div className="flex-grow border-t border-gray-300" />
                 <span className="px-2 text-center text-base font-medium">
-                    Children domains ({list.totalElements}):
+                    Lĩnh vực phụ ({list.totalElements}):
                 </span>
                 <div className="flex-grow border-t border-gray-300" />
             </div>
@@ -72,14 +72,14 @@ const ChildrenDomainList = ({ list, parentId, parentDomains, fetchChildrenDomain
                 ))
                 :
                 (
-                    <p className="text-gray-500">No children domains found</p>
+                    <p className="text-gray-500">Không có lĩnh vực phụ nào được tìm thấy</p>
                 )}
             <Separator />
             <Dialog open={isCreateChildrenDialogOpen} onOpenChange={setIsCreateChildrenDialogOpen}>
                 <DialogTrigger
                     className="flex items-center gap-2 py-2 px-2 bg-primary rounded-lg hover:bg-primary/90 text-white mx-auto"
                 >
-                    <CirclePlus />Add a new children domain
+                    <CirclePlus />Thêm lĩnh vực phụ
                 </DialogTrigger>
                 <DialogContent width='400px'>
                     <DomainFormPopup

@@ -15,24 +15,24 @@ import { format } from "date-fns";
 export const columns = (onUpdate: () => void): ColumnDef<LearningPath>[] => [
   {
     accessorKey: "title",
-    header: "Title",
+    header: "Tên",
   },
   {
     accessorKey: "description",
-    header: "Description",
+    header: "Mô tả",
     cell: ({ row }) => row.original.description || "No description"
   },
   {
-    header: "Domain ",
+    header: "Lĩnh vực ",
     cell: ({ row }) => row.original.domain?.name ?? "N/A"
   },
   {
     accessorKey: "totalCourses",
-    header: "Total Courses",
+    header: "Số khóa học",
   },
   {
     accessorKey: "isPublic",
-    header: "Status",
+    header: "Trạng thái",
     cell: ({ row }) => {
       const status = row.original.public
         ? LearningPathStatus.true
@@ -40,18 +40,18 @@ export const columns = (onUpdate: () => void): ColumnDef<LearningPath>[] => [
 
       return status === LearningPathStatus.true ? (
         <div className="px-4 py-2 bg-[#56D071] w-fit text-[#56D071] rounded-xl bg-opacity-10">
-          {LearningPathStatus.true}
+          Đang hoạt động
         </div>
       ) : (
         <div className="px-4 py-2 bg-[#FD5673] w-fit text-[#FD5673] rounded-xl bg-opacity-10">
-          {LearningPathStatus.false}
+          Không hoạt động
         </div>
       );
     },
   },
   {
     accessorKey: "createdAt",
-    header: "Created Date",
+    header: "Ngày tạo",
     cell: ({ row }) => {
       return <span>
         {format(new Date(row.original.createdAt), "dd/MM/yyyy")}

@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState, useTransition } from "react";
-import { ChevronDown, ChevronRight, LoaderCircle, Plus, SquarePen, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronRight, LoaderCircle, Plus, SquarePen } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -53,12 +53,12 @@ const LessonItem = ({
             try {
                 const response = await updateLessonResourceOrder(lessonId, newOrder, token);
                 if (response.success === true) {
-                    toast.success("Updated order successfully");
+                    toast.success("Cập nhật thứ tự thành công");
                     setIsOrderUpdated(false);
                 }
             } catch (error) {
                 console.error("Failed to update new order", error);
-                toast.error("Failed to update new order");
+                toast.error("Cập nhật thứ tự thất bại");
             }
         })
     };
@@ -112,11 +112,6 @@ const LessonItem = ({
                             />
                         </DialogContent>
                     </Dialog>
-
-                    {/* Nút Delete */}
-                    <Button size={"icon"} variant={"destructive"}>
-                        <Trash2 />
-                    </Button>
 
                     {/* Toggle lesson resource */}
                     <Button
@@ -187,7 +182,7 @@ const LessonItem = ({
                                     </Droppable>
                                 </DragDropContext>
                             ) : (
-                                <p className="text-gray-500">No resources found</p>
+                                <p className="text-gray-500">Không tìm thấy tài nguyên</p>
                             )}
                         </>
                     )}
@@ -196,7 +191,7 @@ const LessonItem = ({
                         ? <Dialog open={openCreateResourceForm} onOpenChange={setOpenCreateResourceForm}>
                             <DialogTrigger className="mx-auto flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90">
                                 <Plus size={18} />
-                                Create new lesson resource
+                                Tạo mới một tài nguyên
                             </DialogTrigger>
                             <DialogContent width='500px'>
                                 <CreateLessonResourcePopup
@@ -210,7 +205,7 @@ const LessonItem = ({
                         : <Dialog open={openAddResourceForm} onOpenChange={setOpenAddResourceForm}>
                             <DialogTrigger className="mx-auto flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90">
                                 <Plus size={18} />
-                                Add existing lesson resource
+                                Thêm tài nguyên có sẵn
                             </DialogTrigger>
                             <DialogContent width='500px'>
                                 <AddExistingLessonResourcePopup

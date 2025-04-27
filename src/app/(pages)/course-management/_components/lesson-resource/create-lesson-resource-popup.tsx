@@ -46,11 +46,11 @@ const CreateLessonResourcePopup = ({ lesson, closeForm, token, defaultStudyPlanI
                             router.push(`/course-management/${lesson.studyPlan.course.courseId}/study-plan/${defaultStudyPlanId}/detail/${lesson.studyPlan.studyPlanId}/edit-lesson-resource/learning-resource/${response.data.resourceId}`);
                         } else {
                             // Show an error if creating lesson resource fails
-                            toast.error(`Failed to associate resource with lesson: ${lessonResourceResponse.message}`);
+                            toast.error(`Thất bại trong việc liên kết bài giảng với bài học: ${lessonResourceResponse.message}`);
                         }
                     } else {
                         // If the creation fails, show an error toast
-                        toast.error(`Failed to create learning resource: ${response.message}`);
+                        toast.error(`Tạo bài giảng thất bại: ${response.message}`);
                     }
                 }
 
@@ -68,11 +68,11 @@ const CreateLessonResourcePopup = ({ lesson, closeForm, token, defaultStudyPlanI
                         if (lessonResourceResponse.success) {
                             router.push(`/course-management/${lesson.studyPlan.course.courseId}/study-plan/${defaultStudyPlanId}/detail/${lesson.studyPlan.studyPlanId}/edit-lesson-resource/flashcard-set/${response.data.systemSetId}`);
                         } else {
-                            toast.error(`Failed to associate flashcard set with lesson: ${lessonResourceResponse.message}`);
+                            toast.error(`Thất bại trong việc liên kết flashcard với khóa học: ${lessonResourceResponse.message}`);
                         }
                     } else {
                         // If the creation fails, show an error toast
-                        toast.error(`Failed to create flashcard set: ${response.message}`);
+                        toast.error(`Tạo flashcard thất bại: ${response.message}`);
                     }
                 }
 
@@ -91,11 +91,11 @@ const CreateLessonResourcePopup = ({ lesson, closeForm, token, defaultStudyPlanI
                         if (lessonResourceResponse.success) {
                             router.push(`/course-management/${lesson.studyPlan.course.courseId}/study-plan/${defaultStudyPlanId}/detail/${lesson.studyPlan.studyPlanId}/edit-lesson-resource/quiz/${response.data.quizId}`);
                         } else {
-                            toast.error(`Failed to associate quiz with lesson: ${lessonResourceResponse.message}`);
+                            toast.error(`Thất bại trong việc liên kết bài kiểm tra với bài học: ${lessonResourceResponse.message}`);
                         }
                     } else {
                         // If the creation fails, show an error toast
-                        toast.error(`Failed to create quiz: ${response.message}`);
+                        toast.error(`Tạo bài kiểm tra thất bại: ${response.message}`);
                     }
                 }
 
@@ -108,43 +108,43 @@ const CreateLessonResourcePopup = ({ lesson, closeForm, token, defaultStudyPlanI
     return (
         <>
             <DialogHeader>
-                <DialogTitle>Choose a type of lesson resource:</DialogTitle>
+                <DialogTitle>Chọn một loại tài nguyên:</DialogTitle>
             </DialogHeader>
-
-            <RadioGroup value={selectedType} onValueChange={setSelectedType} className="space-y-2">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3 text-base">
-                        <div className="p-[6px] rounded-full bg-[#FD5673] bg-opacity-10 text-[#FD5673]">
-                            <Youtube size={20} />
+            <div className="w-[400px]">
+                <RadioGroup value={selectedType} onValueChange={setSelectedType} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3 text-base">
+                            <div className="p-[6px] rounded-full bg-[#FD5673] bg-opacity-10 text-[#FD5673]">
+                                <Youtube size={20} />
+                            </div>
+                            <span>Bài giảng</span>
                         </div>
-                        <span>Learning resource</span>
+                        <RadioGroupItem value="LearningResource" id="learning-resource" />
                     </div>
-                    <RadioGroupItem value="LearningResource" id="learning-resource" />
-                </div>
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3 text-base">
-                        <div className="p-[6px] rounded-full bg-[#3AC6C6] bg-opacity-10 text-[#3AC6C6]">
-                            <Copy size={20} />
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3 text-base">
+                            <div className="p-[6px] rounded-full bg-[#3AC6C6] bg-opacity-10 text-[#3AC6C6]">
+                                <Copy size={20} />
+                            </div>
+                            <span>Flashcard</span>
                         </div>
-                        <span>Flashcard set</span>
+                        <RadioGroupItem value="FlashcardSet" id="flashcard-set" />
                     </div>
-                    <RadioGroupItem value="FlashcardSet" id="flashcard-set" />
-                </div>
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3 text-base">
-                        <div className="p-[6px] rounded-full bg-[#FFB600] bg-opacity-10 text-[#FFB600]">
-                            <BookOpenCheck size={20} />
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3 text-base">
+                            <div className="p-[6px] rounded-full bg-[#FFB600] bg-opacity-10 text-[#FFB600]">
+                                <BookOpenCheck size={20} />
+                            </div>
+                            <span>Bài kiểm tra</span>
                         </div>
-                        <span>Quiz</span>
+                        <RadioGroupItem value="Quiz" id="quiz" />
                     </div>
-                    <RadioGroupItem value="Quiz" id="quiz" />
-                </div>
-            </RadioGroup>
-
+                </RadioGroup>
+            </div>
             <div className="flex justify-end space-x-2 mt-4">
-                <Button variant="outline" onClick={() => closeForm(false)}>Cancel</Button>
+                <Button variant="outline" onClick={() => closeForm(false)}>Hủy</Button>
                 <Button disabled={isPending} onClick={handleSubmit}>
-                    {isPending ? <><LoaderCircle className="animate-spin" /> Processing ...</> : "Continue"}
+                    {isPending ? <><LoaderCircle className="animate-spin" /> Đang xử lí ...</> : "Tiếp tục"}
                 </Button>
             </div>
         </>

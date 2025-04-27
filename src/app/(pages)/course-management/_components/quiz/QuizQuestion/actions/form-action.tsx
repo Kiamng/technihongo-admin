@@ -43,10 +43,10 @@ const NonEditingOrderActions = ({
     return (
         <div className="flex flex-row space-x-4">
             <Button type="submit" disabled={isSaving}>
-                {isSaving ? "Saving..." : "Save Quiz"}
+                {isSaving ? "Đang lưu..." : "Lưu"}
             </Button>
             <Button variant={"outline"} type="button" onClick={handleUpdateOrderToggle}>
-                Update order
+                Cập nhật thứ tự
             </Button>
         </div>
     );
@@ -66,10 +66,10 @@ const EditingOrderActions = ({
     return (
         <div className="flex flex-row space-x-4">
             <Button disabled={isSavingNewOrder} type="button" variant={"outline"} onClick={handleCancelUpdateOrder}>
-                Cancel
+                Hủy
             </Button>
             <Button disabled={isSavingNewOrder} type="button" onClick={handleSaveNewOrder}>
-                Save new order
+                Lưu thứ tự
             </Button>
         </div>
     );

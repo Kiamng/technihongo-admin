@@ -95,11 +95,11 @@ export default function UploadWithPreview({
                     disabled={disabled}
                 />
                 <Button type="button" size="sm" onClick={handleClickUpload} disabled={disabled}>
-                    Upload {label}
+                    Chọn {label}
                 </Button>
                 {previewUrl && (
                     <Button disabled={disabled} type="button" variant="destructive" size="sm" onClick={handleClear}>
-                        Clear {label}
+                        Xóa {label}
                     </Button>
                 )}
             </div>
@@ -122,7 +122,7 @@ export default function UploadWithPreview({
                     <img src={previewUrl} alt="Preview" className="mt-4 rounded-md max-h-[300px]" />
                 )
             ) : (
-                <p className="text-slate-400 mt-2">No {label.toLowerCase()} selected</p>
+                <p className="text-slate-400 mt-2">Không có {label.toLowerCase()} nào được chọn</p>
             )}
         </div>
     );

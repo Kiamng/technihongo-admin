@@ -23,9 +23,9 @@
 import { z } from "zod";
 
 export const CreateLearningPathSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
-  domainId: z.number({ required_error: "Domain ID is required" })
+  title: z.string().min(1, "Tên của lộ trình không được để trống"),
+  description: z.string().min(1, "Hãy thêm một mô tả"),
+  domainId: z.number({ required_error: "Hãy chọn 1 lĩnh vực" })
     .int("Domain ID must be an integer")
     .nonnegative("Domain ID cannot be negative"),
   isPublic: z.boolean()

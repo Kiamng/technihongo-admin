@@ -48,7 +48,7 @@ export default function EditQuizPage() {
     const fetchQuizQuestion = async () => {
         setIsQuizQuestionsLoading(true);
         try {
-            const response = await getQuizQuestionByQuizId(parseInt(quizId as string, 10));
+            const response = await getQuizQuestionByQuizId(session?.user.token as string, parseInt(quizId as string, 10));
 
             const updatedQuizQuestions = await Promise.all(
                 response.map(async (quizQuestion) => {
@@ -81,7 +81,7 @@ export default function EditQuizPage() {
 
     const fetchQuizAnswer = async (questionId: number) => {
         try {
-            const response = await getAnswersByQuestionId(questionId);
+            const response = await getAnswersByQuestionId(session?.user.token as string, questionId);
             return response;
         } catch (error) {
             console.log(error);
@@ -116,7 +116,7 @@ export default function EditQuizPage() {
                 await Promise.all([fetchQuizQuestion(), fetchDifficultyLevel()]);
             } catch (error) {
                 console.error(error);
-                toast.error("Failed to load quiz.");
+                toast.error("Tải bài kiểm tra thất bại");
             } finally {
                 setIsLoading(false);
             }
@@ -133,7 +133,7 @@ export default function EditQuizPage() {
             <Link href={`/course-management/${courseId}/study-plan/${defaultStudyPlanId}/detail/${studyPlanId}`}>
                 <Button variant="outline">
                     <CornerDownLeft className="w-4 h-4" />
-                    <span>Back</span>
+                    <span>Quay lại</span>
                 </Button>
             </Link>
             <div className=" flex flex-row space-x-6 items-center">
@@ -141,7 +141,7 @@ export default function EditQuizPage() {
                     <div className="rounded-full p-2 bg-[#FFB600] bg-opacity-10">
                         <BookOpenCheck className="text-[#FFB600]" size={28} />
                     </div>
-                    <span className="text-4xl font-bold ">Edit Quiz Details</span>
+                    <span className="text-4xl font-bold ">Cập nhật thông tin bài kiểm tra</span>
                 </div>
                 {quiz ?
                     <QuizUpdateStatus quiz={quiz} setQuiz={setQuiz} token={session?.user.token as string} />

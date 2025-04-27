@@ -124,14 +124,14 @@ const FlashcardsFormRender = ({ initialData, token, flashcardSetId, fetchSet }: 
         if (selectedQuestion.flashcardId) {
             deleteFlashcard(token, selectedQuestion.flashcardId)
                 .then(() => {
-                    toast.success('Flashcard deleted successfully!');
+                    toast.success('Xóa flashcard thành công!');
                 })
                 .catch((error) => {
                     console.error("Error deleting flashcard: ", error);
-                    toast.error('Failed to delete flashcard');
+                    toast.error('Xóa flashcard thất bại');
                 });
         } else {
-            toast.success('Flashcard deleted successfully!');
+            toast.success('Xóa flashcard thành công!');
         }
     };
 
@@ -184,7 +184,7 @@ const FlashcardsFormRender = ({ initialData, token, flashcardSetId, fetchSet }: 
         const hasUnSavedFlashcards = form.getValues().flashcards.some((flashcard) => !flashcard.flashcardId) || changedFlashcards.length > 0;
 
         if (hasUnSavedFlashcards) {
-            toast.error("You need to save all questions before updating order.");
+            toast.error("Bạn phải lưu những thay đổi trước khi cập nhật thứ tự");
             return;
         }
 
@@ -225,12 +225,12 @@ const FlashcardsFormRender = ({ initialData, token, flashcardSetId, fetchSet }: 
 
                 await updateFlashardOrder(token, flashcardSetId, newOrder as number[]);
 
-                toast.success("Order saved successfully!");
+                toast.success("Cập nhật thứ tự thành công!");
                 setInitialOrder([...newFlashcardOrder]);
                 setIsEditingOrder(false);
             } catch (error) {
                 console.error("Error while updating new order:", error);
-                toast.error("Failed to save new order");
+                toast.error("Cập nhật thứ tự thất bại");
             }
         });
     };
@@ -312,7 +312,7 @@ const FlashcardsFormRender = ({ initialData, token, flashcardSetId, fetchSet }: 
                         if (flashcard.flashcardId) {
                             const res = await updateFlashard(token, flashcard);
                             if (res.success === false) {
-                                toast.error(`Failed to update: "${flashcard.japaneseDefinition}"`);
+                                toast.error(`Cập nhật thất bại: "${flashcard.japaneseDefinition}"`);
                             }
                         }
                     }
@@ -321,7 +321,7 @@ const FlashcardsFormRender = ({ initialData, token, flashcardSetId, fetchSet }: 
                 await fetchSet()
             } catch (error) {
                 console.error("Error while updating flashcards: ", error);
-                toast.error("Failed to update flashcards");
+                toast.error("Cập nhật thất bại!");
             }
         })
     }
@@ -377,7 +377,7 @@ const FlashcardsFormRender = ({ initialData, token, flashcardSetId, fetchSet }: 
                     {fields.length === 0 && <EmptyStateComponent imgageUrl="https://allpromoted.co.uk/image/no-data.svg" message="This set does not have any flashcard" size={400} />}
                     <button type="button" onClick={handleInsertNew} className="w-full flex h-[70px] justify-center items-center rounded-lg shadow-md border-[1px] hover:scale-95 duration-100 transition-all ease-in-out">
                         <div className="flex space-x-4">
-                            <Plus /> <span className="font-medium">Add flashcard</span>
+                            <Plus /> <span className="font-medium">Thêm mới</span>
                         </div>
                     </button>
                 </div>

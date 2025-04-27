@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { LearningPath } from "@/types/learningPath";
-import { AlertCircle, Book, Globe, Calendar, Tag } from "lucide-react";
+import { AlertCircle, Book, Globe, Calendar, Tag, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,6 +22,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { CreateLearningPathSchema } from "@/schema/learning-path";
 import { LoaderCircle } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function LearningPathDetailPage() {
   const [learningPath, setLearningPath] = useState<LearningPath | null>(null);
@@ -176,9 +177,7 @@ export default function LearningPathDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        Loading learning path details...
-      </div>
+      <Skeleton className="w-full h-screen" />
     );
   }
 
@@ -187,7 +186,7 @@ export default function LearningPathDetailPage() {
       <div className="flex justify-center items-center min-h-screen">
         <div className="w-[400px] p-6 border rounded-lg">
           <h2 className="flex items-center text-red-500">
-            <AlertCircle className="mr-2" /> Error
+            <AlertCircle className="mr-2" /> Lỗi
           </h2>
           <p className="text-destructive mt-2">{error}</p>
         </div>
@@ -198,7 +197,7 @@ export default function LearningPathDetailPage() {
   if (!learningPath) {
     return (
       <div className="flex justify-center items-center min-h-screen">
-        No learning path found.
+        Không tìm thấy lộ trình học tập
       </div>
     );
   }
@@ -208,7 +207,7 @@ export default function LearningPathDetailPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <div className="border rounded-lg p-6">
-            <h1 className="text-2xl font-bold mb-6">Edit Learning Path</h1>
+            <h1 className="text-2xl font-bold mb-6">Cập nhật lộ trình học tập</h1>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <FormField
@@ -217,7 +216,7 @@ export default function LearningPathDetailPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        <Book className="inline mr-2 h-5 w-5" /> Title
+                        <Book className="inline mr-2 h-5 w-5" /> Tên
                       </FormLabel>
                       <FormControl>
                         <Input disabled={isSaving} {...field} />
@@ -232,7 +231,7 @@ export default function LearningPathDetailPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        <Book className="inline mr-2 h-5 w-5" /> Description
+                        <Book className="inline mr-2 h-5 w-5" /> Mô tả
                       </FormLabel>
                       <FormControl>
                         <Textarea disabled={isSaving} {...field} rows={4} />
@@ -245,7 +244,7 @@ export default function LearningPathDetailPage() {
               <div className="space-y-4">
                 <FormItem>
                   <FormLabel>
-                    <Globe className="inline mr-2 h-5 w-5" /> Domain
+                    <Globe className="inline mr-2 h-5 w-5" /> Lĩnh vực
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -256,7 +255,7 @@ export default function LearningPathDetailPage() {
                 </FormItem>
                 <FormItem>
                   <FormLabel>
-                    <Calendar className="inline mr-2 h-5 w-5" /> Created Date
+                    <Calendar className="inline mr-2 h-5 w-5" /> Ngày tạo
                   </FormLabel>
                   <FormControl>
                     <Input
@@ -270,7 +269,7 @@ export default function LearningPathDetailPage() {
                   name="isPublic"
                   render={({ field }) => (
                     <FormItem className="flex items-center gap-2">
-                      <FormLabel>Public</FormLabel>
+                      <FormLabel>Trạng thái</FormLabel>
                       <FormControl>
                         <Switch
                           checked={field.value}
@@ -286,16 +285,16 @@ export default function LearningPathDetailPage() {
             <div className="mt-6 flex justify-end space-x-4">
               <Link href="/learning-path">
                 <Button variant="outline" type="button" disabled={isSaving}>
-                  Cancel
+                  Hủy
                 </Button>
               </Link>
               <Button type="submit" disabled={isSaving}>
                 {isSaving ? (
                   <>
-                    <LoaderCircle className="mr-2 h-4 w-4 animate-spin" /> Saving...
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Đang lưu ...
                   </>
                 ) : (
-                  "Save"
+                  "Lưu"
                 )}
               </Button>
             </div>

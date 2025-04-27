@@ -107,17 +107,15 @@ export default function CourseManagementPage() {
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSearchValue(event.target.value);
 
-        // Hủy bỏ timeout cũ (nếu có)
         if (timeoutId) {
             clearTimeout(timeoutId);
         }
 
-        // Thiết lập timeout mới
         const id = setTimeout(() => {
             setDebouncedSearchValue(event.target.value);
-        }, 500); // 500ms delay
+        }, 500);
 
-        setTimeoutId(id); // Lưu lại timeoutID để có thể hủy sau
+        setTimeoutId(id);
     };
 
     const handleDomainChange = (value: string) => {
@@ -168,7 +166,7 @@ export default function CourseManagementPage() {
         <div className="w-full space-y-6">
 
             <div className="flex justify-between items-center w-full">
-                <h1 className="text-4xl font-bold">Course Management</h1>
+                <h1 className="text-4xl font-bold">Quản lí khóa học</h1>
                 <CreateNewCourseForm
                     loading={loading}
                     levels={memoizedDifficultyLevels}
@@ -180,18 +178,18 @@ export default function CourseManagementPage() {
             <div className="w-full flex flex-row justify-between">
                 <Input
                     className="w-[300px]"
-                    placeholder="Search name"
+                    placeholder="Tìm kiếm khóa học"
                     value={searchValue}
                     onChange={handleSearchChange}
                 />
                 <div className="flex flex-row space-x-4">
                     <Select onValueChange={handleDomainChange} disabled={loading}>
                         <SelectTrigger className="w-[300px]">
-                            <SelectValue placeholder={loading ? "Loading domains ..." : "Select a domain"} />
+                            <SelectValue placeholder={loading ? "Đang tải ..." : "Lĩnh vực"} />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="None">
-                                None
+                                Trống
                             </SelectItem>
                             {memoizedDomains?.content.map((domain) => (
                                 <SelectItem key={domain.domainId} value={domain.domainId.toString()}>
@@ -202,11 +200,11 @@ export default function CourseManagementPage() {
                     </Select>
                     <Select onValueChange={handleLevelChange} disabled={loading}>
                         <SelectTrigger className="w-[300px]">
-                            <SelectValue placeholder={loading ? "Loading level ..." : "Select a level"} />
+                            <SelectValue placeholder={loading ? "Đang tải ..." : "Độ khó"} />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="None">
-                                None
+                                Trống
                             </SelectItem>
                             {memoizedDifficultyLevels.map((level) => (
                                 <SelectItem key={level.levelId} value={level.levelId.toString()}>
@@ -222,13 +220,13 @@ export default function CourseManagementPage() {
                 <Pagination className="space-x-6">
                     <PaginationContent>
                         <PaginationItem >
-                            <Button disabled={currentPage === 0} onClick={handlePreviousPage} variant={"ghost"}><ChevronLeft /> Previous</Button>
+                            <Button disabled={currentPage === 0} onClick={handlePreviousPage} variant={"ghost"}><ChevronLeft /></Button>
                         </PaginationItem>
                         <PaginationItem>
                             {currentPage + 1}/{coursesList?.totalPages}
                         </PaginationItem>
                         <PaginationItem onClick={handleNextPage}>
-                            <Button disabled={coursesList?.last === true} onClick={handleNextPage} variant={"ghost"}>Next <ChevronRight /></Button>
+                            <Button disabled={coursesList?.last === true} onClick={handleNextPage} variant={"ghost"}><ChevronRight /></Button>
                         </PaginationItem>
                     </PaginationContent>
                 </Pagination>

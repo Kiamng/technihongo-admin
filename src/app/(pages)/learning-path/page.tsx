@@ -7,6 +7,7 @@ import { LearningPath } from "@/types/learningPath";
 import { getAllLearningPaths } from "@/app/api/learning-path/learning-path.api";
 import { columns } from "./_components/columns";
 import AddLearningPathPopup from "./_components/addlearning-path";
+import { Separator } from "@/components/ui/separator";
 
 export default function LearningPathManagementPage() {
   const { data: session } = useSession();
@@ -41,12 +42,12 @@ export default function LearningPathManagementPage() {
   return (
     <div className="w-full space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-4xl font-bold">Learning Path Management</h1>
+        <h1 className="text-4xl font-bold">Các lộ trình học tập</h1>
         <AddLearningPathPopup onUpdate={handleUpdate} />
       </div>
-
+      <Separator />
       <div className="space-y-6">
-        <div className="font-medium">Total learning paths: {learningPaths.length}</div>
+        <div className="font-medium">Tổng cộng: {learningPaths.length}</div>
         <DataTable
           columns={columns(handleUpdate)}
           searchKey="title"

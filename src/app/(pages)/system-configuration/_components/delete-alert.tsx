@@ -52,8 +52,8 @@ const DeleteAlert = ({ domain, fetchParentDomains, fetchChildrenDomains, open, o
         <AlertDialog open={open} onOpenChange={onOpenChange}>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                    <p>This action cannot be undone. This will permanently delete this domain.</p>
+                    <AlertDialogTitle>Bạn có chắc chắn không?</AlertDialogTitle>
+                    <p>Hành động này sẽ không thể hoàn tác và vĩnh viễn xóa lĩnh vực này</p>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                     <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>

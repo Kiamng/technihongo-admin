@@ -82,22 +82,22 @@ const LessonPopupForm = ({ studyPlanId, fetchLessons, setIsDialogOpen, initialDa
     return (
         <>
             <DialogHeader>
-                <DialogTitle>{initialData ? "Update" : "Create new"} lesson</DialogTitle>
+                <DialogTitle>{initialData ? "Cập nhật thông tin" : "Thêm mới"} bài học</DialogTitle>
             </DialogHeader>
             <form
                 className="w-full flex flex-col gap-y-5"
                 onSubmit={handleSubmit(onSubmit)}
             >
                 <div className="flex flex-col space-y-4">
-                    <Label>Title:</Label>
+                    <Label>Tên:</Label>
                     <Input
                         className=""
                         disabled={isPending}
                         id="title"
-                        placeholder="Enter title here"
+                        placeholder="Nhập tên bài học"
                         type="text"
                         {...register("title", {
-                            required: "Title is required",
+                            required: "Tên bài học không được để trống",
                         })}
                     />
                     {errors.title && (
@@ -113,10 +113,10 @@ const LessonPopupForm = ({ studyPlanId, fetchLessons, setIsDialogOpen, initialDa
                             className=""
                             disabled={isPending}
                             id="title"
-                            placeholder="Enter order here"
+                            placeholder="Nhập thứ tự mới"
                             type="text"
                             {...register("order", {
-                                required: "Order is required",
+                                required: "Thứ tự không được để trống",
                             })}
                         />
                         {errors.title && (
@@ -131,10 +131,10 @@ const LessonPopupForm = ({ studyPlanId, fetchLessons, setIsDialogOpen, initialDa
                     <Button disabled={isPending} type="submit">
                         {isPending ? (
                             <>
-                                <LoaderCircle className="animate-spin" /> {initialData ? "Updating ..." : "Creating ..."}
+                                <LoaderCircle className="animate-spin" /> {initialData ? "Đang cập nhật ..." : "Đang thêm ..."}
                             </>
                         ) : (
-                            initialData ? "Update" : "Create"
+                            initialData ? "Cập nhật" : "Thêm"
                         )}
                     </Button>
                 </div>

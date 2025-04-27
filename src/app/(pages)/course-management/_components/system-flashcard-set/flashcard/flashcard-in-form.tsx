@@ -28,7 +28,7 @@ const FlashcardInFormRender = ({ field, index, isSaving, addChangedFlashcard, ha
             <div className="w-full flex flex-row space-x-4">
                 <FormField control={field.control} name={`flashcards.${index}.japaneseDefinition`} render={({ field }) => (
                     <FormItem className="flex-1">
-                        <FormLabel>Term</FormLabel>
+                        <FormLabel>Từ vựng</FormLabel>
                         <FormControl>
                             <Textarea  {...field}
                                 disabled={isSaving}
@@ -45,7 +45,7 @@ const FlashcardInFormRender = ({ field, index, isSaving, addChangedFlashcard, ha
                 )} />
                 <FormField control={field.control} name={`flashcards.${index}.vietEngTranslation`} render={({ field }) => (
                     <FormItem className="flex-1">
-                        <FormLabel>Definition</FormLabel>
+                        <FormLabel>Định nghĩa</FormLabel>
                         <FormControl>
                             <Textarea  {...field}
                                 disabled={isSaving}

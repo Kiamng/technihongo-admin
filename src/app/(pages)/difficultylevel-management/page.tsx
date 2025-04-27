@@ -38,20 +38,20 @@ export default function DifficultyLevelManagementPage() {
   return (
     <div className="w-full space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-4xl font-bold">Difficulty Level Management</h1>
+        <h1 className="text-4xl font-bold">Các Độ khó</h1>
 
       </div>
 
       <div className="w-full flex flex-row justify-between">
         <Input
           className="w-[300px]"
-          placeholder="Search difficulty level"
+          placeholder="Tìm kiếm"
           value={searchValue}
           onChange={handleSearchChange}
         />
       </div>
 
-      <div className="font-medium">Total difficulty levels: {difficultyLevels?.length || 0}</div>
+      <div className="font-medium">Tổng động: {difficultyLevels?.length || 0}</div>
 
       <DataTable
         columns={columns}

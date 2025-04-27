@@ -57,8 +57,8 @@ const QuizUpdateStatus = ({ quiz, token, setQuiz }: QuizUpdateStatusProps) => {
                         placeholder="Public" />
                 </SelectTrigger>
                 <SelectContent >
-                    <SelectItem className="bg-[#56D071] text-[#56D071] bg-opacity-10" value="true">PUBLIC</SelectItem>
-                    <SelectItem className="bg-[#FD5673] text-[#FD5673] bg-opacity-10" value="false">PRIVATE</SelectItem>
+                    <SelectItem className="bg-[#56D071] text-[#56D071] bg-opacity-10" value="true">Đang hoạt động</SelectItem>
+                    <SelectItem className="bg-[#FD5673] text-[#FD5673] bg-opacity-10" value="false">không hoạt động</SelectItem>
                 </SelectContent>
             </Select>
         </div>

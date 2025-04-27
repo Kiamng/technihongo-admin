@@ -92,7 +92,7 @@ const DomainFormPopup: React.FC<DomainFormPopupProps> = ({ initialData, setIsDia
     return (
         <>
             <DialogHeader>
-                <DialogTitle className="text-center">{initialData ? initialData.name : "Create new domain"}</DialogTitle>
+                <DialogTitle className="text-center">{initialData ? initialData.name : "Tạo mới"}</DialogTitle>
             </DialogHeader>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmitForm)} className="w-full space-y-6">
@@ -101,7 +101,7 @@ const DomainFormPopup: React.FC<DomainFormPopupProps> = ({ initialData, setIsDia
                         name="name"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Domain name</FormLabel>
+                                <FormLabel>Tên lĩnh vực</FormLabel>
                                 <FormControl>
                                     <Input {...field} />
                                 </FormControl>
@@ -127,7 +127,7 @@ const DomainFormPopup: React.FC<DomainFormPopupProps> = ({ initialData, setIsDia
                         name="description"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Description</FormLabel>
+                                <FormLabel>Mô tả</FormLabel>
                                 <FormControl>
                                     <Textarea {...field} rows={3} />
                                 </FormControl>
@@ -171,10 +171,10 @@ const DomainFormPopup: React.FC<DomainFormPopupProps> = ({ initialData, setIsDia
                         <Button disabled={isPending} type="submit">
                             {isPending ? (
                                 <>
-                                    <LoaderCircle className="animate-spin" /> {initialData ? "Updating ..." : "Creating ..."}
+                                    <LoaderCircle className="animate-spin" /> {initialData ? "Đang cập nhật ..." : "Đang tạo ..."}
                                 </>
                             ) : (
-                                initialData ? "Update" : "Create"
+                                initialData ? "Cập nhật" : "Tạo"
                             )}
                         </Button>
                     </div>

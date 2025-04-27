@@ -1,16 +1,16 @@
 import { z } from "zod";
 
 export const LearningResourceSchema = z.object({
-    title: z.string().min(1, "Title is required"),
+    title: z.string().min(1, "Hãy nhập tên bài giảng"),
     description: z.string().optional(),
     videoUrl: z.union([
         z.string().url("Invalid URL"), // Nếu là URL từ Cloudinary
-        z.instanceof(File, { message: "Video file is required" }), // Nếu là file tải lên
+        z.instanceof(File, { message: "Hãy chon 1 video" }), // Nếu là file tải lên
     ]),
-    videoFilename: z.string().min(1, "Video name is required"),
+    videoFilename: z.string().min(1, "Tên video name không được để trống"),
     pdfUrl: z.union([
         z.string().url("Invalid URL"), // Nếu là URL từ Cloudinary
-        z.instanceof(File, { message: "PDF file is required" }), // Nếu là file tải lên
+        z.instanceof(File, { message: "Hãy chon 1 pdf" }), // Nếu là file tải lên
     ]).optional(),
     pdfFilename: z.string().optional(),
     premium: z.boolean(),

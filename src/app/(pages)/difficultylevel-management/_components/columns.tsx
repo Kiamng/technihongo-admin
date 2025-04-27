@@ -1,7 +1,6 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
 import { DifficultyLevel } from "@/types/difficulty-level";
-import { CellAction } from "./cell-action";
 import { format } from "date-fns";
 
 export const columns: ColumnDef<DifficultyLevel>[] = [
@@ -11,15 +10,15 @@ export const columns: ColumnDef<DifficultyLevel>[] = [
   },
   {
     accessorKey: "name",
-    header: "Name",
+    header: "Tên",
   },
   {
     accessorKey: "description",
-    header: "Description",
+    header: "Mô tả",
   },
   {
     accessorKey: "createdAt",
-    header: "Created At",
+    header: "Ngày tạo",
     cell: ({ row }) => {
       return (
         <span>
@@ -28,8 +27,8 @@ export const columns: ColumnDef<DifficultyLevel>[] = [
       );
     },
   },
-  {
-    id: "actions",
-    cell: ({ row }) => <CellAction data={row.original} />,
-  },
+  // {
+  //   id: "actions",
+  //   cell: ({ row }) => <CellAction data={row.original} />,
+  // },
 ];

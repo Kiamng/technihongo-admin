@@ -19,11 +19,11 @@ const QuestionRender = ({ field, index, addChangedQuestion, handleDeleteImage, i
         <div className="w-full flex flex-row space-x-4">
             <FormField control={field.control} name={`questions.${index}.questionText`} render={({ field }) => (
                 <FormItem className="flex-1">
-                    <FormLabel>Question Text</FormLabel>
+                    <FormLabel>Câu hỏi</FormLabel>
                     <FormControl>
                         <Textarea  {...field}
                             disabled={isSaving || hasAttempt}
-                            placeholder="Enter question text"
+                            placeholder="Nhập câu hỏi"
                             className="resize-none w-full white-space: pre-line "
                             onChange={(e) => {
                                 field.onChange(e);
@@ -37,11 +37,11 @@ const QuestionRender = ({ field, index, addChangedQuestion, handleDeleteImage, i
 
             <FormField control={field.control} name={`questions.${index}.explanation`} render={({ field }) => (
                 <FormItem className="flex-1">
-                    <FormLabel>Explanation(Optional)</FormLabel>
+                    <FormLabel>Giải thích(Optional)</FormLabel>
                     <FormControl>
                         <Textarea  {...field}
                             disabled={isSaving || hasAttempt}
-                            placeholder="Enter explanation"
+                            placeholder="Nhập giải thích"
                             className="resize-none w-full white-space: pre-line "
                             onChange={(e) => {
                                 field.onChange(e);

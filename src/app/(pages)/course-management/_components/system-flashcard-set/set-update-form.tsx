@@ -44,7 +44,7 @@ const SetUpdateForm = ({ flashcardSet, token, isLoading, flashcardSetId }: SetUp
             try {
                 const response = await updateSysFlashcardSet(token, values, flashcardSetId)
                 if (response.success === true) {
-                    toast.success("Updated flashcard set information successfully!!");
+                    toast.success("Cập nhật thông tin flashcard thành công");
                 } else {
                     toast.error(response.message);
                 }
@@ -61,31 +61,31 @@ const SetUpdateForm = ({ flashcardSet, token, isLoading, flashcardSetId }: SetUp
                 <div className="w-1/2 flex flex-col space-y-6">
                     <FormField control={form.control} name="title" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Title:</FormLabel>
+                            <FormLabel>Tên flashcard:</FormLabel>
                             <FormControl>
-                                <Input disabled={isPending || isLoading} placeholder="Enter Title" {...field} />
+                                <Input disabled={isPending || isLoading} placeholder="Tên flashcard" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="description" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Description :</FormLabel>
+                            <FormLabel>Mô tả:</FormLabel>
                             <FormControl>
                                 <Textarea
                                     disabled={isPending || isLoading}
-                                    placeholder="Enter description" {...field} />
+                                    placeholder="Mô tả" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="difficultyLevel" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Level :</FormLabel>
+                            <FormLabel>Độ khó:</FormLabel>
                             <FormControl>
                                 <Input
                                     disabled={true}
-                                    placeholder="Enter description" {...field} />
+                                    placeholder="Độ khó" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -93,8 +93,8 @@ const SetUpdateForm = ({ flashcardSet, token, isLoading, flashcardSetId }: SetUp
                     <div className="w-full flex justify-end">
                         <Button disabled={isPending} type="submit">
                             {isPending
-                                ? <><LoaderCircle className="animate-spin" /> Saving ...</>
-                                : "Save changes"}
+                                ? <><LoaderCircle className="animate-spin" /> Đang lưu ...</>
+                                : "Lưu thay đổi"}
                         </Button>
                     </div>
                 </div>

@@ -6,7 +6,7 @@ import { CellAction } from "./cell-action";
 export const columns: ColumnDef<Course>[] = [
     {
         accessorKey: "title",
-        header: "Title",
+        header: "Tên khóa học",
     },
     {
         header: "Domain",
@@ -22,20 +22,20 @@ export const columns: ColumnDef<Course>[] = [
     },
     {
         accessorKey: "enrollmentCount",
-        header: "Enrollments",
+        header: "Số người đăng ký",
     },
     {
         accessorKey: "estimatedDuration",
-        header: "Estimate duration",
+        header: "Thời gian ước tính",
     },
     {
         accessorKey: "public",
-        header: "Public status",
+        header: "Trạng thái",
         cell: ({ row }) => {
             return row.original.publicStatus ? (
-                <div className="px-4 py-2 bg-[#56D071] w-fit text-[#56D071] rounded-xl bg-opacity-10">ACTIVE</div>
+                <div className="px-4 py-2 bg-[#56D071] w-fit text-[#56D071] rounded-xl bg-opacity-10">Đang họat động</div>
             ) : (
-                <div className="px-4 py-2 bg-[#FD5673] w-fit text-[#FD5673] rounded-xl bg-opacity-10">INACTIVE</div>
+                <div className="px-4 py-2 bg-[#FD5673] w-fit text-[#FD5673] rounded-xl bg-opacity-10">Không hoạt động</div>
             );
         },
     },

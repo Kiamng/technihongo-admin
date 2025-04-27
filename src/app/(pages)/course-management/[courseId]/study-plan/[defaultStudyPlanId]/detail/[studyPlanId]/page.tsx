@@ -53,7 +53,7 @@ function StudPlanDetailPage() {
             setStudyPlan(await getStudyPlanById(session?.user.token as string, numericStudyPlanId));
         } catch (error) {
             console.error(error);
-            toast.error("Failed to load study plan.");
+            toast.error("Tải kế hoạch học tập thất bại");
         }
     };
 
@@ -65,7 +65,7 @@ function StudPlanDetailPage() {
                 await fetchStudyPlan();
             } catch (error) {
                 console.error(error);
-                toast.error("Failed to load study plan.");
+                toast.error("Tải kế hoạch học tập thất bại");
             } finally {
                 setIsLoading(false);
             }

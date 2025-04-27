@@ -54,7 +54,7 @@ const UpdateStudyPlanForm = ({ studyPlan, token }: UpdateStudyPlanFormProps) => 
                 <div className="flex flex-col space-y-4">
                     <FormField control={form.control} name="title" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Title</FormLabel>
+                            <FormLabel>Tên</FormLabel>
                             <FormControl>
                                 <Input placeholder="Enter Title" {...field} />
                             </FormControl>
@@ -64,16 +64,16 @@ const UpdateStudyPlanForm = ({ studyPlan, token }: UpdateStudyPlanFormProps) => 
                     <div className="w-full grid grid-cols-2 gap-4">
                         <FormField control={form.control} name="hoursPerDay" render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Hours per day:</FormLabel>
+                                <FormLabel>Thời gian học mỗi ngày (giờ):</FormLabel>
                                 <FormControl>
-                                    <Input type="text" placeholder="Enter hours per day" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
+                                    <Input type="text" placeholder="1 giờ" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )} />
                         <FormField control={form.control} name="isActive" render={({ field }) => (
                             <FormItem className="w-full">
-                                <FormLabel>Active status</FormLabel>
+                                <FormLabel>Trạng thái </FormLabel>
                                 <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(value === "true")}>
                                     <FormControl>
                                         <SelectTrigger>
@@ -81,8 +81,8 @@ const UpdateStudyPlanForm = ({ studyPlan, token }: UpdateStudyPlanFormProps) => 
                                         </SelectTrigger>
                                     </FormControl>
                                     <SelectContent >
-                                        <SelectItem value="true"><div className="px-4 py-2 bg-[#56D071] w-fit text-[#56D071] rounded-xl bg-opacity-10">ACTIVE</div></SelectItem>
-                                        <SelectItem value="false"><div className="px-4 py-2 bg-[#FD5673] w-fit text-[#FD5673] rounded-xl bg-opacity-10">INACTIVE</div></SelectItem>
+                                        <SelectItem value="true"><div className="px-4 py-2 bg-[#56D071] w-fit text-[#56D071] rounded-xl bg-opacity-10">Đang hoạt động</div></SelectItem>
+                                        <SelectItem value="false"><div className="px-4 py-2 bg-[#FD5673] w-fit text-[#FD5673] rounded-xl bg-opacity-10">Không hoạt động</div></SelectItem>
                                     </SelectContent>
                                 </Select>
 
@@ -92,7 +92,7 @@ const UpdateStudyPlanForm = ({ studyPlan, token }: UpdateStudyPlanFormProps) => 
                     </div>
                     <FormField control={form.control} name="description" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Description:</FormLabel>
+                            <FormLabel>Mô tả:</FormLabel>
                             <FormControl>
                                 <Textarea {...field} rows={3} />
                             </FormControl>
@@ -104,10 +104,10 @@ const UpdateStudyPlanForm = ({ studyPlan, token }: UpdateStudyPlanFormProps) => 
                     <Button disabled={isPending} type="submit">
                         {isPending ? (
                             <>
-                                <LoaderCircle className="animate-spin" /> Updating ...
+                                <LoaderCircle className="animate-spin" /> Đang cập nhật ...
                             </>
                         ) : (
-                            "Update"
+                            "Cập nhật"
                         )}
                     </Button>
                 </div>
