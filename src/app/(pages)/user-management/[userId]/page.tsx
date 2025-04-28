@@ -758,7 +758,7 @@ export default function UserDetailPage({ params }: UserDetailPageProps) {
       <Tabs defaultValue="activity" className="space-y-4">
         <TabsList className="grid w-full grid-cols-2 max-w-md">
           <TabsTrigger value="activity">Nhật ký hoạt động</TabsTrigger>
-          <TabsTrigger value="payment">Lịch sử giao dịch</TabsTrigger>
+          {user?.student && <TabsTrigger value="payment">Lịch sử giao dịch</TabsTrigger>}
         </TabsList>
 
         {/* Activity Log Tab */}
@@ -809,20 +809,19 @@ export default function UserDetailPage({ params }: UserDetailPageProps) {
                     <Badge
                       className={`${getIconContainerBgColor(
                         log.activityType.toLowerCase()
-                      ).replace("bg-", "bg-")} ${
-                        log.activityType.toLowerCase() === "lesson"
+                      ).replace("bg-", "bg-")} ${log.activityType.toLowerCase() === "lesson"
                           ? "text-indigo-800"
                           : log.activityType.toLowerCase() === "complete"
-                          ? "text-green-800"
-                          : log.activityType.toLowerCase() === "login"
-                          ? "text-cyan-800"
-                          : log.activityType.toLowerCase() === "view"
-                          ? "text-gray-800"
-                          : log.activityType.toLowerCase() ===
-                            "renew_subscription"
-                          ? "text-purple-800"
-                          : "text-gray-800"
-                      }`}
+                            ? "text-green-800"
+                            : log.activityType.toLowerCase() === "login"
+                              ? "text-cyan-800"
+                              : log.activityType.toLowerCase() === "view"
+                                ? "text-gray-800"
+                                : log.activityType.toLowerCase() ===
+                                  "renew_subscription"
+                                  ? "text-purple-800"
+                                  : "text-gray-800"
+                        }`}
                     >
                       {log.activityType}
                     </Badge>
@@ -846,7 +845,7 @@ export default function UserDetailPage({ params }: UserDetailPageProps) {
             <div className="p-12 text-center text-gray-500 bg-gray-50 rounded-lg border border-dashed">
               <FileText className="h-16 w-16 mx-auto mb-4 text-gray-300" />
               <p className="text-lg">Chưa có nhật ký hoạt động</p>
-              
+
             </div>
           )}
         </TabsContent>
@@ -923,7 +922,7 @@ export default function UserDetailPage({ params }: UserDetailPageProps) {
             <div className="p-12 text-center text-gray-500 bg-gray-50 rounded-lg border border-dashed">
               <CreditCard className="h-16 w-16 mx-auto mb-4 text-gray-300" />
               <p className="text-lg">Chưa có lịch sử giao dịch</p>
-            
+
             </div>
           )}
         </TabsContent>

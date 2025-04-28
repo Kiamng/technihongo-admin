@@ -34,7 +34,7 @@
 //       (currentPage - 1) * itemsPerPage,
 //       currentPage * itemsPerPage
 //     );
-  
+
 
 //   // Fetch subscriptions
 //   const fetchSubscriptions = async () => {
@@ -111,7 +111,6 @@ import {
 
 import { Pagination } from "@/components/Pagination";
 import { useSession } from "next-auth/react";
-import { CardTitle } from "@/components/ui/card";
 import { SubscriptionStats } from "../dashboard/_components/SubscriptionStats";
 import { SubscriptionPlanColumns } from "../dashboard/_components/columns";
 import EditSubscriptionPlanPopup from "../dashboard/_components/add-subscription-popup";
@@ -172,7 +171,7 @@ export default function SubscriptionManagement() {
     <div className="w-full">
       {/* Page title */}
       <div className="flex justify-between items-center mb-6">
-        <CardTitle>Quản lý gói đăng ký</CardTitle>
+        <h1 className="text-4xl font-bold">Quản lí gói đăng ký</h1>
         <EditSubscriptionPlanPopup
           token={session?.user.token as string}
           fetchSubscriptions={fetchSubscriptions}

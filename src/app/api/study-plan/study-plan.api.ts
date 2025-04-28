@@ -66,8 +66,13 @@ export const updateStudyPlan = async (token : string, values: z.infer<typeof Stu
     return response.data
 }
 
-export const deleteStudyPlan = async ( studyplanId : number) => {
-    const response = await axiosClient.delete(`${ENDPOINT.DELETE_STUDYPLAN}/${studyplanId}`
+export const deleteStudyPlan = async (token : string , studyplanId : number) => {
+    const response = await axiosClient.delete(`${ENDPOINT.DELETE_STUDYPLAN}/${studyplanId}`,
+        {
+            headers: {
+            Authorization: `Bearer ${token}`
+            }
+        }
     )
     return response.data
 }

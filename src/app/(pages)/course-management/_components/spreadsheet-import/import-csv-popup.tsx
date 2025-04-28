@@ -20,27 +20,27 @@ const ImportCSVPopup = ({ type }: ImportType) => {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="outline">Spreadsheet import <FileSpreadsheet /></Button>
+                <Button variant="outline">Tải lên <FileSpreadsheet /></Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle className="text-3xl font-bold text-center">Import From Spreadsheet</DialogTitle>
+                    <DialogTitle className="text-3xl font-bold text-center">Tải lên từ file sheet</DialogTitle>
                 </DialogHeader>
                 <div className="flex flex-col space-y-4 text-xl text-center p-4">
                     <div>1. <a
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 underline"
-                        href={`${type === 'flashcard' ? flashcardCSVLink : type === 'quiz' ? quizCSVLink : scriptCSVLink}/edit?usp=sharing/copy`}>Copy</a>
-                        or
+                        href={`${type === 'flashcard' ? flashcardCSVLink : type === 'quiz' ? quizCSVLink : scriptCSVLink}/edit?usp=sharing/copy`}>Copy </a>
+                        Hoặc
                         <a
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-600 underline"
-                            href={`${type === 'flashcard' ? flashcardCSVLink : type === 'quiz' ? quizCSVLink : scriptCSVLink}/export?format=xlsx`}>Download</a>
-                        our template.</div>
-                    <div>2. Fill it out and export as CSV UTF-8</div>
-                    <div>3. Upload Below</div>
+                            href={`${type === 'flashcard' ? flashcardCSVLink : type === 'quiz' ? quizCSVLink : scriptCSVLink}/export?format=xlsx`}> Tải </a>
+                        file mẫu của chúng tôi.</div>
+                    <div>2. Điền dữ liệu và lưu file ở dạng CSV UTF-8</div>
+                    <div>3. Tải xuống bên dưới</div>
                     <Button
                         type="button"
                         onClick={() => {

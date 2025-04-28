@@ -100,14 +100,14 @@ export default function UserManagementPage() {
   return (
     <div className="w-full space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-4xl font-bold">Account Management</h1>
+        <h1 className="text-4xl font-bold">Quản lí người dùng</h1>
         <AddContentManagerPopup />
       </div>
 
       <div className="w-full flex flex-row justify-between">
         <Input
           className="w-[300px]"
-          placeholder="Search name"
+          placeholder="Tìm kiếm"
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
         />
@@ -120,12 +120,12 @@ export default function UserManagementPage() {
         </TabsList>
 
         <TabsContent className="space-y-6" value="student">
-          <div className="font-medium">Total students: {currentData?.totalElements || 0}</div>
+          <div className="font-medium">Tổng students: {currentData?.totalElements || 0}</div>
           <DataTable columns={columns} data={currentData?.content || []} isLoading={loading && activeTab === "student"} />
         </TabsContent>
 
         <TabsContent className="space-y-6" value="contentManager">
-          <div className="font-medium">Total content managers: {currentData?.totalElements || 0}</div>
+          <div className="font-medium">Tổng content managers: {currentData?.totalElements || 0}</div>
           <DataTable columns={columns} data={currentData?.content || []} isLoading={loading && activeTab === "contentManager"} />
         </TabsContent>
       </Tabs>
@@ -138,7 +138,7 @@ export default function UserManagementPage() {
               onClick={() => handlePageChange(Math.max(currentPage - 1, 0))}
               variant={"ghost"}
             >
-              <ChevronLeft /> Previous
+              <ChevronLeft />
             </Button>
           </PaginationItem>
           <PaginationItem>
@@ -150,7 +150,7 @@ export default function UserManagementPage() {
               onClick={() => handlePageChange(currentPage + 1)}
               variant={"ghost"}
             >
-              Next <ChevronRight />
+              <ChevronRight />
             </Button>
           </PaginationItem>
         </PaginationContent>

@@ -168,7 +168,7 @@ export default function CourseDetailPage() {
                     </DialogContent>
                 </Dialog>
             </div>
-            {studyPlans ? <StudyPlanList fetchStudyPlan={fetchStudyPlan} StudyPlanList={studyPlans} /> : <EmptyStateComponent imgageUrl="https://allpromoted.co.uk/image/no-data.svg" message="Không tìm thấy kế hoạch học tập nào" size={400} />}
+            {studyPlans ? <StudyPlanList token={session?.user.token as string} fetchStudyPlan={fetchStudyPlan} StudyPlanList={studyPlans} /> : <EmptyStateComponent imgageUrl="https://allpromoted.co.uk/image/no-data.svg" message="Không tìm thấy kế hoạch học tập nào" size={400} />}
 
         </div>
     )

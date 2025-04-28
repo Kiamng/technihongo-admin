@@ -40,7 +40,7 @@ const UpdateStudyPlanForm = ({ studyPlan, token }: UpdateStudyPlanFormProps) => 
                 if (!response || response.success === false) {
                     toast.error("Failed to update study plan!");
                 } else {
-                    toast.success("Study plan updated successfully!");
+                    toast.success("Cập nhật kế hoạch học tập thành công!");
                 }
             } catch (error) {
                 console.error(error);

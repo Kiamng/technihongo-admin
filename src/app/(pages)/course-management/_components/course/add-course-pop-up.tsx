@@ -128,11 +128,11 @@ const CreateNewCourseForm = ({ token, fetchCourses, domains, levels, loading }: 
     return (
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger className="flex items-center gap-2 py-2 px-4 bg-primary rounded-xl hover:bg-primary/90 text-white">
-                <CirclePlus />Create new course
+                <CirclePlus />Tạo mới
             </DialogTrigger>
             <DialogContent width='700px'>
                 <DialogHeader>
-                    <DialogTitle>Create new course</DialogTitle>
+                    <DialogTitle>Tạo mới khóa học</DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
@@ -140,12 +140,12 @@ const CreateNewCourseForm = ({ token, fetchCourses, domains, levels, loading }: 
                             <div className='grid grid-cols-1 gap-4'>
                                 <FormField control={form.control} name="title" render={({ field }) => (
                                     <FormItem>
-                                        <Label>Title</Label>
+                                        <Label>Tên khóa học</Label>
                                         <FormControl>
                                             <Input
                                                 disabled={isPending}
                                                 className='w-[300px]'
-                                                placeholder="Enter Title" {...field} />
+                                                placeholder="Tên khóa học" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -153,12 +153,12 @@ const CreateNewCourseForm = ({ token, fetchCourses, domains, levels, loading }: 
 
                                 <FormField control={form.control} name="description" render={({ field }) => (
                                     <FormItem>
-                                        <Label>Description</Label>
+                                        <Label>Mô tả</Label>
                                         <FormControl>
                                             <Textarea
                                                 disabled={isPending}
                                                 className='w-[300px]'
-                                                placeholder="Enter description" {...field} />
+                                                placeholder="Mô tả" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -166,12 +166,12 @@ const CreateNewCourseForm = ({ token, fetchCourses, domains, levels, loading }: 
 
                                 <FormField control={form.control} name="estimatedDuration" render={({ field }) => (
                                     <FormItem>
-                                        <Label>Estimated Duration</Label>
+                                        <Label>Thời gian dự tính</Label>
                                         <FormControl>
                                             <Input
                                                 disabled={isPending}
                                                 className='w-[300px]'
-                                                placeholder="Enter estimated duration" {...field} />
+                                                placeholder="Thời gian dự tính" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -179,13 +179,13 @@ const CreateNewCourseForm = ({ token, fetchCourses, domains, levels, loading }: 
 
                                 <FormField control={form.control} name="domainId" render={({ field }) => (
                                     <FormItem>
-                                        <Label>Domain</Label>
+                                        <Label>Lĩnh vực</Label>
                                         <Select
                                             disabled={isPending || loading}
                                             onValueChange={(value) => field.onChange(Number(value))}>
                                             <FormControl>
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder={loading ? "loading ..." : "Select a domain"} />
+                                                    <SelectValue placeholder={loading ? "loading ..." : "Lĩnh vực"} />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
@@ -205,13 +205,13 @@ const CreateNewCourseForm = ({ token, fetchCourses, domains, levels, loading }: 
                             <div className='flex flex-col space-y-4'>
                                 <FormField control={form.control} name="difficultyLevelId" render={({ field }) => (
                                     <FormItem className='w-[300px]'>
-                                        <Label>Level</Label>
+                                        <Label>Độ khó</Label>
                                         <Select
                                             disabled={isPending || loading}
                                             onValueChange={(value) => field.onChange(Number(value))}>
                                             <FormControl>
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder={loading ? "loading ..." : "Select a level"} />
+                                                    <SelectValue placeholder={loading ? "loading ..." : "Độ khó"} />
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
@@ -245,7 +245,7 @@ const CreateNewCourseForm = ({ token, fetchCourses, domains, levels, loading }: 
                                 />
                                 <FormField control={form.control} name="thumbnailUrl" render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Thumbnail Image</FormLabel>
+                                        <FormLabel>Ảnh</FormLabel>
                                         <FormControl>
                                             <Input
                                                 disabled={isPending}
@@ -274,7 +274,7 @@ const CreateNewCourseForm = ({ token, fetchCourses, domains, levels, loading }: 
                         </div>
                         <div className='w-full flex justify-end'>
                             <Button disabled={isPending} type="submit">
-                                {isPending ? <><LoaderCircle className="animate-spin" /> Creating ...</> : "Create course"}
+                                {isPending ? <><LoaderCircle className="animate-spin" /> Đang tạo ...</> : "Tạo khóa học"}
                             </Button>
                         </div>
 

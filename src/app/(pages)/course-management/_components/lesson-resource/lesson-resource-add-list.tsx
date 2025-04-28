@@ -45,7 +45,7 @@ const AddingLessonResourceItem = ({ lessonResource, handleAddLessonResource, han
                 </div>
                 <span>{title}</span>
                 <div className={`bg-opacity-10 px-3 py-[6px] text-base rounded-lg ${lessonResource.active ? "bg-[#56D071] text-[#56D071]" : "bg-[#FD5673] text-[#FD5673]"}`}>
-                    {lessonResource.active ? "ACTIVE" : "INACTIVE"}
+                    {lessonResource.active ? "Đang hoạt động" : "Không hoạt động"}
                 </div>
             </div>
             {isAdding ? (

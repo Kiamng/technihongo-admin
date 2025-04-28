@@ -7,7 +7,7 @@ import { format } from "date-fns";
 export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "userName",
-    header: "Username",
+    header: "Tên",
   },
   {
     accessorKey: "email",
@@ -15,7 +15,7 @@ export const columns: ColumnDef<User>[] = [
   },
   {
     accessorKey: "createdAt",
-    header: "Joined date",
+    header: "Ngày tham gia",
     cell: ({ row }) => {
       return (
         <span>

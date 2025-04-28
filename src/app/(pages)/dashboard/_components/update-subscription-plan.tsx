@@ -72,7 +72,7 @@ const EditSubscriptionPlanPopup: React.FC<EditSubscriptionPlanPopupProps> = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-[600px]">
         <DialogHeader>
-          <DialogTitle className="text-center">Update Subscription Plan</DialogTitle>
+          <DialogTitle className="text-center">Cập nhật gói đăng ký</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -82,7 +82,7 @@ const EditSubscriptionPlanPopup: React.FC<EditSubscriptionPlanPopupProps> = ({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Subscription Name</FormLabel>
+                  <FormLabel>Tên gói đăng ký</FormLabel>
                   <FormControl>
                     <Input disabled={isLoading} {...field} />
                   </FormControl>
@@ -95,7 +95,7 @@ const EditSubscriptionPlanPopup: React.FC<EditSubscriptionPlanPopupProps> = ({
               name="benefits"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Benefit</FormLabel>
+                  <FormLabel>Lợi ích</FormLabel>
                   <FormControl>
                     <Textarea disabled={isLoading} {...field} rows={3} />
                   </FormControl>
@@ -109,9 +109,9 @@ const EditSubscriptionPlanPopup: React.FC<EditSubscriptionPlanPopupProps> = ({
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Price</FormLabel>
+                    <FormLabel>Giá</FormLabel>
                     <FormControl>
-                      <Input disabled={isLoading} type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
+                      <Input disabled={isLoading} type="text" {...field} onChange={(e) => field.onChange((e.target.value))} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -122,9 +122,9 @@ const EditSubscriptionPlanPopup: React.FC<EditSubscriptionPlanPopupProps> = ({
                 name="durationDays"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Duration days</FormLabel>
+                    <FormLabel>Thời hạn</FormLabel>
                     <FormControl>
-                      <Input disabled={isLoading} type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
+                      <Input disabled={isLoading} type="text" {...field} onChange={(e) => field.onChange((e.target.value))} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -137,7 +137,7 @@ const EditSubscriptionPlanPopup: React.FC<EditSubscriptionPlanPopupProps> = ({
               name="active"
               render={({ field }) => (
                 <FormItem className="flex items-center gap-2">
-                  <FormLabel>Active</FormLabel>
+                  <FormLabel>Trạng thái</FormLabel>
                   <FormControl>
                     <Switch disabled={isLoading} checked={field.value} onCheckedChange={field.onChange} />
                   </FormControl>
@@ -150,10 +150,10 @@ const EditSubscriptionPlanPopup: React.FC<EditSubscriptionPlanPopupProps> = ({
               <Button disabled={isLoading} type="submit">
                 {isLoading ? (
                   <>
-                    <LoaderCircle className="animate-spin" /> Updating...
+                    <LoaderCircle className="animate-spin" /> Đang cập nhật...
                   </>
                 ) : (
-                  "Update"
+                  "Cập nhật"
                 )}
               </Button>
             </div>

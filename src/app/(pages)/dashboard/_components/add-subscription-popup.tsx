@@ -42,7 +42,7 @@ const EditSubscriptionPlanPopup: React.FC<AddDomainFormProps> = ({ fetchSubscrip
       if (!response || response.success === false) {
         toast.error("Failed to add new subscription plan!");
       } else {
-        toast.success("Added new subscription plan successfully!");
+        toast.success("Thêm mới gói đăng ký thành công !");
         setIsDialogOpen(false);
         fetchSubscriptions();
         form.reset();
@@ -61,13 +61,13 @@ const EditSubscriptionPlanPopup: React.FC<AddDomainFormProps> = ({ fetchSubscrip
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger className="flex items-center gap-2 py-2 px-4 bg-primary rounded-xl hover:bg-primary/90 text-white">
         <span className="flex items-center gap-2">
-          <SquareChartGantt /> Add new Subscription Plan
+          <SquareChartGantt /> Tạo mới gói
         </span>
       </DialogTrigger>
 
       <DialogContent className="max-w-[600px]">
         <DialogHeader>
-          <DialogTitle className="text-center">Create subscription plan</DialogTitle>
+          <DialogTitle className="text-center">Tạo một gói mới</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
@@ -78,7 +78,7 @@ const EditSubscriptionPlanPopup: React.FC<AddDomainFormProps> = ({ fetchSubscrip
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Subscription name</FormLabel>
+                  <FormLabel>Tên gói</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -93,7 +93,7 @@ const EditSubscriptionPlanPopup: React.FC<AddDomainFormProps> = ({ fetchSubscrip
               name="benefits"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Benefit</FormLabel>
+                  <FormLabel>Lợi ích</FormLabel>
                   <FormControl>
                     <Textarea {...field} rows={3} />
                   </FormControl>
@@ -109,12 +109,12 @@ const EditSubscriptionPlanPopup: React.FC<AddDomainFormProps> = ({ fetchSubscrip
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Price</FormLabel>
+                    <FormLabel>Giá</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
                         {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        onChange={(e) => field.onChange((e.target.value))}
                       />
                     </FormControl>
                     <FormMessage />
@@ -126,12 +126,12 @@ const EditSubscriptionPlanPopup: React.FC<AddDomainFormProps> = ({ fetchSubscrip
                 name="durationDays"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Duration days</FormLabel>
+                    <FormLabel>Thời hạn</FormLabel>
                     <FormControl>
                       <Input
                         type="text"
                         {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
+                        onChange={(e) => field.onChange((e.target.value))}
                       />
                     </FormControl>
                     <FormMessage />
@@ -145,10 +145,10 @@ const EditSubscriptionPlanPopup: React.FC<AddDomainFormProps> = ({ fetchSubscrip
               <Button disabled={isLoading} type="submit">
                 {isLoading ? (
                   <>
-                    <LoaderCircle className="animate-spin" /> Creating ...
+                    <LoaderCircle className="animate-spin" /> Đang tạo ...
                   </>
                 ) : (
-                  "Create"
+                  "Tạo"
                 )}
               </Button>
             </div>

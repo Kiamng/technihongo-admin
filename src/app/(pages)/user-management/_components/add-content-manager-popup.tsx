@@ -42,11 +42,11 @@ const AddContentManagerPopup = () => {
     const onSubmitForm = async (values: z.infer<typeof addContentManagerSchema>) => {
         try {
             setIsLoading(true)
-            const response = await addContentManager(session?.user.token as string, session?.user.id as number, values);
+            const response = await addContentManager(session?.user.token as string, values);
             if (response.success === false) {
                 toast.error("Failed to add new content manager!!");
             } else {
-                toast.success("Add new content manager successfully!!");
+                toast.success("Tạo mới content manager thành công!!");
             }
         }
         catch (error) {
@@ -60,10 +60,10 @@ const AddContentManagerPopup = () => {
     return (
         <Dialog>
             <DialogTrigger className="flex items-center gap-2 py-2 px-4 bg-primary rounded-xl hover:bg-primary/90 text-white">
-                <UserCheck className="w-5 h-5" /> Add new content manager</DialogTrigger>
+                <UserCheck className="w-5 h-5" /> Thêm mới content manager</DialogTrigger>
             <DialogContent width="700px">
                 <DialogHeader>
-                    <DialogTitle>Add new content manager</DialogTitle>
+                    <DialogTitle>Thêm mới  content manager</DialogTitle>
                 </DialogHeader>
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmitForm)} className="w-full space-y-10">
@@ -73,7 +73,7 @@ const AddContentManagerPopup = () => {
                                 name="userName"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Username</FormLabel>
+                                        <FormLabel>Tên</FormLabel>
                                         <FormControl>
                                             <Input disabled={isLoading}  {...field} />
                                         </FormControl>
@@ -99,7 +99,7 @@ const AddContentManagerPopup = () => {
                                 name="password"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Password</FormLabel>
+                                        <FormLabel>Mật khẩu</FormLabel>
                                         <FormControl>
                                             <Input disabled={isLoading} type="password"  {...field} />
                                         </FormControl>
@@ -112,7 +112,7 @@ const AddContentManagerPopup = () => {
                                 name="confirmPassword"
                                 render={({ field }) => (
                                     <FormItem>
-                                        <FormLabel>Confirm password</FormLabel>
+                                        <FormLabel>Nhập lại mật khẩu</FormLabel>
                                         <FormControl>
                                             <Input disabled={isLoading} type="password"  {...field} />
                                         </FormControl>
@@ -125,7 +125,7 @@ const AddContentManagerPopup = () => {
                         <div className="w-full flex justify-end">
 
                             <Button disabled={isLoading} type="submit">
-                                {isLoading ? <><LoaderCircle className="animate-spin" /> Creating ...</> : "Create"}
+                                {isLoading ? <><LoaderCircle className="animate-spin" /> Đang tạo ...</> : "Tạo"}
                             </Button>
                         </div>
                     </form>

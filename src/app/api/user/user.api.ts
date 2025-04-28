@@ -81,10 +81,9 @@ export const getContentManager = async ({
 
 export const addContentManager = async (
   token : string,
-  adminId: number,
   values: z.infer<typeof addContentManagerSchema>
 ) => {
-  const response = await axiosClient.post(`${ENDPOINT.ADDCONTENTMANAGER}/${adminId}`, {
+  const response = await axiosClient.post(`${ENDPOINT.ADDCONTENTMANAGER}`, {
     userName: values.userName,
     email: values.email,
     password: values.password,

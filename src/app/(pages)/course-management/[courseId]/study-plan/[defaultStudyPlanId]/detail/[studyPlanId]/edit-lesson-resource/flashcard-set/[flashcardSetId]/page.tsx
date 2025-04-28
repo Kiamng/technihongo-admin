@@ -79,7 +79,7 @@ const EditFlashcardSetPage = () => {
                 <Skeleton className="w-full h-[500px]" />
             }
             <Separator />
-            {flashcardSet?.flashcards &&
+            {flashcardSet && flashcardSet?.flashcards.length > 0 &&
                 <FlashcardList FlashcardList={flashcardSet.flashcards} />
             }
             {flashcardSet &&

@@ -374,7 +374,7 @@ const FlashcardsFormRender = ({ initialData, token, flashcardSetId, fetchSet }: 
                             )
                         }
                     </div>
-                    {fields.length === 0 && <EmptyStateComponent imgageUrl="https://allpromoted.co.uk/image/no-data.svg" message="This set does not have any flashcard" size={400} />}
+                    {fields.length === 0 && <EmptyStateComponent imgageUrl="https://allpromoted.co.uk/image/no-data.svg" message="Bộ flashcard này chưa có thẻ nào" size={400} />}
                     <button type="button" onClick={handleInsertNew} className="w-full flex h-[70px] justify-center items-center rounded-lg shadow-md border-[1px] hover:scale-95 duration-100 transition-all ease-in-out">
                         <div className="flex space-x-4">
                             <Plus /> <span className="font-medium">Thêm mới</span>

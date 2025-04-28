@@ -39,7 +39,7 @@ const CreateStudyPlanPopUp = ({ courseId, setIsDialogOpen, fetchStudyPlan, token
             if (response.success === false) {
                 toast.error("Failed to create new study plan!!");
             } else {
-                toast.success("Create new study plan successfully!!");
+                toast.success("Tạo mới kế hoạch thành công!!");
                 setIsDialogOpen(false);
                 fetchStudyPlan();
                 form.reset();
@@ -59,31 +59,31 @@ const CreateStudyPlanPopUp = ({ courseId, setIsDialogOpen, fetchStudyPlan, token
     return (
         <>
             <DialogHeader>
-                <DialogTitle>Create new study plan</DialogTitle>
+                <DialogTitle>Tạo mới kế hoạch học tập</DialogTitle>
             </DialogHeader>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-full">
                     <FormField control={form.control} name="title" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Title:</FormLabel>
+                            <FormLabel>Tên kế hoạch học tập:</FormLabel>
                             <FormControl>
-                                <Input placeholder="Enter Title" {...field} />
+                                <Input placeholder="Tên kế hoạch học tập" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="hoursPerDay" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Hours per day:</FormLabel>
+                            <FormLabel>Số giờ học mỗi ngày:</FormLabel>
                             <FormControl>
-                                <Input type="text" placeholder="Enter hours per day" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
+                                <Input type="text" placeholder="Số giờ học mỗi ngày" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="description" render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Description:</FormLabel>
+                            <FormLabel>Mô tả:</FormLabel>
                             <FormControl>
                                 <Textarea {...field} rows={3} />
                             </FormControl>
@@ -94,10 +94,10 @@ const CreateStudyPlanPopUp = ({ courseId, setIsDialogOpen, fetchStudyPlan, token
                         <Button disabled={isPending} type="submit">
                             {isPending ? (
                                 <>
-                                    <LoaderCircle className="animate-spin" /> Creating ...
+                                    <LoaderCircle className="animate-spin" /> Đang tạo ...
                                 </>
                             ) : (
-                                "Create"
+                                "Tạo"
                             )}
                         </Button>
                     </div>

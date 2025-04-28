@@ -12,11 +12,11 @@ export const CellAction: React.FC<CellActionProps> = ({ data }) => {
   const handleViewUser = () => {
     router.push(`/user-management/${data.userId}`);
   };
-  
+
 
   return (
     <Button onClick={handleViewUser} variant="outline">
-      View
+      Xem thông tin
     </Button>
   );
 };

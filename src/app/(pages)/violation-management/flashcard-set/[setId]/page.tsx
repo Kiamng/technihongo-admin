@@ -216,6 +216,9 @@ const ViolationFlashcardSetSummary = () => {
                             <div className="text-sm text-gray-400">{violatedSet?.createdAt ? format(new Date(violatedSet.createdAt), "HH:mm, dd/MM/yyyy") : 'N/A'}</div>
                         </div>
                     </div>
+
+                    <h1 className="text-base">Flashcard: <span>{violatedSet?.title}</span></h1>
+
                     <div className="table-responsive">
                         <table className="min-w-full border-collapse rounded-2xl">
                             <thead>

@@ -9,27 +9,27 @@ interface ColumnProps {
 export const SubscriptionPlanColumns = ({ fetchSubscriptions }: ColumnProps): ColumnDef<SubscriptionPlan>[] => [
   {
     accessorKey: "name",
-    header: "Name",
+    header: "Tên gói",
   },
   {
     accessorKey: "price",
-    header: "Price",
+    header: "Giá",
     cell: ({ row }) => {
       return row.original.price.toLocaleString();
     },
   },
   {
     accessorKey: "durationDays",
-    header: "DurationDays",
+    header: "Thời hạn",
   },
   {
     accessorKey: "active",
-    header: "Active",
+    header: "Trạng thái",
     cell: ({ row }) => {
       return row.original.active ? (
-        <div className="px-4 py-2 bg-[#56D071] w-fit text-[#56D071] rounded-xl bg-opacity-10">ACTIVE</div>
+        <div className="px-4 py-2 bg-[#56D071] w-fit text-[#56D071] rounded-xl bg-opacity-10">Đang hoạt động</div>
       ) : (
-        <div className="px-4 py-2 bg-[#FD5673] w-fit text-[#FD5673] rounded-xl bg-opacity-10">INACTIVE</div>
+        <div className="px-4 py-2 bg-[#FD5673] w-fit text-[#FD5673] rounded-xl bg-opacity-10">Không hoạt động</div>
       );
     },
   },

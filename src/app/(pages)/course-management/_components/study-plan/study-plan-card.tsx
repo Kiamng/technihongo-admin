@@ -24,18 +24,23 @@ import { Button } from "@/components/ui/button";
 
 
 interface StudyPlanCardProps {
+    token: string
     plan: StudyPlan;
     defaultStudyPlanId: number;
     fetchStudyPlan: () => Promise<void>;
 }
-const StudyPlanCard = ({ plan, defaultStudyPlanId, fetchStudyPlan }: StudyPlanCardProps) => {
+const StudyPlanCard = ({ token, plan, defaultStudyPlanId, fetchStudyPlan }: StudyPlanCardProps) => {
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [isPending, startTransition] = useTransition();
 
     const handleDelete = async () => {
+        if (plan.default) {
+            toast.warning('Không thể xóa kế hoạch học tập mặc định!')
+            return
+        }
         startTransition(async () => {
             try {
-                const response = await deleteStudyPlan(plan.studyPlanId);
+                const response = await deleteStudyPlan(token, plan.studyPlanId);
                 if (!response || response.success === false) {
                     toast.error("Failed to delete subscription plan!");
                 } else {
@@ -58,16 +63,16 @@ const StudyPlanCard = ({ plan, defaultStudyPlanId, fetchStudyPlan }: StudyPlanCa
                     <div className="text-base font-medium">{plan.title}</div>
                     {plan.active ? (
                         <div className="px-4 py-2 bg-[#56D071] w-fit text-[#56D071] rounded-xl text-xs font-semibold bg-opacity-10">
-                            ACTIVE
+                            Đang hoạt động
                         </div>)
                         :
                         (<div className="px-4 py-2 bg-[#FD5673] w-fit text-[#FD5673] rounded-xl text-xs font-semibold bg-opacity-10">
-                            NON-ACTIVE
+                            Đang hoạt động
                         </div>
                         )}
                 </div>
-                <div className="text-base font-medium text-slate-400">Description: {plan.description}</div>
-                <div className="text-base font-medium text-slate-400">Created date: {format(new Date(plan.createdAt), "dd/MM/yy")}</div>
+                <div className="text-base font-medium text-slate-400">Mô tả: {plan.description}</div>
+                <div className="text-base font-medium text-slate-400">Ngày tạo: {format(new Date(plan.createdAt), "dd/MM/yy")}</div>
             </div>
             <DropdownMenu>
                 <DropdownMenuTrigger>
@@ -76,24 +81,24 @@ const StudyPlanCard = ({ plan, defaultStudyPlanId, fetchStudyPlan }: StudyPlanCa
                 <DropdownMenuContent>
                     <Link href={`/course-management/${plan.course.courseId}/study-plan/${defaultStudyPlanId}/detail/${plan.studyPlanId}`}>
                         <DropdownMenuItem>
-                            <Eye /> View more
+                            <Eye /> Xem thêm
                         </DropdownMenuItem>
                     </Link>
                     <DropdownMenuItem onClick={() => setConfirmOpen(true)}>
-                        <Trash /> Delete
+                        <Trash /> Xóa
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
             <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                        <p>This action cannot be undone. This will permanently delete this study plan.</p>
+                        <AlertDialogTitle>Bạn có chắc không?</AlertDialogTitle>
+                        <p>Hành động này sẽ không thể hoàn tác, kế hoạch học tập này sẽ bị xóa vĩnh viễn.</p>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel onClick={() => setConfirmOpen(false)}>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel onClick={() => setConfirmOpen(false)}>Hủy</AlertDialogCancel>
                         <Button variant={"destructive"} onClick={handleDelete} disabled={isPending} >
-                            {isPending ? "Deleting..." : <><Trash /> Delete</>}
+                            {isPending ? "Đang xóa..." : <><Trash /> Xóa</>}
                         </Button>
                     </AlertDialogFooter>
                 </AlertDialogContent>

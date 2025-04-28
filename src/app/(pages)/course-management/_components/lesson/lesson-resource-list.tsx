@@ -62,7 +62,6 @@ const LessonResourceItem = ({ lessonResource, studyPlanId, updateLessonResources
             setConfirmOpen(true);
         }
     };
-
     const handleDelete = async () => {
         if (lessonResource.lessonResourceId) {
             startTransition(async () => {
@@ -74,8 +73,9 @@ const LessonResourceItem = ({ lessonResource, studyPlanId, updateLessonResources
                     } else {
                         toast.error("Failed to delete lesson resource!");
                     }
-                } catch (error) {
-                    toast.error("An error occurred while deleting the lesson resource.");
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                } catch (error: any) {
+                    toast.error(error.response.data.message);
                     console.error("Failed to delete lesson resource", error);
                 } finally {
                     setConfirmOpen(false);
@@ -115,7 +115,7 @@ const LessonResourceItem = ({ lessonResource, studyPlanId, updateLessonResources
                     </div>
                     <span>{title}</span>
                     <div className={`bg-opacity-10 px-3 py-[6px] text-base rounded-lg ${lessonResource.active ? "bg-[#56D071] text-[#56D071]" : "bg-[#FD5673] text-[#FD5673]"}`}>
-                        {lessonResource.active ? "ACTIVE" : "INACTIVE"}
+                        {lessonResource.active ? "Đang hoạt động" : "Không hoạt động"}
                     </div>
                     {/* <div>
                         <Select
@@ -148,13 +148,13 @@ const LessonResourceItem = ({ lessonResource, studyPlanId, updateLessonResources
             <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
-                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                        <p>This action cannot be undone. This will permanently delete this lesson resource.</p>
+                        <AlertDialogTitle>Bạn đã chắc chắn chưa?</AlertDialogTitle>
+                        <p>Hành động này sẽ không thể hoàn tác và tài nguyên này sẽ bị xóa vĩnh viễn</p>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel onClick={cancelDelete}>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel onClick={cancelDelete}>Hủy</AlertDialogCancel>
                         <Button variant={"destructive"} onClick={handleDelete} disabled={isPending}>
-                            {isPending ? "Deleting..." : "Delete"}
+                            {isPending ? "Đang xóa..." : "Xóa"}
                         </Button>
                     </AlertDialogFooter>
                 </AlertDialogContent>

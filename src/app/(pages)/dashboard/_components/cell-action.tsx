@@ -158,7 +158,7 @@ export const CellAction: React.FC<CellActionProps> = ({
     <>
       <div className="flex gap-2">
         <Button onClick={() => setIsOpen(true)}>
-          <Edit className="w-4 h-4" /> Update
+          <Edit className="w-4 h-4" /> Cập nhật
         </Button>
 
         {!isActive && (
@@ -167,7 +167,7 @@ export const CellAction: React.FC<CellActionProps> = ({
             className="bg-red-500 hover:bg-red-600 text-white"
             disabled={isDeleting}
           >
-            <Trash className="w-4 h-4" /> Delete
+            <Trash className="w-4 h-4" /> Xóa
           </Button>
         )}
       </div>
@@ -187,21 +187,20 @@ export const CellAction: React.FC<CellActionProps> = ({
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>Bạn có chắc không?</AlertDialogTitle>
             <p>
-              This action cannot be undone. This will permanently delete this
-              subscription plan.
+              Hành động này sẽ không thể hoàn tác và gói này sẽ bị xóa vĩnh viễn
             </p>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setConfirmOpen(false)}>
-              Cancel
+              Hủy
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isDeleting || isActive}
             >
-              {isDeleting ? "Deleting..." : "Delete"}
+              {isDeleting ? "Đang xóa..." : "Xóa"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
