@@ -171,7 +171,7 @@ export default function EditLearningResourcePage() {
 
                         </div>
 
-                        <Button disabled={isPending} type="submit">
+                        <Button disabled={isPending || learningResource?.public} type="submit">
                             {isPending ? <><LoaderCircle className="animate-spin" /> Đang lưu ...</> : "Lưu thay đổi"}
                         </Button>
                     </div>
@@ -181,7 +181,7 @@ export default function EditLearningResourcePage() {
                                 <FormItem>
                                     <FormLabel>Tên bài giảng:</FormLabel>
                                     <FormControl>
-                                        <Input disabled={isPending} placeholder="Nhập tên bài giảng" {...field} />
+                                        <Input disabled={isPending || learningResource?.public} placeholder="Nhập tên bài giảng" {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -190,7 +190,7 @@ export default function EditLearningResourcePage() {
                                 <FormItem>
                                     <FormLabel>Mô tả:</FormLabel>
                                     <FormControl>
-                                        <Textarea disabled={isPending} placeholder="Thêm một mô tả" {...field} rows={3} />
+                                        <Textarea disabled={isPending || learningResource?.public} placeholder="Thêm một mô tả" {...field} rows={3} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -200,13 +200,14 @@ export default function EditLearningResourcePage() {
                                     <FormLabel>Video (mp4):</FormLabel>
                                     <div className="flex items-center space-x-2">
                                         <FormControl>
-                                            <Input disabled={isPending} placeholder="Chọn một video" {...field} readOnly />
+                                            <Input disabled={isPending || learningResource?.public} placeholder="Chọn một video" {...field} readOnly />
                                         </FormControl>
                                     </div>
                                     <FormMessage />
                                 </FormItem>
                             )} />
                             <UploadWithPreview
+                                isPublic={learningResource?.public as boolean}
                                 disabled={isPending}
                                 label="Video"
                                 accept="video/*"
@@ -233,13 +234,14 @@ export default function EditLearningResourcePage() {
                                     <FormLabel>PDF:</FormLabel>
                                     <div className="flex items-center space-x-2">
                                         <FormControl>
-                                            <Input disabled={isPending} placeholder="Chọn pdf" {...field} readOnly />
+                                            <Input disabled={isPending || learningResource?.public} placeholder="Chọn pdf" {...field} readOnly />
                                         </FormControl>
                                     </div>
                                     <FormMessage />
                                 </FormItem>
                             )} />
                             <UploadWithPreview
+                                isPublic={learningResource?.public as boolean}
                                 disabled={isPending}
                                 label="PDF"
                                 accept="application/pdf"

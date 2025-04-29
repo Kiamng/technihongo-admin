@@ -20,13 +20,14 @@ import { uploadImageCloud } from "@/app/api/image/image.api";
 type FlashcardInForm = z.infer<typeof FlashcardSchema>;
 
 interface FlashcardProps {
+    isPublic: boolean
     initialData: Flashcard[]
     token: string
     flashcardSetId: number
     fetchSet: () => Promise<void>
 }
 
-const FlashcardsFormRender = ({ initialData, token, flashcardSetId, fetchSet }: FlashcardProps) => {
+const FlashcardsFormRender = ({ isPublic, initialData, token, flashcardSetId, fetchSet }: FlashcardProps) => {
     const [isSaving, startTransition] = useTransition();
     const [isSavingNewOrder, startSavingNewOrderTransition] = useTransition();
     const [initialOrder, setInitialOrder] = useState<FlashcardInForm[]>([]);
@@ -117,6 +118,10 @@ const FlashcardsFormRender = ({ initialData, token, flashcardSetId, fetchSet }: 
     };
 
     const handleDelete = (index: number) => {
+        if (isPublic) {
+            toast.error(`Bạn không thể thực hiện hành động này. Flashcard đang hoạt động`)
+            return
+        }
         const selectedQuestion = form.getValues().flashcards[index];
 
         remove(index);
@@ -335,15 +340,15 @@ const FlashcardsFormRender = ({ initialData, token, flashcardSetId, fetchSet }: 
                             <span className="text-lg font-bold ">
                                 Flashcard ({newFlashcardOrder.length})
                             </span>
-                            <ImportCSVPopup type="flashcard" />
+                            {!isPublic && <ImportCSVPopup type="flashcard" />}
                         </div>
-                        <FormAction
+                        {!isPublic && <FormAction
                             isSaving={isSaving}
                             isEditingOrder={isEditingOrder}
                             handleUpdateOrderToggle={handleUpdateOrderToggle}
                             handleCancelUpdateOrder={handleCancelUpdateOrder}
                             handleSaveNewOrder={handleSaveNewOrder}
-                            isSavingNewOrder={isSavingNewOrder} />
+                            isSavingNewOrder={isSavingNewOrder} />}
                         <input
                             type="file"
                             accept=".csv"
@@ -362,6 +367,7 @@ const FlashcardsFormRender = ({ initialData, token, flashcardSetId, fetchSet }: 
                                                     ${getBorderClass(field)}`}
                                     >
                                         <FlashcardInFormRender
+                                            isPublic={isPublic}
                                             field={field}
                                             index={index}
                                             isSaving={isSaving}
@@ -375,11 +381,11 @@ const FlashcardsFormRender = ({ initialData, token, flashcardSetId, fetchSet }: 
                         }
                     </div>
                     {fields.length === 0 && <EmptyStateComponent imgageUrl="https://allpromoted.co.uk/image/no-data.svg" message="Bộ flashcard này chưa có thẻ nào" size={400} />}
-                    <button type="button" onClick={handleInsertNew} className="w-full flex h-[70px] justify-center items-center rounded-lg shadow-md border-[1px] hover:scale-95 duration-100 transition-all ease-in-out">
+                    {!isPublic && <button type="button" onClick={handleInsertNew} className="w-full flex h-[70px] justify-center items-center rounded-lg shadow-md border-[1px] hover:scale-95 duration-100 transition-all ease-in-out">
                         <div className="flex space-x-4">
                             <Plus /> <span className="font-medium">Thêm mới</span>
                         </div>
-                    </button>
+                    </button>}
                 </div>
             </form>
         </Form>

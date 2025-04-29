@@ -29,16 +29,16 @@ const QuizUpdateStatus = ({ quiz, token, setQuiz }: QuizUpdateStatusProps) => {
                 );
 
                 if (response.success) {
-                    toast.success("Quiz public status updated successfully!");
+                    toast.success("Cập nhật trạng thái thành công!");
 
                     // Safely update the quiz state
                     setQuiz((prevQuiz) => prevQuiz ? { ...prevQuiz, public: publicStatus === 'true' } : prevQuiz);
                 } else {
                     toast.error(response.message || "Failed to update quiz public status.");
                 }
-            } catch (error) {
-                console.error("Error updating quiz public status:", error);
-                toast.error("An error occurred while updating quiz public status.");
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            } catch (error: any) {
+                toast.error(error.response.data.message);
             }
         })
     };

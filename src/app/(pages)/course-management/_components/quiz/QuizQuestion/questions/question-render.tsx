@@ -12,9 +12,10 @@ interface QuestionRender {
     handleDeleteImage: (index: number) => void,
     isSaving: boolean,
     hasAttempt: boolean
+    isPublic: boolean
 }
 
-const QuestionRender = ({ field, index, addChangedQuestion, handleDeleteImage, isSaving, hasAttempt, handleImageSelect }: QuestionRender) => {
+const QuestionRender = ({ field, index, addChangedQuestion, handleDeleteImage, isSaving, hasAttempt, handleImageSelect, isPublic }: QuestionRender) => {
     return (
         <div className="w-full flex flex-row space-x-4">
             <FormField control={field.control} name={`questions.${index}.questionText`} render={({ field }) => (
@@ -22,7 +23,7 @@ const QuestionRender = ({ field, index, addChangedQuestion, handleDeleteImage, i
                     <FormLabel>Câu hỏi</FormLabel>
                     <FormControl>
                         <Textarea  {...field}
-                            disabled={isSaving || hasAttempt}
+                            disabled={isSaving || hasAttempt || isPublic}
                             placeholder="Nhập câu hỏi"
                             className="resize-none w-full white-space: pre-line "
                             onChange={(e) => {
@@ -40,7 +41,7 @@ const QuestionRender = ({ field, index, addChangedQuestion, handleDeleteImage, i
                     <FormLabel>Giải thích(Optional)</FormLabel>
                     <FormControl>
                         <Textarea  {...field}
-                            disabled={isSaving || hasAttempt}
+                            disabled={isSaving || hasAttempt || isPublic}
                             placeholder="Nhập giải thích"
                             className="resize-none w-full white-space: pre-line "
                             onChange={(e) => {
@@ -52,7 +53,7 @@ const QuestionRender = ({ field, index, addChangedQuestion, handleDeleteImage, i
                 </FormItem>
             )} />
             {!field.url ?
-                (!hasAttempt &&
+                (!hasAttempt || !isPublic &&
                     <QuestionImageUpload isSaving={isSaving} handleImageSelect={handleImageSelect} index={index} />
                 )
                 :
@@ -66,7 +67,7 @@ const QuestionRender = ({ field, index, addChangedQuestion, handleDeleteImage, i
                     }}
                 >
                     {!hasAttempt &&
-                        <button disabled={isSaving} type="button" onClick={() => handleDeleteImage(index)} className={`bg-slate-700 text-white hover:bg-red-500 p-1 h-fit ${isSaving ? "hover:cursor-not-allowed" : "hover:cursor-pointer hover:scale-105 duration-100"}`}>
+                        <button disabled={isSaving || isPublic} type="button" onClick={() => handleDeleteImage(index)} className={`bg-slate-700 text-white hover:bg-red-500 p-1 h-fit ${isSaving ? "hover:cursor-not-allowed" : "hover:cursor-pointer hover:scale-105 duration-100"}`}>
                             <Trash size={16} />
                         </button>
                     }

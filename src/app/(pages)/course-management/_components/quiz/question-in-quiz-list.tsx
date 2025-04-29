@@ -153,6 +153,7 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
     };
 
     const handleDelete = (index: number) => {
+
         const selectedQuestion = form.getValues().questions[index];
 
         remove(index);
@@ -277,6 +278,11 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
 
         if (values.questions.length === 0 || values.questions.length < 5) {
             toast.error("Bài kiểm tra phải có ít nhất 5 câu hỏi");
+            return;
+        }
+
+        if (values.questions.length === 0 || values.questions.length > 50) {
+            toast.error("Giới hạn chỉ được 50 câu hỏi");
             return;
         }
 
@@ -447,7 +453,7 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
                             </div>
                             )
                             : (
-                                form.getValues().questions.length > 0 &&
+                                form.getValues().questions.length > 0 || !quiz.public &&
                                 <FormAction
                                     isEditingOrder={isEditingOrder}
                                     handleCancelUpdateOrder={handleCancelUpdateOrder}
@@ -477,7 +483,7 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
                                     >
                                         <div className="flex justify-between">
                                             <div className="text-lg font-semibold text-slate-500">{index + 1}</div>
-                                            {!quiz.hasAttempt &&
+                                            {!quiz.hasAttempt || !quiz.public &&
                                                 <button disabled={isSaving} type="button" onClick={() => handleDelete(index)} className="text-red-400 hover:text-red-500 duration-100 hover:scale-125">
                                                     <Trash2 />
                                                 </button>
@@ -485,6 +491,7 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
                                         </div>
                                         <Separator />
                                         <QuestionRender
+                                            isPublic={quiz.public}
                                             hasAttempt={quiz.hasAttempt}
                                             isSaving={isSaving}
                                             field={field}
@@ -494,6 +501,7 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
                                             handleDeleteImage={handleDeleteImage} />
                                         <Separator />
                                         <OptionRender
+                                            isPublic={quiz.public}
                                             hasAttempt={quiz.hasAttempt}
                                             isSaving={isSaving}
                                             addChangedQuestion={addChangedQuestion}
@@ -505,7 +513,7 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
                             )}
                     </div>
                     {fields.length === 0 && <EmptyStateComponent imgageUrl="https://allpromoted.co.uk/image/no-data.svg" message="Bài kiểm tra này chưa có câu hỏi nào" size={400} />}
-                    {!quiz.hasAttempt &&
+                    {!quiz.hasAttempt || !quiz.public &&
                         <button type="button" onClick={handleInsertNew} className="w-full flex h-[70px] justify-center items-center rounded-lg shadow-md border-[1px] hover:scale-95 duration-100 transition-all ease-in-out">
                             <div className="flex space-x-4">
                                 <Plus /> <span className="font-medium">Thêm mới</span>

@@ -1,4 +1,4 @@
-import { isMostlyJapanese } from "@/lib/validation/japanese";
+import { isMostlyJapanese, isMostlyVietnamese } from "@/lib/validation/japanese";
 import { z } from "zod";
 
 export const ScriptSchema =   z.object({
@@ -8,10 +8,20 @@ export const ScriptSchema =   z.object({
     .refine(val => isMostlyJapanese(val), {
           message: "Phải là tiếng Nhật và không được chứa icon hay ký tự đặc biệt",
         }),
+    questionExplain : z.string()
+    .min(1, "Bản dịch không được để trống !")
+    .refine(val => isMostlyVietnamese(val), {
+          message: "Bản dịch phải là tiếng Việt",
+        }),
     answer :  z.string()
     .min(1, "Phản hồi không được để trống !")
     .refine(val => isMostlyJapanese(val), {
           message: "Phải là tiếng Nhật và không được chứa icon hay ký tự đặc biệt",
+        }),
+    answerExplain : z.string()
+    .min(1, "Bản dịch không được để trống !")
+    .refine(val => isMostlyVietnamese(val), {
+          message: "Bản dịch phải là tiếng Việt",
         }),
     scriptOrder : z.number().nullable() 
 })

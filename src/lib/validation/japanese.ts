@@ -24,14 +24,10 @@ export const ScriptValidate = (text: string, threshold: number = 0.8): boolean =
   const emojiOrSymbolRegex = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
   const allowedPunctuationRegex = /[!?！？]/gu;
 
-  // Match các kí tự Nhật
   const japaneseChars = text.match(japaneseCharRegex) || [];
-  // Match emoji
   const emojiChars = text.match(emojiOrSymbolRegex) || [];
-  // Match dấu ! ? cho phép
   const allowedChars = text.match(allowedPunctuationRegex) || [];
 
-  // Tổng số kí tự hợp lệ (kí tự bình thường + dấu ! ?)
   const totalValidChars = text.length - emojiChars.length;
 
   if (emojiChars.length > 0) return false;
@@ -40,3 +36,27 @@ export const ScriptValidate = (text: string, threshold: number = 0.8): boolean =
   const ratio = (japaneseChars.length + allowedChars.length) / totalValidChars;
   return ratio >= threshold;
 };
+
+export const isMostlyVietnamese = (text: string, threshold: number = 0.8): boolean => {
+  // Chữ cái tiếng Việt (có dấu) + chữ cái Latin không dấu
+  const vietnameseOrLatinRegex = /[A-Za-zÀ-Ỵà-ỵĂăÂâĐđÊêÔôƠơƯư]/gu;
+  const punctuationRegex = /[.,!?]/gu;
+  const emojiRegex = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu;
+
+  const letters = text.match(vietnameseOrLatinRegex) || [];
+  const punctuations = text.match(punctuationRegex) || [];
+  const emojiChars = text.match(emojiRegex) || [];
+
+  // Bỏ khoảng trắng ra khỏi tổng số ký tự
+  const pureText = text.replace(/\s/g, "");
+  const pureTotalChars = pureText.length;
+
+  if (emojiChars.length > 0) return false;
+  if (pureTotalChars <= 2) return letters.length === pureTotalChars;
+
+  const validCount = letters.length + punctuations.length;
+  const ratio = validCount / pureTotalChars;
+
+  return ratio >= threshold;
+};
+

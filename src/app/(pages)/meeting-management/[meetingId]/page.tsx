@@ -74,6 +74,8 @@ export default function MeetingDetail() {
         },
     });
 
+    const isMeetingActive = form.watch('infomation.isActive');
+
     {/*====================================== Update order ======================================*/ }
 
     const handleUpdateOrderToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -162,7 +164,9 @@ export default function MeetingDetail() {
                     append({
                         scriptId: null,
                         question: script.question,
+                        questionExplain: script.questionExplain,
                         answer: script.answer,
+                        answerExplain: script.answerExplain,
                         scriptOrder: 0
                     });
                 });
@@ -177,14 +181,22 @@ export default function MeetingDetail() {
         append({
             scriptId: null,
             question: "",
+            questionExplain: "",
             answer: "",
+            answerExplain: "",
             scriptOrder: 0
         });
     };
 
     const handleDelete = (index: number) => {
-        const selectedQuestion = form.getValues().scripts[index];
+        const status = form.getValues().infomation.isActive
 
+        if (status) {
+            toast.error(`Bạn không thể cập nhật nội dung của cuộc hội thoại đang hoạt động`)
+            return
+        }
+
+        const selectedQuestion = form.getValues().scripts[index];
         remove(index);
 
         if (selectedQuestion.scriptId) {
@@ -286,7 +298,9 @@ export default function MeetingDetail() {
                             session?.user.token as string,
                             intialMeeting?.meetingId as number,
                             script.question,
-                            script.answer
+                            script.questionExplain,
+                            script.answer,
+                            script.answerExplain
                         );
                     }
                 } catch (error) {
@@ -301,7 +315,9 @@ export default function MeetingDetail() {
                                 session?.user.token as string,
                                 script.scriptId,
                                 script.question,
-                                script.answer
+                                script.questionExplain,
+                                script.answer,
+                                script.answerExplain
                             );
 
                             if (updateResponse.success === false) {
@@ -402,6 +418,7 @@ export default function MeetingDetail() {
                                 render={({ field }) => (
                                     <FormItem>
                                         <Select
+                                            disabled={isSaving}
                                             onValueChange={(value) => field.onChange(value === 'true')}
                                             value={field.value !== undefined ? String(field.value) : ''}>
                                             <FormControl>
@@ -439,7 +456,7 @@ export default function MeetingDetail() {
                                     <FormItem>
                                         <FormLabel>Tên hội thoại</FormLabel>
                                         <FormControl>
-                                            <Input placeholder="Tên cuộc hội thoại" {...field} />
+                                            <Input disabled={isSaving || isMeetingActive} placeholder="Tên cuộc hội thoại" {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -453,6 +470,7 @@ export default function MeetingDetail() {
                                         <FormLabel>Mô tả</FormLabel>
                                         <FormControl>
                                             <Textarea
+                                                disabled={isSaving || isMeetingActive}
                                                 placeholder="Thêm 1 mô tả"
                                                 className="resize-none"
                                                 {...field}
@@ -471,6 +489,7 @@ export default function MeetingDetail() {
                                     <FormItem>
                                         <FormLabel>Giọng đọc</FormLabel>
                                         <Select
+                                            disabled={isSaving || isMeetingActive}
                                             onValueChange={(value) => {
                                                 field.onChange(value);
                                                 const selected = voices.find(voice => voice.name === value);
@@ -500,7 +519,7 @@ export default function MeetingDetail() {
                     <Separator />
                     <h1 className="text-4xl font-bold">Nội dung hội thoại ({fields.length})</h1>
                     <div className='w-full flex flex-row justify-between items-center'>
-                        <ImportCSVPopup type="script" />
+                        {!isMeetingActive && <ImportCSVPopup type="script" />}
                         <div className='flex flex-row space-x-2'>
                             {isEditingOrder
                                 ?
@@ -524,7 +543,7 @@ export default function MeetingDetail() {
                                         Lưu thứ tự
                                     </Button>
                                 </>
-                                : <Button
+                                : !isMeetingActive ? <Button
                                     className="hover:scale-105 transition-all duration-100 font-medium text-lg"
                                     disabled={isSaving}
                                     type="button"
@@ -532,7 +551,7 @@ export default function MeetingDetail() {
                                     onClick={handleUpdateOrderToggle}
                                 >
                                     Thay đổi thứ tự <ArrowUpDown />
-                                </Button>
+                                </Button> : <></>
                             }
                         </div>
                     </div>
@@ -556,6 +575,7 @@ export default function MeetingDetail() {
                                 ${getBorderClass(field)}`}
                                 >
                                     <ScriptsInForm
+                                        isMeetingActive={isMeetingActive}
                                         field={field}
                                         index={index}
                                         isSaving={isSaving}
@@ -570,11 +590,13 @@ export default function MeetingDetail() {
                         && <EmptyStateComponent
                             imgageUrl="https://allpromoted.co.uk/image/no-data.svg"
                             message="Cuộc hội thoại này chưa có nội dung nào" size={400} />}
-                    <button type="button" onClick={handleInsertNew} className="w-full flex h-[70px] justify-center items-center rounded-lg shadow-md border-[1px] hover:scale-95 duration-100 transition-all ease-in-out">
-                        <div className="flex space-x-4">
-                            <Plus /> <span className="font-medium">Thêm mới</span>
-                        </div>
-                    </button>
+                    {!isMeetingActive &&
+                        <button type="button" onClick={handleInsertNew} className="w-full flex h-[70px] justify-center items-center rounded-lg shadow-md border-[1px] hover:scale-95 duration-100 transition-all ease-in-out">
+                            <div className="flex space-x-4">
+                                <Plus /> <span className="font-medium">Thêm mới</span>
+                            </div>
+                        </button>
+                    }
                 </form>
             </Form>
         </div>

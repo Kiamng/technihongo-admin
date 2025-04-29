@@ -65,7 +65,7 @@ const QuizEditForm = ({ quiz, token, difficultyLevels, loading }: QuizEditFormPr
                         <FormItem>
                             <FormLabel>Tên bài kiểm tra:</FormLabel>
                             <FormControl>
-                                <Input disabled={isPending} placeholder="Tên bài kiểm tra" {...field} />
+                                <Input disabled={isPending || quiz.public} placeholder="Tên bài kiểm tra" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -75,7 +75,7 @@ const QuizEditForm = ({ quiz, token, difficultyLevels, loading }: QuizEditFormPr
                             <FormLabel>Mô tả:</FormLabel>
                             <FormControl>
                                 <Textarea
-                                    disabled={isPending}
+                                    disabled={isPending || quiz.public}
                                     placeholder="Mô tả" {...field} />
                             </FormControl>
                             <FormMessage />
@@ -85,7 +85,7 @@ const QuizEditForm = ({ quiz, token, difficultyLevels, loading }: QuizEditFormPr
                         <FormItem>
                             <FormLabel>Độ khó:</FormLabel>
                             <Select
-                                disabled={isPending || loading}
+                                disabled={isPending || loading || quiz.public}
                                 value={field.value?.toString()}
                                 onValueChange={(value) => field.onChange(Number(value))}>
                                 <FormControl>
@@ -113,7 +113,7 @@ const QuizEditForm = ({ quiz, token, difficultyLevels, loading }: QuizEditFormPr
                                 <FormControl>
                                     <Input
                                         className="w-full"
-                                        disabled={isPending}
+                                        disabled={isPending || quiz.public}
                                         placeholder="Nhập điểm" {...field} />
                                 </FormControl>
                                 <FormMessage />
@@ -125,7 +125,7 @@ const QuizEditForm = ({ quiz, token, difficultyLevels, loading }: QuizEditFormPr
                                 <FormControl>
                                     <Input
                                         className="w-full"
-                                        disabled={isPending}
+                                        disabled={isPending || quiz.public}
                                         placeholder="Giới hạn" {...field} />
                                 </FormControl>
                                 <FormMessage />
@@ -133,7 +133,7 @@ const QuizEditForm = ({ quiz, token, difficultyLevels, loading }: QuizEditFormPr
                         )} />
                     </div>
                     <div className="w-full flex justify-end">
-                        <Button disabled={isPending} type="submit">
+                        <Button disabled={isPending || quiz.public} type="submit">
                             {isPending
                                 ? <><LoaderCircle className="animate-spin" /> Đang lưu ...</>
                                 : "Lưu thay đổi"}

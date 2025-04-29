@@ -83,7 +83,7 @@ const EditFlashcardSetPage = () => {
                 <FlashcardList FlashcardList={flashcardSet.flashcards} />
             }
             {flashcardSet &&
-                <FlashcardsFormRender fetchSet={fetchSet} initialData={flashcardSet?.flashcards} token={session?.user.token as string} flashcardSetId={parseInt(flashcardSetId as string, 10)} />
+                <FlashcardsFormRender isPublic={flashcardSet.isPublic} fetchSet={fetchSet} initialData={flashcardSet?.flashcards} token={session?.user.token as string} flashcardSetId={parseInt(flashcardSetId as string, 10)} />
             }
         </div>
     )

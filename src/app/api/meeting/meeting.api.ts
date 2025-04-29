@@ -126,12 +126,14 @@ export const updateMeeting = async (token: string, meeting : number, title : str
   return response.data
 }
 
-export const createScript = async (token: string, meetingId : number, question : string, answer : string) => {
+export const createScript = async (token: string, meetingId : number, question : string, questionExplain: string, answer : string, answerExplain: string) => {
   const response = await axiosClient.post(`${ENDPOINT.CREATE_SCRIPT}`,
     {
       meetingId : meetingId,
       question : question,
-      answer : answer
+      questionExplain: questionExplain,
+      answer : answer,
+      answerExplain: answerExplain
     },
     {
       headers: {
@@ -142,11 +144,13 @@ export const createScript = async (token: string, meetingId : number, question :
   return response.data
 }
 
-export const updateScript = async (token: string, scripId : number, question : string, answer : string) => {
+export const updateScript = async (token: string, scripId : number, question : string, questionExplain: string,  answer : string, answerExplain: string) => {
   const response = await axiosClient.patch(`${ENDPOINT.UPDATE_SCRIPT}/${scripId}`,
     {
       question : question,
-      answer : answer
+      questionExplain: questionExplain,
+      answer : answer,
+      answerExplain: answerExplain
     },
     {
       headers: {

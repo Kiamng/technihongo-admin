@@ -63,7 +63,7 @@ const SetUpdateForm = ({ flashcardSet, token, isLoading, flashcardSetId }: SetUp
                         <FormItem>
                             <FormLabel>Tên flashcard:</FormLabel>
                             <FormControl>
-                                <Input disabled={isPending || isLoading} placeholder="Tên flashcard" {...field} />
+                                <Input disabled={isPending || isLoading || flashcardSet.isPublic} placeholder="Tên flashcard" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -73,7 +73,7 @@ const SetUpdateForm = ({ flashcardSet, token, isLoading, flashcardSetId }: SetUp
                             <FormLabel>Mô tả:</FormLabel>
                             <FormControl>
                                 <Textarea
-                                    disabled={isPending || isLoading}
+                                    disabled={isPending || isLoading || flashcardSet.isPublic}
                                     placeholder="Mô tả" {...field} />
                             </FormControl>
                             <FormMessage />
@@ -91,7 +91,7 @@ const SetUpdateForm = ({ flashcardSet, token, isLoading, flashcardSetId }: SetUp
                         </FormItem>
                     )} />
                     <div className="w-full flex justify-end">
-                        <Button disabled={isPending} type="submit">
+                        <Button disabled={isPending || flashcardSet.isPublic} type="submit">
                             {isPending
                                 ? <><LoaderCircle className="animate-spin" /> Đang lưu ...</>
                                 : "Lưu thay đổi"}

@@ -13,6 +13,7 @@ interface UploadWithPreviewProps {
     previewUrl: string | null;
     setPreviewUrl: (url: string | null) => void;
     onClear: () => void;
+    isPublic: boolean
 }
 
 export default function UploadWithPreview({
@@ -23,6 +24,7 @@ export default function UploadWithPreview({
     previewUrl,
     setPreviewUrl,
     onClear,
+    isPublic,
 }: UploadWithPreviewProps) {
     const [fileName, setFileName] = useState<string>("");
     const MAX_VIDEO_SIZE = 524_288_000; // 500MB
@@ -92,13 +94,13 @@ export default function UploadWithPreview({
                     accept={accept}
                     hidden
                     onChange={handleChange}
-                    disabled={disabled}
+                    disabled={disabled || isPublic}
                 />
-                <Button type="button" size="sm" onClick={handleClickUpload} disabled={disabled}>
+                <Button type="button" size="sm" onClick={handleClickUpload} disabled={disabled || isPublic}>
                     Chọn {label}
                 </Button>
                 {previewUrl && (
-                    <Button disabled={disabled} type="button" variant="destructive" size="sm" onClick={handleClear}>
+                    <Button disabled={disabled || isPublic} type="button" variant="destructive" size="sm" onClick={handleClear}>
                         Xóa {label}
                     </Button>
                 )}

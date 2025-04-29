@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useState, useTransition } from "react";
-import { ChevronDown, ChevronRight, LoaderCircle, Plus, SquarePen } from "lucide-react";
+import { ChevronDown, ChevronRight, LoaderCircle, Plus, SquarePen, Trash } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -13,6 +13,8 @@ import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea
 import { updateLessonResourceOrder } from "@/app/api/lesson-resource/lesson-resource.api";
 import { toast } from "sonner";
 import AddExistingLessonResourcePopup from "../lesson-resource/add-existing-lesson-resource-popup";
+import DeleteLessonAlert from "./delete-alert";
+import { deleteLesson } from "@/app/api/lesson/lesson.api";
 
 interface LessonItemProps {
     lesson: Lesson;
@@ -43,6 +45,8 @@ const LessonItem = ({
     studyPlanId,
     defaultStudyPlanId
 }: LessonItemProps) => {
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [selectedDeleteLessonId, setSelectedDeleteLessonId] = useState<number | null>(null);
     const [selectedLesson, setSelectedLesson] = useState<{ lessonId: number; title: string } | null>(null);
     const [openCreateResourceForm, setOpenCreateResourceForm] = useState(false);
     const [openAddResourceForm, setOpenAddResourceForm] = useState(false);
@@ -82,6 +86,21 @@ const LessonItem = ({
         setIsOrderUpdated(true);
     };
 
+    const handleDeleteLesson = async (lessonId: number) => {
+        try {
+            setIsDeleting(true);
+            await deleteLesson(token, lessonId);
+            toast.success("Xóa bài học thành công!");
+            setSelectedDeleteLessonId(null);
+            fetchLessons();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+            toast.error(error.response.data.message);
+        } finally {
+            setIsDeleting(false);
+        }
+    }
+
     return (
         <div className="lesson bg-white rounded-2xl space-y-4 px-5 py-4">
             <div className="w-full flex flex-row justify-between items-center">
@@ -112,6 +131,22 @@ const LessonItem = ({
                             />
                         </DialogContent>
                     </Dialog>
+
+                    <Button
+                        size={"icon"}
+                        variant={"ghost"}
+                        onClick={() => setSelectedDeleteLessonId(lesson.lessonId)}
+                    >
+                        <Trash />
+                    </Button>
+
+                    {<DeleteLessonAlert
+                        disable={isDeleting}
+                        onOpen={selectedDeleteLessonId === lesson.lessonId}
+                        onClose={() => setSelectedDeleteLessonId(null)}
+                        lessonId={lesson.lessonId}
+                        onConfirmDelete={handleDeleteLesson}
+                    />}
 
                     {/* Toggle lesson resource */}
                     <Button

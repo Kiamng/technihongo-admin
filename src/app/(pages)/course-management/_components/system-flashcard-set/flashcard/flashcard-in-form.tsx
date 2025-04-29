@@ -6,6 +6,7 @@ import { FieldValues } from "react-hook-form";
 
 
 interface FlashcardInFormProps {
+    isPublic: boolean
     field: FieldValues,
     index: number,
     isSaving: boolean,
@@ -15,7 +16,7 @@ interface FlashcardInFormProps {
     handleImageSelect: (index: number, file: File) => void,
 }
 
-const FlashcardInFormRender = ({ field, index, isSaving, addChangedFlashcard, handleDelete, handleDeleteImage, handleImageSelect }: FlashcardInFormProps) => {
+const FlashcardInFormRender = ({ isPublic, field, index, isSaving, addChangedFlashcard, handleDelete, handleDeleteImage, handleImageSelect }: FlashcardInFormProps) => {
     return (
         <>
             <div className="flex justify-between">
@@ -31,7 +32,7 @@ const FlashcardInFormRender = ({ field, index, isSaving, addChangedFlashcard, ha
                         <FormLabel>Từ vựng</FormLabel>
                         <FormControl>
                             <Textarea  {...field}
-                                disabled={isSaving}
+                                disabled={isSaving || isPublic}
                                 placeholder="Enter question text"
                                 className="resize-none w-full white-space: pre-line"
                                 onChange={(e) => {
@@ -48,7 +49,7 @@ const FlashcardInFormRender = ({ field, index, isSaving, addChangedFlashcard, ha
                         <FormLabel>Định nghĩa</FormLabel>
                         <FormControl>
                             <Textarea  {...field}
-                                disabled={isSaving}
+                                disabled={isSaving || isPublic}
                                 placeholder="Enter explanation"
                                 className="resize-none w-full white-space: pre-line "
                                 onChange={(e) => {
@@ -62,6 +63,7 @@ const FlashcardInFormRender = ({ field, index, isSaving, addChangedFlashcard, ha
                 {!field.imageUrl ? (
                     <>
                         <input
+                            disabled={isSaving || isPublic}
                             type="file"
                             accept="image/*"
                             id={`upload-${index}`}
@@ -92,7 +94,7 @@ const FlashcardInFormRender = ({ field, index, isSaving, addChangedFlashcard, ha
                         }}
                     >
                         <button
-                            disabled={isSaving}
+                            disabled={isSaving || isPublic}
                             type="button"
                             onClick={() => handleDeleteImage(index)}
                             className={`bg-slate-700 text-white hover:bg-red-500 p-1 h-fit ${!isSaving ? "hover:cursor-not-allowed" : "hover:cursor-pointer hover:scale-105 duration-100"}`}

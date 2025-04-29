@@ -5,7 +5,8 @@ const ENDPOINT = {
     GET_LESSON_BY_STUDY_PLAN_ID : '/lesson/study-plan/paginated',
     CREATE_LESSON: '/lesson/create',
     UPDATE_LESSON: 'lesson/update',
-    UPDATE_LESSON_ORDER : '/lesson/set-order'
+    UPDATE_LESSON_ORDER : '/lesson/set-order',
+    DELETE_LESSON: '/lesson/delete'
 };
 
 export const getLessonsByStudyPlanId= async ({
@@ -70,6 +71,17 @@ export const updateLesson = async (token : string ,title : string, lessonId : nu
 
 export const updateLessonOrder = async (token : string , studyPlanId : number, lessonId : number, newOrder : number,) => {
   const response = await axiosClient.patch(`${ENDPOINT.UPDATE_LESSON_ORDER}/${studyPlanId}?lessonId=${lessonId}&newOrder=${newOrder}`,
+    {
+      headers: {
+      Authorization: `Bearer ${token}`
+    }
+    }
+  )
+  return response.data
+}
+
+export const deleteLesson = async (token : string , lessonId : number) => {
+  const response = await axiosClient.delete(`${ENDPOINT.DELETE_LESSON}/${lessonId}`,
     {
       headers: {
       Authorization: `Bearer ${token}`

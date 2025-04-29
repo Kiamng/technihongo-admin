@@ -14,9 +14,10 @@ interface OptionRenderProps {
     addChangedQuestion: (index: number) => void;
     isSaving: boolean;
     hasAttempt: boolean;
+    isPublic: boolean;
 }
 
-const OptionRender = ({ field, index, handleOptionClick, addChangedQuestion, isSaving, hasAttempt }: OptionRenderProps) => {
+const OptionRender = ({ field, index, handleOptionClick, addChangedQuestion, isSaving, hasAttempt, isPublic }: OptionRenderProps) => {
     const [options, setOptions] = useState<OptionType[]>(field.options || []);
 
     useEffect(() => {
@@ -54,7 +55,7 @@ const OptionRender = ({ field, index, handleOptionClick, addChangedQuestion, isS
                                 <FormItem className="w-full">
                                     <FormControl>
                                         <Textarea
-                                            disabled={isSaving || hasAttempt}
+                                            disabled={isSaving || hasAttempt || isPublic}
                                             {...field}
                                             className="resize-none w-full white-space: pre-line"
                                             placeholder="Nhập nội dung đáp án"
@@ -70,7 +71,7 @@ const OptionRender = ({ field, index, handleOptionClick, addChangedQuestion, isS
                         />
                         <button
                             type="button"
-                            disabled={isSaving}
+                            disabled={isSaving || isPublic}
                             onClick={() => {
                                 handleOptionToggle(optionIndex);
                                 handleOptionClick(index, optionIndex);
