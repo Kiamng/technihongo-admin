@@ -80,7 +80,7 @@ const CreateLessonResourcePopup = ({ lesson, closeForm, token, defaultStudyPlanI
                     draftData = {
                         title: "Draft quiz",
                         description: "This is a draft quiz",
-                        difficultyLevelId: 1,
+                        difficultyLevelId: lesson.studyPlan.course.difficultyLevel.levelId,
                         passingScore: 0.5,
                         timeLimit: 10,
                         isPremium: lesson.studyPlan.course.premium

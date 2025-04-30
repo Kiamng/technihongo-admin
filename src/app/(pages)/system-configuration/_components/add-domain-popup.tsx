@@ -56,12 +56,13 @@ const DomainFormPopup: React.FC<DomainFormPopupProps> = ({ initialData, setIsDia
             tag: initialData?.tag ?? "",
             name: initialData?.name ?? "",
             description: initialData?.description ?? "",
-            parentDomainId: getDefaultParentDomainId(),
+            parentDomainId: getDefaultParentDomainId() ?? null,
             isActive: initialData?.isActive ?? false,
         },
     });
 
     const onSubmitForm = async (values: z.infer<typeof addDomainSchema>) => {
+
         startTransition(async () => {
             try {
                 let response;

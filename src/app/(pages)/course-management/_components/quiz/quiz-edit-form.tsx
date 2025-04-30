@@ -47,12 +47,13 @@ const QuizEditForm = ({ quiz, token, difficultyLevels, loading }: QuizEditFormPr
             try {
                 const response = await updateQuiz(token, quiz.quizId, values)
                 if (response.success === true) {
-                    toast.success("Saved learning resource successfully!!");
+                    toast.success("Cập nhật thông tin bài kiểm tra thành công!!");
                 } else {
                     toast.error(response.message);
                 }
-            } catch (error) {
-                console.error("Error creating course:", error);
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            } catch (error: any) {
+                toast.error(error.response.data.message)
             }
         })
     }

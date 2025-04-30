@@ -8,6 +8,7 @@ import { getAllLearningPaths } from "@/app/api/learning-path/learning-path.api";
 import { columns } from "./_components/columns";
 import AddLearningPathPopup from "./_components/addlearning-path";
 import { Separator } from "@/components/ui/separator";
+import EmptyStateComponent from "@/components/empty-state";
 
 export default function LearningPathManagementPage() {
   const { data: session } = useSession();
@@ -47,13 +48,21 @@ export default function LearningPathManagementPage() {
       </div>
       <Separator />
       <div className="space-y-6">
-        <div className="font-medium">Tổng cộng: {learningPaths.length}</div>
-        <DataTable
-          columns={columns(handleUpdate)}
-          searchKey="title"
-          data={learningPaths}
-          isLoading={loading}
-        />
+        <div className="font-medium">Tổng cộng: {learningPaths ? learningPaths.length : 0}</div>
+        {learningPaths ?
+          <DataTable
+            columns={columns(handleUpdate)}
+            searchKey="title"
+            data={learningPaths}
+            isLoading={loading}
+          />
+          :
+          <EmptyStateComponent
+            message={"Không tìm thấy lộ trình học tập nào"}
+            size={400}
+            imgageUrl="https://cdni.iconscout.com/illustration/premium/thumb/no-information-found-illustration-download-in-svg-png-gif-file-formats--zoom-logo-document-user-interface-result-pack-illustrations-8944779.png?f=webp" />
+        }
+
       </div>
     </div>
   );

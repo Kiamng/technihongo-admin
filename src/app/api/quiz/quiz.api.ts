@@ -46,7 +46,8 @@ export const updateQuiz = async (token: string, quizId : number, values:z.infer<
             title: values.title,
             description : values.description,
             difficultyLevelId : values.difficultyLevelId,
-            passingScore : values.passingScore
+            passingScore : values.passingScore,
+            timeLimit : values.timeLimit
         },
         {
             headers: {

@@ -42,7 +42,7 @@ export const addDomain = async (token :string, values: z.infer<typeof addDomainS
         const response = await axiosClient.post(ENDPOINT.ADDDOMAIN, {
             name: values.name,
             tag: values.tag,
-            parentDomainId: Number(values.parentDomainId) ,
+            parentDomainId: values.parentDomainId,
             description: values.description,
             isActive: false,
         },

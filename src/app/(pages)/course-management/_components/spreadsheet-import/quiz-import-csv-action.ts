@@ -18,6 +18,7 @@ interface Option {
 
 interface CSVRow {
   'Question Text': string;
+  'Explanation': string;
   'Answer 1': string;
   'Answer 2': string;
   'Answer 3': string;
@@ -31,6 +32,7 @@ export const handleFileUpload = (file: File): Promise<Question[]> => {
       complete: (result) => {
         const questions: Question[] = (result.data as CSVRow[]).map((row) => {
           const questionText = row['Question Text'];
+          const explanation =row['Explanation'];
           const answers = [
             row['Answer 1'],
             row['Answer 2'],
@@ -53,7 +55,7 @@ export const handleFileUpload = (file: File): Promise<Question[]> => {
             quizQuestionId: null,
             questionId: null,
             questionText,
-            explanation: '',
+            explanation,
             url: '',
             initialIndex: null,
             questionType,

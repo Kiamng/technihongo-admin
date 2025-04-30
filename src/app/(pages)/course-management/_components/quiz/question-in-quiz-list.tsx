@@ -445,7 +445,7 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
                             <span className="text-lg font-bold ">
                                 Số câu hỏi ({isQuizQuestionsLoading ? "..." : newQuestionOrder.length})
                             </span>
-                            {!quiz.hasAttempt && <ImportCSVPopup type="quiz" />}
+                            {!quiz.hasAttempt && !quiz.public && <ImportCSVPopup type="quiz" />}
                         </div>
                         {quiz.hasAttempt
                             ? (<div className="px-3 py-2 bg-orange-400 text-white font-medium text-base rounded-lg">
@@ -453,7 +453,7 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
                             </div>
                             )
                             : (
-                                form.getValues().questions.length > 0 || !quiz.public &&
+                                form.getValues().questions.length > 0 && !quiz.public &&
                                 <FormAction
                                     isEditingOrder={isEditingOrder}
                                     handleCancelUpdateOrder={handleCancelUpdateOrder}
@@ -483,7 +483,7 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
                                     >
                                         <div className="flex justify-between">
                                             <div className="text-lg font-semibold text-slate-500">{index + 1}</div>
-                                            {!quiz.hasAttempt || !quiz.public &&
+                                            {!quiz.hasAttempt && !quiz.public &&
                                                 <button disabled={isSaving} type="button" onClick={() => handleDelete(index)} className="text-red-400 hover:text-red-500 duration-100 hover:scale-125">
                                                     <Trash2 />
                                                 </button>
@@ -513,8 +513,8 @@ const QuestionInQuizList = ({ initialData, isQuizQuestionsLoading, quiz, fetchQu
                             )}
                     </div>
                     {fields.length === 0 && <EmptyStateComponent imgageUrl="https://allpromoted.co.uk/image/no-data.svg" message="Bài kiểm tra này chưa có câu hỏi nào" size={400} />}
-                    {!quiz.hasAttempt || !quiz.public &&
-                        <button type="button" onClick={handleInsertNew} className="w-full flex h-[70px] justify-center items-center rounded-lg shadow-md border-[1px] hover:scale-95 duration-100 transition-all ease-in-out">
+                    {(!quiz.hasAttempt && !quiz.public) &&
+                        <button disabled={quiz.public} type="button" onClick={handleInsertNew} className="w-full flex h-[70px] justify-center items-center rounded-lg shadow-md border-[1px] hover:scale-95 duration-100 transition-all ease-in-out">
                             <div className="flex space-x-4">
                                 <Plus /> <span className="font-medium">Thêm mới</span>
                             </div>
