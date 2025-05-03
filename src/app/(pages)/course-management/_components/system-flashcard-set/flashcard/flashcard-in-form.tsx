@@ -99,7 +99,7 @@ const FlashcardInFormRender = ({ isPublic, field, index, isSaving, addChangedFla
                             onClick={() => handleDeleteImage(index)}
                             className={`bg-slate-700 text-white hover:bg-red-500 p-1 h-fit ${!isSaving ? "hover:cursor-not-allowed" : "hover:cursor-pointer hover:scale-105 duration-100"}`}
                         >
-                            <Trash size={16} />
+                            {!isPublic && <Trash size={16} />}
                         </button>
                     </div>
                 )}
