@@ -29,6 +29,7 @@ interface LessonItemProps {
     setLessonResources: Dispatch<SetStateAction<Record<number, LessonResource[]>>>;
     studyPlanId: number
     defaultStudyPlanId: number
+    isActive: boolean
 }
 
 const LessonItem = ({
@@ -43,7 +44,8 @@ const LessonItem = ({
     updateLessonResources,
     setLessonResources,
     studyPlanId,
-    defaultStudyPlanId
+    defaultStudyPlanId,
+    isActive
 }: LessonItemProps) => {
     const [isDeleting, setIsDeleting] = useState(false);
     const [selectedDeleteLessonId, setSelectedDeleteLessonId] = useState<number | null>(null);
@@ -110,36 +112,38 @@ const LessonItem = ({
                 </div>
                 <div className="flex flex-row space-x-4">
                     {/* Nút Edit */}
-                    <Dialog open={selectedLesson?.lessonId === lesson.lessonId} onOpenChange={(isOpen) => {
-                        if (!isOpen) setSelectedLesson(null);
-                    }}>
-                        <DialogTrigger
-                            className="flex items-center gap-2 py-2 px-2 bg-primary rounded-lg hover:bg-primary/90 text-white"
-                            onClick={() => setSelectedLesson({ lessonId: lesson.lessonId, title: lesson.title })}
-                        >
-                            <SquarePen size={18} />
-                        </DialogTrigger>
-                        <DialogContent width='400px'>
-                            <LessonPopupForm
-                                initialData={lesson.title}
-                                setIsDialogOpen={() => setSelectedLesson(null)}
-                                fetchLessons={fetchLessons}
-                                studyPlanId={studyPlanId}
-                                lessonId={lesson.lessonId}
-                                initialOrder={lesson.lessonOrder}
-                                token={token}
-                            />
-                        </DialogContent>
-                    </Dialog>
+                    {!isActive &&
+                        <>
+                            <Dialog open={selectedLesson?.lessonId === lesson.lessonId} onOpenChange={(isOpen) => {
+                                if (!isOpen) setSelectedLesson(null);
+                            }}>
+                                <DialogTrigger
+                                    className="flex items-center gap-2 py-2 px-2 bg-primary rounded-lg hover:bg-primary/90 text-white"
+                                    onClick={() => setSelectedLesson({ lessonId: lesson.lessonId, title: lesson.title })}
+                                >
+                                    <SquarePen size={18} />
+                                </DialogTrigger>
+                                <DialogContent width='400px'>
+                                    <LessonPopupForm
+                                        initialData={lesson.title}
+                                        setIsDialogOpen={() => setSelectedLesson(null)}
+                                        fetchLessons={fetchLessons}
+                                        studyPlanId={studyPlanId}
+                                        lessonId={lesson.lessonId}
+                                        initialOrder={lesson.lessonOrder}
+                                        token={token}
+                                    />
+                                </DialogContent>
+                            </Dialog>
 
-                    <Button
-                        size={"icon"}
-                        variant={"ghost"}
-                        onClick={() => setSelectedDeleteLessonId(lesson.lessonId)}
-                    >
-                        <Trash />
-                    </Button>
-
+                            <Button
+                                size={"icon"}
+                                variant={"ghost"}
+                                onClick={() => setSelectedDeleteLessonId(lesson.lessonId)}
+                            >
+                                <Trash />
+                            </Button>
+                        </>}
                     {<DeleteLessonAlert
                         disable={isDeleting}
                         onOpen={selectedDeleteLessonId === lesson.lessonId}
@@ -206,6 +210,7 @@ const LessonItem = ({
                                                                     key={resource.lessonResourceId}
                                                                     lessonResource={resource}
                                                                     token={token}
+                                                                    isActive={isActive}
                                                                 />
                                                             </div>
                                                         )}
@@ -223,21 +228,23 @@ const LessonItem = ({
                     )}
                     <Separator />
                     {isDefaultStudyPlan
-                        ? <Dialog open={openCreateResourceForm} onOpenChange={setOpenCreateResourceForm}>
-                            <DialogTrigger className="mx-auto flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90">
-                                <Plus size={18} />
-                                Tạo mới một tài nguyên
-                            </DialogTrigger>
-                            <DialogContent width='500px'>
-                                <CreateLessonResourcePopup
-                                    defaultStudyPlanId={defaultStudyPlanId}
-                                    lesson={lesson}
-                                    closeForm={setOpenCreateResourceForm}
-                                    token={token}
-                                />
-                            </DialogContent>
-                        </Dialog>
-                        : <Dialog open={openAddResourceForm} onOpenChange={setOpenAddResourceForm}>
+                        ? (!isActive &&
+                            <Dialog open={openCreateResourceForm} onOpenChange={setOpenCreateResourceForm}>
+                                <DialogTrigger className="mx-auto flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90">
+                                    <Plus size={18} />
+                                    Tạo mới một tài nguyên
+                                </DialogTrigger>
+                                <DialogContent width='500px'>
+                                    <CreateLessonResourcePopup
+                                        defaultStudyPlanId={defaultStudyPlanId}
+                                        lesson={lesson}
+                                        closeForm={setOpenCreateResourceForm}
+                                        token={token}
+                                    />
+                                </DialogContent>
+                            </Dialog>
+                        )
+                        : (!isActive && <Dialog open={openAddResourceForm} onOpenChange={setOpenAddResourceForm}>
                             <DialogTrigger className="mx-auto flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90">
                                 <Plus size={18} />
                                 Thêm tài nguyên có sẵn
@@ -252,6 +259,7 @@ const LessonItem = ({
                                 />
                             </DialogContent>
                         </Dialog>
+                        )
                     }
                 </div>
             )}

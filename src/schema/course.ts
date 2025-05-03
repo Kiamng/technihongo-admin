@@ -24,5 +24,4 @@ export const updateCourseSchema = z.object({
   ]),
   estimatedDuration: z.string().min(1, "Hãy nhập thời gian học ước tính"),
   isPremium : z.boolean(),
-  isPublic : z.boolean()
 });

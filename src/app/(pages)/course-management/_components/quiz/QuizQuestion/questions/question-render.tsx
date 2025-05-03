@@ -53,7 +53,7 @@ const QuestionRender = ({ field, index, addChangedQuestion, handleDeleteImage, i
                 </FormItem>
             )} />
             {!field.url ?
-                (!hasAttempt || !isPublic &&
+                (!hasAttempt && !isPublic &&
                     <QuestionImageUpload isSaving={isSaving} handleImageSelect={handleImageSelect} index={index} />
                 )
                 :
@@ -66,7 +66,7 @@ const QuestionRender = ({ field, index, addChangedQuestion, handleDeleteImage, i
                         backgroundPosition: "center"
                     }}
                 >
-                    {!hasAttempt &&
+                    {!hasAttempt && !isPublic &&
                         <button disabled={isSaving || isPublic} type="button" onClick={() => handleDeleteImage(index)} className={`bg-slate-700 text-white hover:bg-red-500 p-1 h-fit ${isSaving ? "hover:cursor-not-allowed" : "hover:cursor-pointer hover:scale-105 duration-100"}`}>
                             <Trash size={16} />
                         </button>

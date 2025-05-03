@@ -12,5 +12,4 @@ export const StudyPlanSchema = z.object({
       message: 'Thời gian không thể là số 0 '
     }),
     isDefault : z.boolean().optional(),
-    isActive : z.boolean().optional()
 })

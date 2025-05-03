@@ -83,7 +83,7 @@ const QuizEditForm = ({ quiz, token, difficultyLevels, loading }: QuizEditFormPr
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="difficultyLevelId" render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="hidden">
                             <FormLabel>Độ khó:</FormLabel>
                             <Select
                                 disabled={isPending || loading || quiz.public}

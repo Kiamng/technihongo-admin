@@ -18,13 +18,14 @@ import { Pagination, PaginationContent, PaginationItem } from "@/components/ui/p
 
 
 interface LessonListProps {
+    isActive: boolean
     studyPlanId: number;
     isDefaultStudyPlan: boolean;
     defaultStudyPlanId: number;
     token: string;
 }
 
-const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan, defaultStudyPlanId }: LessonListProps) => {
+const LessonListComponent = ({ isActive, studyPlanId, token, isDefaultStudyPlan, defaultStudyPlanId }: LessonListProps) => {
     const [lessonList, setLessonList] = useState<LessonList>();
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isLoadingLR, setIsLoadingLR] = useState<boolean>(false);
@@ -169,23 +170,24 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan, defaultSt
                 <div className="text-4xl font-bold flex items-center">
                     Số bài học ({isLoading ? <LoaderCircle className="animate-spin" /> : lessonList?.totalElements})
                 </div>
-                <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                    <DialogTrigger className="flex items-center gap-2 py-2 px-4 bg-primary rounded-xl hover:bg-primary/90 text-white">
-                        <CirclePlus />Thêm mới bài học
-                    </DialogTrigger>
-                    <DialogContent width='400px'>
-                        <LessonPopupForm
-                            initialData={null}
-                            setIsDialogOpen={setIsCreateDialogOpen}
-                            fetchLessons={fetchLessons}
-                            studyPlanId={studyPlanId}
-                            lessonId={null}
-                            initialOrder={null}
-                            token={token}
-                        />
-                    </DialogContent>
-                </Dialog>
-
+                {!isActive &&
+                    <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+                        <DialogTrigger className="flex items-center gap-2 py-2 px-4 bg-primary rounded-xl hover:bg-primary/90 text-white">
+                            <CirclePlus />Thêm mới bài học
+                        </DialogTrigger>
+                        <DialogContent width='400px'>
+                            <LessonPopupForm
+                                initialData={null}
+                                setIsDialogOpen={setIsCreateDialogOpen}
+                                fetchLessons={fetchLessons}
+                                studyPlanId={studyPlanId}
+                                lessonId={null}
+                                initialOrder={null}
+                                token={token}
+                            />
+                        </DialogContent>
+                    </Dialog>
+                }
             </div>
             <div className="w-full space-y-5">
                 <div className="flex flex-row space-x-10 items-center">
@@ -222,6 +224,7 @@ const LessonListComponent = ({ studyPlanId, token, isDefaultStudyPlan, defaultSt
                                     setLessonResources={setLessonResources}
                                     studyPlanId={studyPlanId}
                                     defaultStudyPlanId={defaultStudyPlanId}
+                                    isActive={isActive}
                                 />
                             ))
                         ) : (

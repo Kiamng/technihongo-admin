@@ -1,3 +1,5 @@
+import { ImagePlus } from "lucide-react";
+
 interface QuestionImageUploadProps {
     index: number;
     isSaving: boolean;
@@ -22,7 +24,7 @@ const QuestionImageUpload = ({ index, isSaving, handleImageSelect }: QuestionIma
             />
             <label htmlFor={`quiz-image-upload-${index}`}>
                 <div className="border-dashed border-[2px] rounded-lg h-[92px] w-32 flex items-center justify-center text-slate-500 hover:text-green-500 hover:scale-105 duration-100 cursor-pointer">
-                    Upload
+                    <ImagePlus />
                 </div>
             </label>
         </>

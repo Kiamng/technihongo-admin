@@ -8,7 +8,8 @@ const ENDPOINT = {
     GET_STUDYPLAN_BY_ID: '/study-plan',
     CREATE_STUDYPLAN: '/study-plan/create',
     UPDATE_STUDYPLAN: '/study-plan/update',
-    DELETE_STUDYPLAN: '/study-plan/delete'
+    DELETE_STUDYPLAN: '/study-plan/delete',
+    UPDATE_STATUS_STUDYPLAN : '/study-plan/update-status'
 };
 
 export const getStudyPlanByCourseId = async (courseId : number, token : string) :Promise<StudyPlan[]> => {
@@ -55,7 +56,6 @@ export const updateStudyPlan = async (token : string, values: z.infer<typeof Stu
         description : values.description,
         hoursPerDay : values.hoursPerDay,
         isDefault : values.isDefault,
-        isActive : values.isActive
     },
     {
             headers: {
@@ -68,6 +68,20 @@ export const updateStudyPlan = async (token : string, values: z.infer<typeof Stu
 
 export const deleteStudyPlan = async (token : string , studyplanId : number) => {
     const response = await axiosClient.delete(`${ENDPOINT.DELETE_STUDYPLAN}/${studyplanId}`,
+        {
+            headers: {
+            Authorization: `Bearer ${token}`
+            }
+        }
+    )
+    return response.data
+}
+
+export const updateStudyPlanActiveStatus = async (token: string, studyPlanId: number, activeStatus :boolean) => {
+    const response = await axiosClient.patch(`${ENDPOINT.UPDATE_STATUS_STUDYPLAN}/${studyPlanId}`,
+        {
+            isActive: activeStatus
+        },
         {
             headers: {
             Authorization: `Bearer ${token}`

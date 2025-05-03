@@ -8,6 +8,7 @@ const ENDPOINT = {
     CREATE_POST :'/course/create',
     GET_COURSE_BY_ID:'/course',
     PATCH_COURSE:'/course/update',
+    UPDATE_COURSE_PUBLIC_STATUS : '/course/update-status'
 };
 
 // export const getAllCourse = async (token : string) :Promise<Course[]> => {
@@ -99,8 +100,6 @@ export const patchCourse = async (values:z.infer<typeof updateCourseSchema>, tok
     attachmentUrl : "",
     thumbnailUrl : values.thumbnailUrl,
     estimatedDuration : values.estimatedDuration,
-    isPremium : values.isPremium,
-    isPublic : values.isPublic
     },
     {
       headers: {
@@ -110,3 +109,17 @@ export const patchCourse = async (values:z.infer<typeof updateCourseSchema>, tok
   )
   return response.data
 } 
+
+export const updateCoursePublicStatus = async (token: string, courseId: number, activeStatus :boolean) => {
+    const response = await axiosClient.patch(`${ENDPOINT.UPDATE_COURSE_PUBLIC_STATUS}/${courseId}`,
+        {
+            isPublic: activeStatus
+        },
+        {
+            headers: {
+            Authorization: `Bearer ${token}`
+            }
+        }
+    )
+    return response.data
+}

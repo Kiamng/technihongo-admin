@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator";
 
 import { StudyPlan } from "@/types/study-plan";
 
-import { CornerDownLeft, PenLine } from "lucide-react";
+import { CornerDownLeft, LoaderCircle } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -17,6 +17,7 @@ import { useParams } from "next/navigation";
 import Link from "next/link";
 import UpdateStudyPlanForm from "@/app/(pages)/course-management/_components/study-plan/update-study-plan-form";
 import LessonListComponent from "@/app/(pages)/course-management/_components/lesson/lesson-list";
+import StudyPlanActiveStatusUpdate from "@/app/(pages)/course-management/_components/study-plan/study-plan-status-update";
 
 function StudPlanDetailPage() {
     const { defaultStudyPlanId, studyPlanId } = useParams();
@@ -24,7 +25,6 @@ function StudPlanDetailPage() {
     const numericDefaultStudyPlanId = defaultStudyPlanId ? parseInt(defaultStudyPlanId as string, 10) : null;
     const { data: session } = useSession();
 
-    console.log("default plan la:", numericDefaultStudyPlanId);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [studyPlan, setStudyPlan] = useState<StudyPlan>();
 
@@ -87,14 +87,24 @@ function StudPlanDetailPage() {
                 </Button>
             </Link>
             <CustomBreadCrumb data={breadcrumbData} />
-            <div className="text-4xl font-bold flex items-center">{studyPlan?.title} <PenLine size={28} /></div>
+            <div className="w-full flex space-x-4">
+                <div className="text-4xl font-bold flex items-center">{studyPlan?.title}</div>
+                {studyPlan ? (
+                    <StudyPlanActiveStatusUpdate
+                        studyPlan={studyPlan}
+                        setStudyPlan={setStudyPlan}
+                        token={session?.user.token as string} />
+                ) : (
+                    <LoaderCircle className="animate-spin" />
+                )}
+            </div>
             {studyPlan && <div className="w-1/2">
                 <UpdateStudyPlanForm token={session?.user?.token as string} studyPlan={studyPlan} />
             </div>}
             <Separator />
 
             {session?.user?.token && numericStudyPlanId && (
-                <LessonListComponent defaultStudyPlanId={numericDefaultStudyPlanId as number} studyPlanId={numericStudyPlanId} token={session.user.token} isDefaultStudyPlan={studyPlan?.default as boolean} />
+                <LessonListComponent isActive={studyPlan?.active as boolean} defaultStudyPlanId={numericDefaultStudyPlanId as number} studyPlanId={numericStudyPlanId} token={session.user.token} isDefaultStudyPlan={studyPlan?.default as boolean} />
             )}
         </div>
     )

@@ -6,7 +6,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -28,7 +27,6 @@ const UpdateStudyPlanForm = ({ studyPlan, token }: UpdateStudyPlanFormProps) => 
             title: studyPlan.title || "",
             hoursPerDay: studyPlan.hoursPerDay || 0,
             description: studyPlan.description || "",
-            isActive: studyPlan.active || false,
             isDefault: studyPlan.default
         },
     });
@@ -56,52 +54,34 @@ const UpdateStudyPlanForm = ({ studyPlan, token }: UpdateStudyPlanFormProps) => 
                         <FormItem>
                             <FormLabel>Tên</FormLabel>
                             <FormControl>
-                                <Input placeholder="Enter Title" {...field} />
+                                <Input disabled={isPending || studyPlan.active} placeholder="Enter Title" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
-                    <div className="w-full grid grid-cols-2 gap-4">
-                        <FormField control={form.control} name="hoursPerDay" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Thời gian học mỗi ngày (giờ):</FormLabel>
+                    <FormField control={form.control} name="hoursPerDay" render={({ field }) => (
+                        <FormItem>
+                            <div className="w-full flex flex-row space-x-4 items-center">
+                                <FormLabel className="w-full">Thời gian học mỗi ngày (giờ):</FormLabel>
                                 <FormControl>
-                                    <Input type="text" placeholder="1 giờ" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
+                                    <Input disabled={isPending || studyPlan.active} type="text" placeholder="giờ" {...field} onChange={(e) => field.onChange(e.target.value)} />
                                 </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )} />
-                        <FormField control={form.control} name="isActive" render={({ field }) => (
-                            <FormItem className="w-full">
-                                <FormLabel>Trạng thái </FormLabel>
-                                <Select value={field.value?.toString()} onValueChange={(value) => field.onChange(value === "true")}>
-                                    <FormControl>
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Public" />
-                                        </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent >
-                                        <SelectItem value="true"><div className="px-4 py-2 bg-[#56D071] w-fit text-[#56D071] rounded-xl bg-opacity-10">Đang hoạt động</div></SelectItem>
-                                        <SelectItem value="false"><div className="px-4 py-2 bg-[#FD5673] w-fit text-[#FD5673] rounded-xl bg-opacity-10">Không hoạt động</div></SelectItem>
-                                    </SelectContent>
-                                </Select>
-
-                                <FormMessage />
-                            </FormItem>
-                        )} />
-                    </div>
+                            </div>
+                            <FormMessage />
+                        </FormItem>
+                    )} />
                     <FormField control={form.control} name="description" render={({ field }) => (
                         <FormItem>
                             <FormLabel>Mô tả:</FormLabel>
                             <FormControl>
-                                <Textarea {...field} rows={3} />
+                                <Textarea disabled={isPending || studyPlan.active} {...field} rows={3} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )} />
                 </div>
                 <div className="w-full flex justify-end">
-                    <Button disabled={isPending} type="submit">
+                    <Button disabled={isPending || studyPlan.active} type="submit">
                         {isPending ? (
                             <>
                                 <LoaderCircle className="animate-spin" /> Đang cập nhật ...

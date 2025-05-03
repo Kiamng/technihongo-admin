@@ -20,6 +20,7 @@ interface LessonResourceListProps {
     updateLessonResources: (lessonId: number, resourceId: number) => void
     lessonId: number
     token: string
+    isActive: boolean
 }
 
 // Mapping giữa type và thuộc tính tương ứng
@@ -42,7 +43,7 @@ const resourceTypeConfig = {
     }
 };
 
-const LessonResourceItem = ({ lessonResource, studyPlanId, updateLessonResources, lessonId, token }: LessonResourceListProps) => {
+const LessonResourceItem = ({ lessonResource, studyPlanId, updateLessonResources, lessonId, token, isActive }: LessonResourceListProps) => {
     const resource = resourceTypeConfig[lessonResource.type];
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [isPending, startTransition] = useTransition();
@@ -140,7 +141,9 @@ const LessonResourceItem = ({ lessonResource, studyPlanId, updateLessonResources
                     <Link href={editLink(lessonResource, studyPlanId)}>
                         <Button size="icon" variant="ghost"><SquarePen /></Button>
                     </Link >
-                    <Button onClick={handleDeleteClick} size="icon" variant="ghost"><Trash2 /></Button>
+                    {!isActive &&
+                        <Button onClick={handleDeleteClick} size="icon" variant="ghost"><Trash2 /></Button>
+                    }
                 </div >
             </div>
 

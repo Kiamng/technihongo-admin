@@ -18,7 +18,7 @@ import { updateCourseSchema } from "@/schema/course";
 import { Skeleton } from "@/components/ui/skeleton";
 
 import { Button } from "@/components/ui/button";
-import { CornerDownLeft, PenLine, } from "lucide-react";
+import { CornerDownLeft, LoaderCircle } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
 
@@ -30,7 +30,7 @@ import CreateStudyPlanPopUp from "../_components/study-plan/create-study-plan-po
 import EmptyStateComponent from "@/components/empty-state";
 import CustomBreadCrumb from "@/components/bread-cumb";
 import Link from "next/link";
-import axios from "axios";
+import CoursePublicStatusUpdate from "../_components/course/update-course-public-status";
 
 export default function CourseDetailPage() {
     const { courseId } = useParams();
@@ -123,16 +123,12 @@ export default function CourseDetailPage() {
             if (patchResponse.success === true) {
                 toast.success(patchResponse.message);
             }
-        } catch (error: unknown) {
-            if (axios.isAxiosError(error) && error.response) {
-                toast.error(error?.response.data.message);
-            } else {
-                toast.error('Đã có lỗi xảy ra, vui lòng thử lại sau');
-            }
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (error: any) {
+            toast.error(error?.response.data.message);
         } finally {
             setIsPending(false);
         }
-        console.log(values);
     };
 
 
@@ -150,7 +146,15 @@ export default function CourseDetailPage() {
             </Link>
 
             <CustomBreadCrumb data={breadcrumbData} />
-            <div className="text-4xl font-bold flex items-center">{course?.title} <PenLine size={28} /></div>
+            <div className="w-full flex flex-row space-x-4">
+                <div className="text-4xl font-bold items-center">{course?.title}</div>
+                {course
+                    ? <CoursePublicStatusUpdate
+                        course={course}
+                        setCourse={setCourse}
+                        token={session?.user.token as string} />
+                    : <LoaderCircle className="animate-spin" />}
+            </div>
             <CourseUpdateForm token={session?.user.token as string} course={course} onSubmit={handleSubmit} isPending={isPending} />
             <Separator />
             <div className="w-full flex justify-between">
@@ -168,7 +172,12 @@ export default function CourseDetailPage() {
                     </DialogContent>
                 </Dialog>
             </div>
-            {studyPlans ? <StudyPlanList token={session?.user.token as string} fetchStudyPlan={fetchStudyPlan} StudyPlanList={studyPlans} /> : <EmptyStateComponent imgageUrl="https://allpromoted.co.uk/image/no-data.svg" message="Không tìm thấy kế hoạch học tập nào" size={400} />}
+            {studyPlans ?
+                <StudyPlanList
+                    token={session?.user.token as string}
+                    fetchStudyPlan={fetchStudyPlan}
+                    StudyPlanList={studyPlans} />
+                : <EmptyStateComponent imgageUrl="https://allpromoted.co.uk/image/no-data.svg" message="Không tìm thấy kế hoạch học tập nào" size={400} />}
 
         </div>
     )
