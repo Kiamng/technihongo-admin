@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
+// import { getToken } from "next-auth/jwt";
 
 // Các trang public mà không cần đăng nhập
 const publicRoutes = ["/"];
@@ -12,10 +12,11 @@ const authRoutes = ["/dashboard", "/user-management", "/violation-management", "
 const CMRoutes = ["/course-management", "/system-configuration" , "/meeting-management", "/learning-path" , "/difficultylevel-management"];
 
 export default async function middleware(req: NextRequest) {
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  // const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  const token = req.cookies.get("__Secure-next-auth.session-token");
   const { pathname } = req.nextUrl;
 
-  console.log("🌍 Path:", pathname, "🛂 Role:", token?.role, "token:", token);
+  
 
   // 🛑 Nếu chưa đăng nhập, chỉ cho phép vào publicRoutes (trang đăng nhập)
   if (!token) {
@@ -26,8 +27,8 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  const { role } = token;
-
+  let role: string | undefined;
+console.log("🌍 Path:", pathname, "🛂 Role:", role, "token:", token);
   // 🔄 Nếu đã đăng nhập mà vẫn vào trang đăng nhập, chuyển hướng về dashboard phù hợp
   if (pathname === "/") {
     console.log("🔄 Đã đăng nhập, chuyển hướng đến trang phù hợp...");
