@@ -33,7 +33,10 @@ export default async function middleware(req: NextRequest) {
  let role: string | undefined;
   try {
     // Giải mã token JWT và lấy thông tin người dùng
-    const decodedToken = jwt.verify(token.value, process.env.NEXTAUTH_SECRET as string) as CustomJwtPayload; // Ép kiểu CustomJwtPayload
+    const decodedToken = jwt.verify(token.value, process.env.JWT_SECRET as string) as CustomJwtPayload;
+    
+    // Log thông tin decodedToken để kiểm tra
+    console.log("Decoded Token:", decodedToken); // Kiểm tra giá trị của decodedToken
 
     role = decodedToken?.role; // Lấy role từ decoded token
   } catch (error) {
