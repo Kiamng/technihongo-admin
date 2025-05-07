@@ -58,24 +58,25 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: { strategy: "jwt", maxAge: 60 * 60 * 24 },
   cookies: {
-    sessionToken: {
-      name: "__Secure-next-auth.session-token", // Đảm bảo cookie có tên mạnh mẽ
-      options: {
-        httpOnly: true, // Chỉ server có thể truy cập cookie
-        secure: process.env.NODE_ENV === "production", // Cookie chỉ được gửi qua HTTPS trong production
-        sameSite: "Lax", // SameSite giúp bảo vệ chống CSRF
-        path: "/", // Cookie có thể được truy cập trên toàn bộ website
-        maxAge: 60 * 60 * 24 * 7, // Thời gian sống của cookie (ví dụ: 1 tuần)
-      },
-    },
-    csrfToken: {
-      name: "__Secure-next-auth.csrf-token", // Tên cookie CSRF token
-      options: {
-        httpOnly: true, // Chỉ có thể truy cập từ server
-        secure: process.env.NODE_ENV === "production", // Cookie chỉ gửi qua HTTPS trong production
-        sameSite: "Lax", // SameSite giúp bảo vệ chống CSRF
-        path: "/",
-      },
+  sessionToken: {
+    name: "__Secure-next-auth.session-token",
+    options: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax",
+      path: "/",
+      maxAge: 60 * 60 * 24,
     },
   },
+  csrfToken: {
+    name: "__Secure-next-auth.csrf-token",
+    options: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Lax",
+      path: "/",
+    },
+  },
+}
+
 };
