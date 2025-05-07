@@ -52,6 +52,10 @@ export const authOptions: NextAuthOptions = {
         token: token.token,
       };
 
+      if (typeof window !== "undefined") {
+      document.cookie = `role=${token.role}; path=/; max-age=86400`;
+      }
+
       return session;
     },
   },
