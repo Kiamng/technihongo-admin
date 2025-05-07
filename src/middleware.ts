@@ -7,9 +7,12 @@ const authRoutes = ["/dashboard", "/user-management", "/violation-management", "
 const CMRoutes = ["/course-management", "/system-configuration" , "/meeting-management", "/learning-path" , "/difficultylevel-management"];
 
 export default async function middleware(req: NextRequest) {
+  console.log("All cookies in the request:", req.cookies);
   // const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const token = req.cookies.get("__Secure-next-auth.session-token");
   const roleCookie = req.cookies.get("role");
+  console.log("Token from cookies:", token);
+  console.log("Role from cookies:", roleCookie);
   const role = roleCookie ? roleCookie.value : null;
   if (!token) {
     if (!publicRoutes.includes(req.nextUrl.pathname)) {
