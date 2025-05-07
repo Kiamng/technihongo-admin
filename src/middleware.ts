@@ -1,7 +1,10 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 // import { getToken } from "next-auth/jwt";
-
+import jwt, { JwtPayload } from "jsonwebtoken";
+interface CustomJwtPayload extends JwtPayload {
+  role?: string; // role có thể là string hoặc không
+}
 // Các trang public mà không cần đăng nhập
 const publicRoutes = ["/"];
 
@@ -14,20 +17,31 @@ const CMRoutes = ["/course-management", "/system-configuration" , "/meeting-mana
 export default async function middleware(req: NextRequest) {
   // const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   const token = req.cookies.get("__Secure-next-auth.session-token");
-  const { pathname } = req.nextUrl;
+  
 
   
 
   // 🛑 Nếu chưa đăng nhập, chỉ cho phép vào publicRoutes (trang đăng nhập)
   if (!token) {
-    if (!publicRoutes.includes(pathname)) {
+    if (!publicRoutes.includes(req.nextUrl.pathname)) {
       console.log("🚫 Chưa đăng nhập, chuyển hướng về / (trang đăng nhập)");
       return NextResponse.redirect(new URL("/", req.url));
     }
     return NextResponse.next();
   }
 
-  let role: string | undefined;
+ let role: string | undefined;
+  try {
+    // Giải mã token JWT và lấy thông tin người dùng
+    const decodedToken = jwt.verify(token.value, process.env.NEXTAUTH_SECRET as string) as CustomJwtPayload; // Ép kiểu CustomJwtPayload
+
+    role = decodedToken?.role; // Lấy role từ decoded token
+  } catch (error) {
+    console.error("Lỗi giải mã token:", error);
+    return NextResponse.redirect(new URL("/not-found", req.url)); // Redirect nếu token không hợp lệ
+  }
+
+const { pathname } = req.nextUrl;
 console.log("🌍 Path:", pathname, "🛂 Role:", role, "token:", token);
   // 🔄 Nếu đã đăng nhập mà vẫn vào trang đăng nhập, chuyển hướng về dashboard phù hợp
   if (pathname === "/") {
