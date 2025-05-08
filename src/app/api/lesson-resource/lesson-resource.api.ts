@@ -7,7 +7,8 @@ const ENDPOINT = {
     CREATE : '/lesson-resource/create',
     UPDATE_STATUS : '/lesson-resource/update',
     UPDATE_LESSON_RESOURCE_ORDER : '/lesson-resource/update-order/',
-    GET_EXISTING_LESSON_RESOURCE : '/lesson-resource/study-plan'
+    GET_EXISTING_LESSON_RESOURCE : '/lesson-resource/study-plan',
+    UPDATE_LESSON_RESOURCE_STATUS : '/lesson-resource/update'
 };
 
 export const getLessonResourceByLessonId = async (token : string, lessonId : number) : Promise<LessonResource[]> => {
@@ -121,4 +122,18 @@ export const getExistingLessonResource = async (
         }
     })
     return response.data.data
+}
+
+export const updateLessonResourceActiveStatus = async (lessonResourceId : number, isActive: boolean, token : string ) => {
+    const response = await axiosClient.patch (`${ENDPOINT.UPDATE_LESSON_RESOURCE_STATUS}/${lessonResourceId}`,
+        {
+            isActive : isActive
+        },
+        {
+            headers: {
+            Authorization: `Bearer ${token}`
+            }
+        }
+    )
+    return response.data
 }

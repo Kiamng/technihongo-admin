@@ -1,4 +1,4 @@
-import { deleteLessonResourceById } from "@/app/api/lesson-resource/lesson-resource.api";
+import { deleteLessonResourceById, updateLessonResourceActiveStatus } from "@/app/api/lesson-resource/lesson-resource.api";
 import { Button } from "@/components/ui/button";
 import { LessonResource } from "@/types/lesson-resource";
 import { Youtube, BookOpenCheck, Copy, SquarePen, Trash2 } from "lucide-react";
@@ -69,6 +69,9 @@ const LessonResourceItem = ({ lessonResource, studyPlanId, updateLessonResources
         if (lessonResource.lessonResourceId) {
             startTransition(async () => {
                 try {
+                    if (Number(defaultStudyPlanId) !== studyPlanId && lessonResource.active) {
+                        await updateLessonResourceActiveStatus(lessonResource.lessonResourceId, false, token)
+                    }
                     const response = await deleteLessonResourceById(lessonResource.lessonResourceId, token);
                     if (response && response.success) {
                         toast.success("Xóa tài nguyên thành công!");
@@ -133,8 +136,8 @@ const LessonResourceItem = ({ lessonResource, studyPlanId, updateLessonResources
                                     placeholder="Public" />
                             </SelectTrigger>
                             <SelectContent >
-                                <SelectItem className="bg-[#56D071] text-[#56D071] bg-opacity-10" value="true">ACTIVE</SelectItem>
-                                <SelectItem className="bg-[#FD5673] text-[#FD5673] bg-opacity-10" value="false">INACTIVE</SelectItem>
+                                <SelectItem className="bg-[#56D071] text-[#56D071] bg-opacity-10" value="true">Đang hoạt động</SelectItem>
+                                <SelectItem className="bg-[#FD5673] text-[#FD5673] bg-opacity-10" value="false">Không hoạt động</SelectItem>
                             </SelectContent>
                         </Select>
                     </div> */}
