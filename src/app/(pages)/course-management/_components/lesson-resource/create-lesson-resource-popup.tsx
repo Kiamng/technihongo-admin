@@ -40,7 +40,7 @@ const CreateLessonResourcePopup = ({ lesson, closeForm, token, defaultStudyPlanI
                     };
                     response = await createLearningResource(token, draftData);
                     if (response.success) {
-                        const lessonResourceResponse = await createLessonResource({ token: token, lessonId: lesson.lessonId, resourceId: response.data.resourceId })
+                        const lessonResourceResponse = await createLessonResource({ token: token, lessonId: lesson.lessonId, resourceId: response.data.resourceId, active: false })
                         if (lessonResourceResponse.success) {
                             // If linking resource with lesson was successful, redirect to the edit page
                             router.push(`/course-management/${lesson.studyPlan.course.courseId}/study-plan/${defaultStudyPlanId}/detail/${lesson.studyPlan.studyPlanId}/edit-lesson-resource/learning-resource/${response.data.resourceId}`);
@@ -64,7 +64,7 @@ const CreateLessonResourcePopup = ({ lesson, closeForm, token, defaultStudyPlanI
                     };
                     response = await createSysFlashcardSet(token, draftData);
                     if (response.success) {
-                        const lessonResourceResponse = await createLessonResource({ token: token, lessonId: lesson.lessonId, systemSetId: response.data.systemSetId })
+                        const lessonResourceResponse = await createLessonResource({ token: token, lessonId: lesson.lessonId, systemSetId: response.data.systemSetId, active: false })
                         if (lessonResourceResponse.success) {
                             router.push(`/course-management/${lesson.studyPlan.course.courseId}/study-plan/${defaultStudyPlanId}/detail/${lesson.studyPlan.studyPlanId}/edit-lesson-resource/flashcard-set/${response.data.systemSetId}`);
                         } else {
@@ -87,7 +87,7 @@ const CreateLessonResourcePopup = ({ lesson, closeForm, token, defaultStudyPlanI
                     };
                     response = await createQuiz(token, draftData);
                     if (response.success) {
-                        const lessonResourceResponse = await createLessonResource({ token: token, lessonId: lesson.lessonId, quizId: response.data.quizId })
+                        const lessonResourceResponse = await createLessonResource({ token: token, lessonId: lesson.lessonId, quizId: response.data.quizId, active: false })
                         if (lessonResourceResponse.success) {
                             router.push(`/course-management/${lesson.studyPlan.course.courseId}/study-plan/${defaultStudyPlanId}/detail/${lesson.studyPlan.studyPlanId}/edit-lesson-resource/quiz/${response.data.quizId}`);
                         } else {

@@ -72,12 +72,12 @@ const DomainFormPopup: React.FC<DomainFormPopupProps> = ({ initialData, setIsDia
                     response = await addDomain(token, values)
                 }
                 if (!response || response.success === false) {
-                    toast.error(`Failed to ${initialData ? "update" : "create new"} domain`);
+                    toast.error(`${initialData ? "Cập nhật" : "Tạo mới"} lĩnh vực thất bại!`);
                 } else {
                     if (parentId && fetchChildrenDomains) {
                         fetchChildrenDomains(parentId)
                     }
-                    toast.success(`${initialData ? "Update" : "Create new"} domain successfully!`);
+                    toast.success(`${initialData ? "Cập nhật" : "Tạo mới"} lĩnh vực thành công!`);
                     if (fetchParentDomains) {
                         fetchParentDomains()
                     }

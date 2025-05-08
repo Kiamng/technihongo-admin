@@ -49,29 +49,29 @@ const LessonPopupForm = ({ studyPlanId, fetchLessons, setIsDialogOpen, initialDa
                 if (initialData && data.title !== initialData) {
                     const response = await updateLesson(token, data.title, lessonId!);
                     if (!response || response.success === false) {
-                        toast.error("Failed to update lesson!");
+                        toast.error("Cập nhật bài học thất bại!");
                     } else {
                         didChange = true;
-                        toast.success("Lesson title updated successfully!");
+                        toast.success("Cập nhật bài học thành công!");
                     }
                 } else if (!initialData) {
                     const response = await createLesson(token, data.title, studyPlanId!);
                     if (!response || response.success === false) {
-                        toast.error("Failed to create lesson!");
+                        toast.error("Tạo bài học thất bại!");
                         return;
                     } else {
                         didChange = true;
-                        toast.success("Lesson created successfully!");
+                        toast.success("Tạo bài học thành công!");
                     }
                 }
 
                 if (data.order !== initialOrder && lessonId) {
                     const orderResponse = await updateLessonOrder(token, studyPlanId!, lessonId, data.order);
                     if (!orderResponse || orderResponse.success === false) {
-                        toast.error("Failed to update lesson order!");
+                        toast.error("Cập nhật thứ tự bài học thất bại!");
                     } else {
                         didChange = true;
-                        toast.success("Lesson order updated successfully!");
+                        toast.success("Cập nhật thứ tự bài học thành công!");
                     }
                 }
 

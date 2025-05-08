@@ -31,7 +31,7 @@ const DeleteAlert = ({ domain, fetchParentDomains, fetchChildrenDomains, open, o
             try {
                 const response = await deleteDomain(token, domain.domainId);
                 if (response?.success) {
-                    toast.success("Domain deleted successfully!");
+                    toast.success("Xóa lĩnh vực thành công!");
                     onOpenChange(false);
                     if (domain.parentDomainId === null && fetchParentDomains) {
                         await fetchParentDomains();
@@ -56,9 +56,9 @@ const DeleteAlert = ({ domain, fetchParentDomains, fetchChildrenDomains, open, o
                     <p>Hành động này sẽ không thể hoàn tác và vĩnh viễn xóa lĩnh vực này</p>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel disabled={isPending}>Hủy</AlertDialogCancel>
                     <Button variant="destructive" onClick={handleDelete} disabled={isPending}>
-                        {isPending ? "Deleting..." : "Delete"}
+                        {isPending ? "Đang xóa..." : "Xóa"}
                     </Button>
                 </AlertDialogFooter>
             </AlertDialogContent>

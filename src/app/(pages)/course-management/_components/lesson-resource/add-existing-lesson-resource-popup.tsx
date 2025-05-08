@@ -119,7 +119,8 @@ const AddExistingLessonResourcePopup = ({ lessonId, defaultStudyPlanId, closeFor
                 lessonId: lessonId,
                 resourceId: lessonResource.learningResource?.resourceId,
                 systemSetId: lessonResource.systemFlashCardSet?.systemSetId,
-                quizId: lessonResource.quiz?.quizId
+                quizId: lessonResource.quiz?.quizId,
+                active: lessonResource.active
             });
         }
         setLessonResources((prevResources) => ({

@@ -36,7 +36,8 @@ export const createLessonResource = async (
         lessonId,
         resourceId,
         systemSetId,
-        quizId
+        quizId,
+        active
     } : 
     {
         token : string,
@@ -44,6 +45,7 @@ export const createLessonResource = async (
         resourceId? : number,
         systemSetId? : number,
         quizId? : number,
+        active: boolean
     }
 ) => {
     const response = await axiosClient.post(ENDPOINT.CREATE, {
@@ -51,7 +53,8 @@ export const createLessonResource = async (
         lessonId : lessonId,
         resourceId : resourceId,
         systemSetId: systemSetId,
-        quizId: quizId
+        quizId: quizId,
+        active : active
     },
     {
         headers: {
