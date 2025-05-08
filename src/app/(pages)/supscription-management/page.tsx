@@ -102,16 +102,14 @@ import { useEffect, useState } from "react";
 import { DataTable } from "@/components/data-table";
 
 import { SubscriptionPlan } from "@/types/subscription";
-import { Users, GraduationCap, UserCheck } from "lucide-react";
+// import { Users, GraduationCap, UserCheck } from "lucide-react";
 import {
-  AdminOverview,
-  getAdminOverview,
   getAllSubscription,
 } from "@/app/api/subscription/subscription.api";
 
 import { Pagination } from "@/components/Pagination";
 import { useSession } from "next-auth/react";
-import { SubscriptionStats } from "../dashboard/_components/SubscriptionStats";
+// import { SubscriptionStats } from "../dashboard/_components/SubscriptionStats";
 import { SubscriptionPlanColumns } from "../dashboard/_components/columns";
 import EditSubscriptionPlanPopup from "../dashboard/_components/add-subscription-popup";
 
@@ -120,12 +118,12 @@ export default function SubscriptionManagement() {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState<boolean>(true);
   const [subscriptions, setSubscriptions] = useState<SubscriptionPlan[]>([]);
-  const [overview, setOverview] = useState<AdminOverview>({
-    totalStudents: 0,
-    totalActiveCourses: 0,
-    totalSubscriptionsSold: 0,
-    yearlyRevenue: [],
-  });
+  // const [overview, setOverview] = useState<AdminOverview>({
+  //   totalStudents: 0,
+  //   totalActiveCourses: 0,
+  //   totalSubscriptionsSold: 0,
+  //   yearlyRevenue: [],
+  // });
   const [error, setError] = useState<string | null>(null);
   const itemsPerPage = 5;
   const totalPages = Math.ceil(subscriptions.length / itemsPerPage);
@@ -150,20 +148,20 @@ export default function SubscriptionManagement() {
   };
 
   // Fetch admin overview
-  const fetchAdminOverview = async () => {
-    try {
-      const response = await getAdminOverview(session?.user.token as string);
-      setOverview(response);
-    } catch (err) {
-      console.error("Lỗi khi tải tổng quan:", err);
-      setError("Không thể tải dữ liệu tổng quan.");
-    }
-  };
+  // const fetchAdminOverview = async () => {
+  //   try {
+  //     const response = await getAdminOverview(session?.user.token as string);
+  //     setOverview(response);
+  //   } catch (err) {
+  //     console.error("Lỗi khi tải tổng quan:", err);
+  //     setError("Không thể tải dữ liệu tổng quan.");
+  //   }
+  // };
 
   useEffect(() => {
     if (session?.user.token) {
       fetchSubscriptions();
-      fetchAdminOverview();
+      // fetchAdminOverview();
     }
   }, [session?.user.token]);
 
@@ -184,7 +182,7 @@ export default function SubscriptionManagement() {
       )}
 
       {/* Stats cards */}
-      <div className="w-full flex flex-row space-x-4 mb-6">
+      {/* <div className="w-full flex flex-row space-x-4 mb-6">
         <SubscriptionStats
           title="Tổng số học viên"
           count={overview.totalStudents}
@@ -200,7 +198,7 @@ export default function SubscriptionManagement() {
           count={overview.totalSubscriptionsSold}
           icon={<UserCheck className="w-6 h-6 text-gray-500" />}
         />
-      </div>
+      </div> */}
 
       {/* Data table + Pagination */}
       <DataTable

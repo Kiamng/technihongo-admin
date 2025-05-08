@@ -9,7 +9,7 @@ import AddContentManagerPopup from "./_components/add-content-manager-popup";
 import { Pagination, PaginationContent, PaginationItem } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, UserCheck } from "lucide-react";
 import { useSession } from "next-auth/react";
 
 export default function UserManagementPage() {
@@ -17,6 +17,7 @@ export default function UserManagementPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [users, setUsers] = useState<UserList | undefined>();
   const [contentManagers, setContentManagers] = useState<UserList | undefined>();
+  const [isAddCMDialogOpen, setIsAddCMDialogOpen] = useState<boolean>(false)
   const [activeTab, setActiveTab] = useState("student");
   const [searchValue, setSearchValue] = useState<string>("");
   const [debouncedSearchValue, setDebouncedSearchValue] = useState<string>("");
@@ -101,7 +102,9 @@ export default function UserManagementPage() {
     <div className="w-full space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-4xl font-bold">Quản lí người dùng</h1>
-        <AddContentManagerPopup />
+        <Button onClick={() => setIsAddCMDialogOpen(true)} className="flex space-x-2">
+          <UserCheck /><span>Thêm mới content manager</span>
+        </Button>
       </div>
 
       <div className="w-full flex flex-row justify-between">
@@ -129,6 +132,10 @@ export default function UserManagementPage() {
           <DataTable columns={columns} data={currentData?.content || []} isLoading={loading && activeTab === "contentManager"} />
         </TabsContent>
       </Tabs>
+
+      {isAddCMDialogOpen &&
+        <AddContentManagerPopup fetchData={fetchData} onClose={setIsAddCMDialogOpen} onOpen={isAddCMDialogOpen} />
+      }
 
       <Pagination className="space-x-6">
         <PaginationContent>
