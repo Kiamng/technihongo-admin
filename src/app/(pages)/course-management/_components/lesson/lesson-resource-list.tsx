@@ -13,6 +13,7 @@ import {
     AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { useParams } from "next/navigation";
 
 interface LessonResourceListProps {
     lessonResource: LessonResource;
@@ -47,6 +48,7 @@ const LessonResourceItem = ({ lessonResource, studyPlanId, updateLessonResources
     const resource = resourceTypeConfig[lessonResource.type];
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [isPending, startTransition] = useTransition();
+    const { defaultStudyPlanId } = useParams();
 
     if (!resource) {
         console.error(`Unsupported lesson resource type: ${lessonResource.type}`);
@@ -57,7 +59,7 @@ const LessonResourceItem = ({ lessonResource, studyPlanId, updateLessonResources
     const title = getTitle(lessonResource) || "Untitled";
 
     const handleDeleteClick = () => {
-        if (lessonResource.active) {
+        if (lessonResource.active && Number(defaultStudyPlanId) === studyPlanId) {
             toast.error("You cannot delete an active lesson resource.");
         } else {
             setConfirmOpen(true);
@@ -69,10 +71,10 @@ const LessonResourceItem = ({ lessonResource, studyPlanId, updateLessonResources
                 try {
                     const response = await deleteLessonResourceById(lessonResource.lessonResourceId, token);
                     if (response && response.success) {
-                        toast.success("Lesson resource deleted successfully!");
+                        toast.success("Xóa tài nguyên thành công!");
                         updateLessonResources(lessonId, lessonResource.lessonResourceId);
                     } else {
-                        toast.error("Failed to delete lesson resource!");
+                        toast.error("Xóa tài nguyên thất bại!");
                     }
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 } catch (error: any) {

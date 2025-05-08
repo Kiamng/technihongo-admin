@@ -145,9 +145,9 @@ const AddExistingLessonResourcePopup = ({ lessonId, defaultStudyPlanId, closeFor
                             </SelectTrigger>
                             <SelectContent>
                                 <SelectItem value="none">None</SelectItem>
-                                <SelectItem value="Quiz">Quiz</SelectItem>
-                                <SelectItem value="FlashcardSet">FlashcardSet</SelectItem>
-                                <SelectItem value="LearningResource">LearningResource</SelectItem>
+                                <SelectItem value="Quiz">Bài kiểm tra</SelectItem>
+                                <SelectItem value="FlashcardSet">Flashcard</SelectItem>
+                                <SelectItem value="LearningResource">Bài giảng</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
@@ -163,11 +163,11 @@ const AddExistingLessonResourcePopup = ({ lessonId, defaultStudyPlanId, closeFor
                         </div>
                     )}
                     {!lessonResourcesPage?.last &&
-                        <Button disabled={isLoading} onClick={loadMoreResources}>Load more</Button>
+                        <Button disabled={isLoading} onClick={loadMoreResources}>Tải thêm</Button>
                     }
                 </div>
                 <div className="flex flex-col space-y-4 w-full">
-                    <div>Selected lesson resource:</div>
+                    <div>Các tài nguyên đã chọn:</div>
                     <Separator />
                     <div className="w-full flex flex-col space-y-1 overflow-y-auto h-[300px]">
                         {selectedLessonResources.map((lessonResource) => (
@@ -180,7 +180,7 @@ const AddExistingLessonResourcePopup = ({ lessonId, defaultStudyPlanId, closeFor
             <div className="flex justify-end space-x-2 mt-4">
                 <Button variant="outline" onClick={() => closeForm(false)}>Cancel</Button>
                 <Button disabled={isPending} onClick={handleSubmit}>
-                    {isPending ? <><LoaderCircle className="animate-spin" /> Processing ...</> : "Continue"}
+                    {isPending ? <><LoaderCircle className="animate-spin" /> Đang xử lí ...</> : "Tiếp tục"}
                 </Button>
             </div>
         </>
