@@ -49,10 +49,11 @@ const AddContentManagerPopup = ({ onOpen, onClose, fetchData }: AddContentManage
             const response = await addContentManager(session?.user.token as string, values);
             if (response.success === false) {
                 toast.error("Failed to add new content manager!!");
-                fetchData("contentManager", "")
-                onClose(false)
+
             } else {
                 toast.success("Tạo mới content manager thành công!!");
+                fetchData("contentManager", "")
+                onClose(false)
             }
         }
         catch (error) {
