@@ -54,7 +54,7 @@ export const createLessonResource = async (
         resourceId : resourceId,
         systemSetId: systemSetId,
         quizId: quizId,
-        active : active
+        isActive : active
     },
     {
         headers: {
