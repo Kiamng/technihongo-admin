@@ -44,41 +44,49 @@ const LessonPopupForm = ({ studyPlanId, fetchLessons, setIsDialogOpen, initialDa
     const onSubmit: SubmitHandler<CreateLessonForm> = async (data) => {
         startTransition(async () => {
             try {
-                let response;
-                let orderResponse;
+                let didChange = false;
+
                 if (initialData && data.title !== initialData) {
-
-                    response = await updateLesson(token, data.title, lessonId!);
-
-                } else if (!initialData) {
-
-                    response = await createLesson(token, data.title, studyPlanId!);
-                }
-
-                if (data.order !== initialOrder && lessonId) {
-                    orderResponse = await updateLessonOrder(token, studyPlanId!, lessonId, data.order)
-                    if (!orderResponse || orderResponse.success === false) {
-                        toast.error(`Failed to update lesson order!`);
+                    const response = await updateLesson(token, data.title, lessonId!);
+                    if (!response || response.success === false) {
+                        toast.error("Failed to update lesson!");
                     } else {
-                        fetchLessons();
-                        toast.success(`Lesson order updated successfully!`);
-                        setIsDialogOpen(false);
+                        didChange = true;
+                        toast.success("Lesson title updated successfully!");
+                    }
+                } else if (!initialData) {
+                    const response = await createLesson(token, data.title, studyPlanId!);
+                    if (!response || response.success === false) {
+                        toast.error("Failed to create lesson!");
+                        return;
+                    } else {
+                        didChange = true;
+                        toast.success("Lesson created successfully!");
                     }
                 }
 
-                if (!response || response.success === false) {
-                    toast.error(`Failed to ${initialData ? "update" : "create"} lesson!`);
-                } else {
-                    fetchLessons();
-                    toast.success(`Lesson ${initialData ? "updated" : "created"} successfully!`);
+                if (data.order !== initialOrder && lessonId) {
+                    const orderResponse = await updateLessonOrder(token, studyPlanId!, lessonId, data.order);
+                    if (!orderResponse || orderResponse.success === false) {
+                        toast.error("Failed to update lesson order!");
+                    } else {
+                        didChange = true;
+                        toast.success("Lesson order updated successfully!");
+                    }
+                }
+
+                if (didChange) {
+                    await fetchLessons();
                     setIsDialogOpen(false);
                 }
+
             } catch (error) {
                 console.error(error);
-                toast.error(`An error occurred while ${initialData ? "updating" : "creating"}.`);
+                toast.error(`An error occurred while ${initialData ? "updating" : "creating"} the lesson.`);
             }
         });
     };
+
     return (
         <>
             <DialogHeader>
