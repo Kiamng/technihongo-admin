@@ -52,7 +52,7 @@ const CreateNewCourseForm = ({ token, fetchCourses, domains, levels, loading }: 
             difficultyLevelId: 0,
             estimatedDuration: '',
             thumbnailUrl: '',
-            isPremium: false
+            isPremium: true
         },
     });
 
@@ -231,7 +231,7 @@ const CreateNewCourseForm = ({ token, fetchCourses, domains, levels, loading }: 
                                     control={form.control}
                                     name="isPremium"
                                     render={({ field }) => (
-                                        <FormItem className='flex flex-row space-x-4 items-center'>
+                                        <FormItem className='hidden'>
                                             <FormLabel>Premium</FormLabel>
                                             <FormControl>
                                                 <Switch

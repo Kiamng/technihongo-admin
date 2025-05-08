@@ -71,6 +71,7 @@ export const updateLesson = async (token : string ,title : string, lessonId : nu
 
 export const updateLessonOrder = async (token : string , studyPlanId : number, lessonId : number, newOrder : number,) => {
   const response = await axiosClient.patch(`${ENDPOINT.UPDATE_LESSON_ORDER}/${studyPlanId}?lessonId=${lessonId}&newOrder=${newOrder}`,
+    {},
     {
       headers: {
       Authorization: `Bearer ${token}`

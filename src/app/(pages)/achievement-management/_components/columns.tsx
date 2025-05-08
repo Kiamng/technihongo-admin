@@ -1,10 +1,9 @@
 "use client";
 import { ColumnDef } from "@tanstack/react-table";
-import { CellAction } from "./cell-action";
 import { Achievement } from "@/types/achievement";
 
 export const columns: ColumnDef<Achievement>[] = [
-  
+
   {
     accessorKey: "badgeName",
     header: "Badge Name",
@@ -35,9 +34,5 @@ export const columns: ColumnDef<Achievement>[] = [
         <div className="px-4 py-2 bg-[#FD5673] w-fit text-[#FD5673] rounded-xl bg-opacity-10">INACTIVE</div>
       );
     },
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => <CellAction data={row.original} />,
   },
 ];

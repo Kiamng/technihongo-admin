@@ -80,7 +80,7 @@ const SetUpdateForm = ({ flashcardSet, token, isLoading, flashcardSetId }: SetUp
                         </FormItem>
                     )} />
                     <FormField control={form.control} name="difficultyLevel" render={({ field }) => (
-                        <FormItem>
+                        <FormItem className="hidden">
                             <FormLabel>Độ khó:</FormLabel>
                             <FormControl>
                                 <Input

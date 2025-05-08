@@ -115,35 +115,31 @@ export default function CourseUpdateForm({ course, onSubmit, isPending, token }:
                                 <FormMessage />
                             </FormItem>
                         )} />
-
-
-                        <div className="w-full grid grid-cols-2 gap-4">
-                            <FormField control={form.control} name="estimatedDuration" render={({ field }) => (
-                                <FormItem>
-                                    <Label>Thời gian ước tính</Label>
+                        <FormField control={form.control} name="estimatedDuration" render={({ field }) => (
+                            <FormItem>
+                                <Label>Thời gian ước tính</Label>
+                                <FormControl>
+                                    <Input disabled={isPending || course?.publicStatus} placeholder="Enter estimated duration" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        <FormField
+                            control={form.control}
+                            name="isPremium"
+                            render={({ field }) => (
+                                <FormItem className='hidden'>
+                                    <FormLabel>Premium</FormLabel>
                                     <FormControl>
-                                        <Input disabled={isPending || course?.publicStatus} placeholder="Enter estimated duration" {...field} />
+                                        <Switch
+                                            disabled={true}
+                                            checked={field.value}
+                                            onCheckedChange={field.onChange}
+                                        />
                                     </FormControl>
-                                    <FormMessage />
                                 </FormItem>
-                            )} />
-                            <FormField
-                                control={form.control}
-                                name="isPremium"
-                                render={({ field }) => (
-                                    <FormItem className='flex flex-row space-x-4 items-center'>
-                                        <FormLabel>Premium</FormLabel>
-                                        <FormControl>
-                                            <Switch
-                                                disabled={true}
-                                                checked={field.value}
-                                                onCheckedChange={field.onChange}
-                                            />
-                                        </FormControl>
-                                    </FormItem>
-                                )}
-                            />
-                        </div>
+                            )}
+                        />
                         <FormField control={form.control} name="domainId" render={({ field }) => (
                             <FormItem>
                                 <Label>Lĩnh vực</Label>
