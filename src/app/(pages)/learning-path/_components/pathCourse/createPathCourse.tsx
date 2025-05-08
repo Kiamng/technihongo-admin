@@ -206,7 +206,7 @@ const AddPathCoursePopup = ({
       });
 
       if (response && response.success) {
-        toast.success("Course successfully added to learning path");
+        toast.success("Thêm khóa học vào lộ trình học tập thành công!");
         onCourseAdded(); // Gọi callback để cập nhật danh sách
         setIsDialogOpen(false);
       } else {

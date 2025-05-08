@@ -37,6 +37,10 @@ export const CellAction: React.FC<CellActionProps> = ({ data, onUpdate }) => {
 
   const handleDelete = async () => {
     // Kiểm tra token
+    if (data.public) {
+      toast.error("Bạn không thể xóa 1 lộ trình học tập đang hoạt động");
+      return;
+    }
     if (!session?.user?.token) {
       toast.error("Authentication required. Please log in again.");
       setConfirmOpen(false);
@@ -107,7 +111,7 @@ export const CellAction: React.FC<CellActionProps> = ({ data, onUpdate }) => {
           size="icon"
           onClick={() => setConfirmOpen(true)}
           variant={"destructive"}
-          disabled={isDeleting}
+          disabled={isDeleting || data.public}
         >
           {isDeleting ? "..." : <Trash className="w-4 h-4" />}
         </Button>
@@ -134,8 +138,8 @@ export const CellAction: React.FC<CellActionProps> = ({ data, onUpdate }) => {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <p>This action cannot be undone. This will permanently delete this learning path.</p>
+            <AlertDialogTitle>Bạn đã chắc chắn?</AlertDialogTitle>
+            <p>Hành động này không thể hoàn tác và lộ trình học tập này sẽ bị xóa vĩnh viễn</p>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>

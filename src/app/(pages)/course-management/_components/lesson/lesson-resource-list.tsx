@@ -60,7 +60,7 @@ const LessonResourceItem = ({ lessonResource, studyPlanId, updateLessonResources
 
     const handleDeleteClick = () => {
         if (lessonResource.active && Number(defaultStudyPlanId) === studyPlanId) {
-            toast.error("You cannot delete an active lesson resource.");
+            toast.error("Bạn không thể xóa 1 tài nguyên đang hoạt động !");
         } else {
             setConfirmOpen(true);
         }
